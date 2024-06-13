@@ -54,10 +54,13 @@ class Net(nn.Module):
         self.act = nn.ReLU()
         self.fc2 = nn.Linear(900, 100)
         self.act2 = nn.ReLU()
+        #ADDED:
+        # self.fc3 = nn.Linear(100, 1)
+        # self.act3 = nn.ReLU()
 
     def forward(self, x, hidden_state=None, seq_length=200):
 
-        assert x.shape[0] == self.input_channels
+        assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
         x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
         x = self.conv1(x)
         x = self.do1(x)
@@ -77,13 +80,33 @@ class Net(nn.Module):
         x = self.fc(res2 + res3)
         x = self.act(x)
         x = self.fc2(x)
+        #ADDED LINES:
+        # x = self.act2(x)
+        # x = self.fc3(x)
         return x, hidden_state
 
     def loss(self, prediction, label, seq_length = 200, reduction='mean', lam=1):
-        
-        l1_loss = F.l1_loss(prediction.view(-1, seq_length, 100), label.view(-1, seq_length, 100), reduction=reduction)
-        l2_loss = F.mse_loss(prediction.view(-1, seq_length, 100), label.view(-1, seq_length, 100), reduction=reduction)
-        return lam*l2_loss + (1-lam)*l1_loss
+        l1_loss = 0
+        if isinstance(prediction, np.ndarray):
+            prediction = torch.tensor(prediction)
+        if isinstance(label, np.ndarray):
+            label = torch.tensor(label)
+
+        if prediction.ndim != 1 or label.ndim != 1:
+            prediction = prediction.view(-1)
+            label = label.view(-1)
+
+        if prediction.size() != label.size():
+            raise ValueError(
+                f"Shape mismatch: prediction size {prediction.size()} does not match label size {label.size()}")
+
+        # Compute L1 and L2 losses
+        # l1_loss = F.l1_loss(prediction, label, reduction=reduction)
+        l2_loss = F.mse_loss(prediction, label, reduction=reduction)
+
+        # Combine losses with lambda
+        total_loss = lam * l2_loss + (1 - lam) * l1_loss
+        return total_loss
 
 
 class Disc(nn.Module):

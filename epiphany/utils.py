@@ -7,6 +7,7 @@ import torch
 import glob
 import pandas as pd
 import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 ######## Data Preprocessing Utils ############
 def load_chipseq(dir, chrom="chr1", resolution=100):
@@ -44,7 +45,7 @@ def load_chipseq(dir, chrom="chr1", resolution=100):
 
 ### DIAGONAL PREDICTION STUFF
 # 1. extract orthogonal stripe from the diagonal vector lists
-def contact_extraction(m, diag_log_list, distance=100):
+def contact_extraction(m, diag_log_list, distance=100): #100
     '''
     Args:
         m: position along the diagonal
@@ -71,7 +72,7 @@ def contact_extraction(m, diag_log_list, distance=100):
 
 
 #2. Match ChIP-seq vector with stripe (at same location m)
-def data_preparation(m, diag_log_list, chip_list, chip_res = 100, hic_res = 10000, distance = 200):
+def data_preparation(m, diag_log_list, chip_list, distance, chip_res = 100, hic_res = 10000):
     '''
     m: position along the diagonal
     chip_list: the bw_list we generated above
@@ -82,6 +83,51 @@ def data_preparation(m, diag_log_list, chip_list, chip_res = 100, hic_res = 1000
     res_ratio = int(hic_res / chip_res)
     contacts = contact_extraction(m,diag_log_list,distance)
     return contacts #, chip_list[:, (m*res_ratio - int(distance/2)*res_ratio-1000):(m*res_ratio + int(distance/2)*res_ratio)+1000].T
+
+def get_y_vstripe(start, hic, input_size, resolution=1e04):
+    hic_start_row = start
+    hic_start_col = start + 200 * np.int64(resolution)
+    ind_row = np.int64(hic_start_row // resolution)
+    ind_col = np.int64(hic_start_col // resolution)
+    #vert = hic[ind_row : ind_row + 200, ind_col].toarray()
+    vert = hic[ind_row : ind_row + 200][ind_col].toarray()
+
+    hic_start_row = start + 200 * np.int64(resolution)
+    hic_start_col = start + 201 * np.int64(resolution)
+    ind_row = np.int64(hic_start_row // resolution)
+    ind_col = np.int64(hic_start_col // resolution)
+
+    #hori = hic[ind_row, ind_col : ind_col + 200].toarray()
+    hori = hic[ind_row][ind_col: ind_col + 200].toarray()
+
+    y = np.append(vert, hori).astype(np.float32)
+    y = y.clip(-16, 16)
+    return y
+
+
+def get_y_vstripe_eval(start, hic, input_size, resolution=1e04):
+    hic_start_row = start
+    hic_start_col = start + 200 * np.int64(resolution)
+    ind_row = np.int64(hic_start_row // resolution)
+    ind_col = np.int64(hic_start_col // resolution)
+    vert = hic[max(0, ind_row) : ind_row + 200, ind_col].toarray()
+
+    desired_length = 200
+    num_zeros = desired_length - vert.shape[0]
+    vert = np.pad(vert, ((num_zeros, 0), (0, 0)), "constant")
+
+    hic_start_row = start + 200 * np.int64(resolution)
+    hic_start_col = start + 201 * np.int64(resolution)
+    ind_row = np.int64(hic_start_row // resolution)
+    ind_col = np.int64(hic_start_col // resolution)
+
+    hori = hic[ind_row, ind_col : ind_col + 200].toarray()
+    num_zeros = desired_length - hori.shape[1]
+    hori = np.pad(hori, ((0, 0), (0, num_zeros)), "constant")
+
+    y = np.append(vert, hori).astype(np.float32)
+    return y
+
 
 ######## PyTorch Utils ############
 def save(net, file_name, num_to_keep=1):
@@ -181,7 +227,7 @@ def restore_latest(net, folder, ext='.pt'):
 
 
 def generate_image(label, pred, path='./', seq_length=1000, bands=200):
-    
+
     path = os.path.join(path, 'ex.png')
     label = np.squeeze(label.numpy()).T[::-1,:]
     pred = np.squeeze(pred.numpy()).T[::-1,:]
@@ -204,6 +250,170 @@ def generate_image(label, pred, path='./', seq_length=1000, bands=200):
     return plt.imread(path)
 
 
+# def extract_diagonals(arr):
+#     arr = arr.detach().cpu().numpy() if torch.is_tensor(arr) else arr
+#     diag_up = np.diagonal(arr, axis1=0, axis2=1).T
+#     diag_down = np.fliplr(arr).diagonal(axis1=0, axis2=1).T
+#     return diag_up, diag_down
+
+def generate_image_vstripe(label, pred, path='./', seq_length=1000):
+    if not isinstance(label, np.ndarray):
+        label = label.numpy()
+    if not isinstance(pred, np.ndarray):
+        pred = pred.numpy()
+
+    path = os.path.join(path, 'ex.png')
+
+    # Extract v-stripe from label and pred
+    label_up, label_down = extract_diagonals(label)
+    pred_up, pred_down = extract_diagonals(pred)
+
+    # Initialize image
+    im = np.zeros((seq_length, seq_length))
+
+    # Fill image with label v-stripe
+    for i in range(len(label_up)):
+        if i > 0:
+            np.fill_diagonal(im[:, i:], label_up[-1 - i, i // 2:-i // 2])
+        else:
+            np.fill_diagonal(im, .5 * label_up[-1 - i, :])
+
+    for i in range(len(label_down)):
+        if i > 0:
+            np.fill_diagonal(im[:, i:], label_down[-1 - i, i // 2:-i // 2])
+        else:
+            np.fill_diagonal(im, .5 * label_down[-1 - i, :])
+
+    # Fill image with pred v-stripe
+    for i in range(len(pred_up)):
+        if i > 0:
+            diag_values = pred_up[-1 - i, i // 2:-i // 2]
+            for j in range(len(diag_values)):
+                if im[j, j + i] != 0:
+                    im[j, j + i] = (im[j, j + i] + diag_values[j]) / 2
+                else:
+                    im[j, j + i] = diag_values[j]
+        else:
+            diag_values = .5 * pred_up[-1 - i, :]
+            for j in range(len(diag_values)):
+                if im[j, j] != 0:
+                    im[j, j] = (im[j, j] + diag_values[j]) / 2
+                else:
+                    im[j, j] = diag_values[j]
+
+    for i in range(len(pred_down)):
+        if i > 0:
+            diag_values = pred_down[-1 - i, i // 2:-i // 2]
+            for j in range(len(diag_values)):
+                if im[j, j + i] != 0:
+                    im[j, j + i] = (im[j, j + i] + diag_values[j]) / 2
+                else:
+                    im[j, j + i] = diag_values[j]
+        else:
+            diag_values = .5 * pred_down[-1 - i, :]
+            for j in range(len(diag_values)):
+                if im[j, j] != 0:
+                    im[j, j] = (im[j, j] + diag_values[j]) / 2
+                else:
+                    im[j, j] = diag_values[j]
+
+    # Save image
+    plt.imsave(path, im, cmap='RdYlBu_r', vmin=0)
+
+    return plt.imread(path)
 
 
+def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200):
+    path = os.path.join(path, 'ex_test.png')
+    # label = np.squeeze(label.numpy()).T
+    label = np.squeeze(label).T
 
+    # Ensure label is a numpy array
+    if isinstance(label, torch.Tensor):
+        label = label.detach().numpy()
+    elif not isinstance(label, np.ndarray):
+        label = np.array(label)
+
+    # Extract the diagonals
+    # label_up, label_down = extract_diagonals(label.T)
+    # label_up = label_up
+    # label_down = label_down
+
+    # Initialize the image arrays
+    im1 = np.zeros((seq_length, seq_length))
+    im2 = np.zeros((seq_length, seq_length))
+
+    # Fill the top diagonal with the reconstructed Hi-C from label diagonals
+    for i in range(seq_length):
+        diag_values_up = y_up_list[i]
+        diag_values_down = y_down_list[i]
+
+        for j in range(min(100, seq_length - i)):
+            im1[i, i+j] = diag_values_up[j]
+
+        # # Handle the down_array values as well
+        # for j in range(min(100, seq_length - i)):
+        #     im1[i - j, i] = diag_values_down[j]
+    bands = len(label)
+    label = np.flip(label, axis=0)
+    for j in range(bands - 1):
+        if j > 0:
+            np.fill_diagonal(im2[:, j:], label[bands - 1 - j, j // 2:-j // 2])
+        else:
+            np.fill_diagonal(im2, .5 * label[bands - 1 - j, :])
+
+    # Plot the results
+    fig, ax = plt.subplots()
+    combined_image = im1 + im2.T
+    ax.imshow(combined_image, cmap='RdYlBu_r', vmin=0)
+    plt.imsave(path, combined_image, cmap='RdYlBu_r', vmin=0)
+
+    return plt.imread(path)
+
+
+def test(test_loader, model, device, seq_length):
+    '''
+    Function for the validation step of the training loop
+    '''
+    y_hat_list = []
+    y_true_list = []
+    model.eval()
+
+    with tqdm(test_loader, unit="batch") as tepoch:
+        for (X_chr, y_chr, X_chr_rev, y_chr_rev) in tepoch:
+            # left interactions
+            y_hat, hidden = model(X_chr[0], hidden_state=None,seq_length=seq_length)
+            y_hat = y_hat.squeeze()
+            y_hat, disregard = extract_diagonals(y_hat)
+            # right interactions
+            y_hat_rev, hidden = model(X_chr_rev[0], hidden_state=None,seq_length=seq_length)
+            y_hat_rev = y_hat_rev.squeeze()
+            y_hat_rev, disregard = extract_diagonals(y_hat_rev)
+            y_hat = torch.cat((torch.Tensor(y_hat), torch.flip(torch.Tensor(y_hat_rev), [0]))) #dims was set to 1...
+            y_hat_list.append(y_hat.detach().cpu())
+
+    return y_hat_list
+
+
+def test_model(model, test_loader, device, seq_length):
+    with torch.no_grad():
+        y_hat_list = test(test_loader, model, device, seq_length)
+    return y_hat_list
+
+def extract_diagonals(arr):
+    if isinstance(arr, torch.Tensor):
+        arr = arr.detach().numpy()
+    elif not isinstance(arr, np.ndarray):
+        arr = np.array(arr)
+    assert arr.shape == (200, 100), "Input array must be 200x100 in size"
+
+    up_diagonal = np.zeros(100)
+    down_diagonal = np.zeros(100)
+
+    for i in range(100):
+        up_diagonal[i] = arr[99 + i//2, i]
+        down_diagonal[i] = arr[99 - i//2, i]
+        # up_diagonal[i] = arr[0, i]
+        # down_diagonal[i] = arr[i, 0]
+
+    return up_diagonal, down_diagonal
