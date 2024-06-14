@@ -55,12 +55,12 @@ def main():
     TRAIN_SEQ_LENGTH = 200
     TEST_SEQ_LENGTH = 200
 
-    #torch.cuda.set_device(int(args.gpu))
+    torch.cuda.set_device(int(args.gpu))
 
 
     torch.manual_seed(0)
-    model = Net(1, 5, int(args.window_size))#.cuda()
-    disc = Disc()#.cuda()
+    model = Net(1, 5, int(args.window_size)).cuda()
+    disc = Disc().cuda()
     if args.wandb:
         wandb.watch(model, log='all')
 
@@ -118,7 +118,7 @@ def main():
     plt.savefig('2d_array_visualization_V_test.png')
     print("Plot saved as '2d_array_visualization_V_test.png'")
 
-    #scaler = torch.cuda.amp.GradScaler()
+    scaler = torch.cuda.amp.GradScaler()
     for epoch in range(int(args.e)):
         disc_preds_train = []
 
@@ -142,8 +142,8 @@ def main():
                 if np.linalg.norm(test_label) < 1e-8:
                     continue
 
-                #test_data, test_label = torch.Tensor(test_data[0]).cuda(), torch.Tensor(test_label).cuda()
-                test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
+                test_data, test_label = torch.Tensor(test_data[0]).cuda(), torch.Tensor(test_label).cuda()
+                # test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
 
                 with torch.no_grad():
                     # left interactions
@@ -192,8 +192,8 @@ def main():
                 continue
 
             hidden = None
-            label = torch.Tensor(np.squeeze(label))#.cuda()
-            data = data[0]#.cuda()
+            label = torch.Tensor(np.squeeze(label)).cuda()
+            data = data[0].cuda()
             optimizer.zero_grad()
 
             output, hidden = model(data,seq_length=TRAIN_SEQ_LENGTH)
@@ -225,8 +225,8 @@ def main():
             mse_loss = mse_loss_up
             mse_loss_down = model.loss(output_1d_v_down, label_1d_v_down, seq_length=TRAIN_SEQ_LENGTH)
             disc_out = disc(output.view(1,1,output.shape[0], output.shape[1]))
-            #adv_loss = F.binary_cross_entropy_with_logits(disc_out.view(1), torch.Tensor([1]).cuda()) # how close is disc pred to 1
-            adv_loss = F.binary_cross_entropy_with_logits(disc_out.view(1), torch.Tensor([1]))
+            adv_loss = F.binary_cross_entropy_with_logits(disc_out.view(1), torch.Tensor([1]).cuda()) # how close is disc pred to 1
+            # adv_loss = F.binary_cross_entropy_with_logits(disc_out.view(1), torch.Tensor([1]))
             loss = (LAMBDA)*mse_loss_up + (1 - LAMBDA)*adv_loss
             # loss = float(0.5)*mse_loss_up + float(0.5)*mse_loss_down
 
