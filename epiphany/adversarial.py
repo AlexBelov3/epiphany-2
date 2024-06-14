@@ -105,14 +105,19 @@ def main():
     y_down_list = []
     labels = []
     for i, (test_data, test_label, test_data_rev, test_label_rev) in enumerate(test_loader):
+        print(f"test_label shape: {np.shape(test_label)}")
         test_label = test_label.squeeze()
+        print(f"test_label shape: {np.shape(test_label)}")
+        print(f"test_label type: {type(test_label)}")
         y, y_rev = extract_diagonals(test_label)
+        print(f"y shape: {np.shape(y)}")
+        print(f"y type: {type(y)}")
         y_up_list.append(y)
         y_down_list.append(y_rev)
         labels.append(test_label[100])
-        if i > 400:
+        if i > 1: #400
             break
-    im = generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400) #test_set.sizes
+    im = generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=1) #test_set.sizes # 400
     fig, ax = plt.subplots()
     ax.imshow(im, cmap='RdYlBu_r', vmin=0)
     plt.savefig('2d_array_visualization_V_test.png')
