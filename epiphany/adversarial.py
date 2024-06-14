@@ -93,7 +93,7 @@ def main():
     test_log = os.path.join(LOG_PATH, 'test_log.txt')
 
     hidden = None
-    log_interval = 5
+    log_interval = 50
     parameters = list(model.parameters())
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
@@ -135,7 +135,7 @@ def main():
         y_hat_list = []
         model.eval()
 
-        if epoch % 1 == 0:
+        if epoch % 1 == 0 and epoch != 1 :
             for (test_data, test_label, test_data_rev, test_label_rev) in tqdm(test_loader):
 
                 # Don't plot empty images
