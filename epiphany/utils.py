@@ -339,7 +339,7 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     print(f"Squeezed label shape: {label.shape}")
 
     label = label.T
-    print(f"Transposed label: {label}"s)
+    print(f"Transposed label: {label}")
     print(f"Transposed label shape: {label.shape}")
 
     # Ensure label is a numpy array
