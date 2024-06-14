@@ -324,29 +324,14 @@ def generate_image_vstripe(label, pred, path='./', seq_length=1000):
 
 
 def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200):
-    path = os.path.join(path, 'ex_test.png')
-    # label = np.squeeze(label.numpy()).T
-    print(f"Original label: {label}")
-    print(f"Original label type: {type(label)}")
-
-    # Flatten the label if it's a nested list
-    label = np.array(label)
-    print(f"Label as numpy array: {label}")
-    print(f"Label numpy array shape: {label.shape}")
-
-    label = np.squeeze(label)
-    print(f"Squeezed label: {label}")
-    print(f"Squeezed label shape: {label.shape}")
-
-    label = label.T
-    print(f"Transposed label: {label}")
-    print(f"Transposed label shape: {label.shape}")
-
     # Ensure label is a numpy array
     if isinstance(label, torch.Tensor):
         label = label.detach().numpy()
     elif not isinstance(label, np.ndarray):
         label = np.array(label)
+    path = os.path.join(path, 'ex_test.png')
+    # label = np.squeeze(label.numpy()).T
+    label = np.squeeze(np.array(label)).T
 
     # Extract the diagonals
     # label_up, label_down = extract_diagonals(label.T)
