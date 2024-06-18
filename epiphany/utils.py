@@ -329,8 +329,7 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     # Ensure label is a numpy array
     if isinstance(label, list):
         label = [item.detach().numpy() if isinstance(label, torch.Tensor) else item for item in label]
-
-    if isinstance(label, torch.Tensor):
+    elif isinstance(label, torch.Tensor):
         label = label.detach().numpy()
     elif not isinstance(label, np.ndarray):
         label = np.array(label)
