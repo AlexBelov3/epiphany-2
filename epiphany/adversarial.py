@@ -166,7 +166,7 @@ def main():
                         test_loss.append(loss)
                 else:
                     break
-                i += 1 # test
+                # i += 1 # test
 
             # y_hat_list = [x.detach().cpu() for x in y_hat_list]
             y_hat_list = np.concatenate([x for x in y_hat_list], axis=0)
