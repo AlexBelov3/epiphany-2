@@ -138,7 +138,7 @@ def main():
         if epoch % 5 == 0:
             i = 0
             for (test_data, test_label, test_data_rev, test_label_rev) in tqdm(test_loader):
-                if i <= 4:
+                if i < 400:
                     # Don't plot empty images
                     if np.linalg.norm(test_label) < 1e-8:
                         continue
@@ -166,13 +166,13 @@ def main():
                         test_loss.append(loss)
                 else:
                     break
-                # i += 1 # test
+                i += 1 # test
 
             # y_hat_list = [x.detach().cpu() for x in y_hat_list]
             # y_hat_list = np.concatenate([x for x in y_hat_list], axis=0)
             # y_hat_list = np.array(["test", "text"])
             im.append(
-                wandb.Image(generate_image_test(labels, y_hat_list, y_down_list, path=LOG_PATH, seq_length=TEST_SEQ_LENGTH)))  # test_set.sizes
+                wandb.Image(generate_image_test(labels, y_hat_list, y_down_list, path=LOG_PATH, seq_length=400)))  # TEST_SEQ_LENGTH
         if args.wandb:
             wandb.log({"Validation Examples": im})
             wandb.log({'val_correlation': np.mean(test_loss)})
