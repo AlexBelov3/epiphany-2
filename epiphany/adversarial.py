@@ -253,7 +253,7 @@ def main():
 
             if args.wandb:
                 wandb.log({'mse_loss': mse_loss.item()})
-                wandb.log({'adv_loss': adv_loss.item()})
+                # wandb.log({'adv_loss': adv_loss.item()})
                 wandb.log({'L_G': loss.item()})
                 # wandb.log({'L_D': disc_loss.item()})
 
