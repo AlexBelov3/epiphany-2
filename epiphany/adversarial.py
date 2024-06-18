@@ -136,36 +136,39 @@ def main():
         model.eval()
 
         if epoch % 5 == 0:
+            i = 0
             for (test_data, test_label, test_data_rev, test_label_rev) in tqdm(test_loader):
+                if i <= 1:
+                    # Don't plot empty images
+                    if np.linalg.norm(test_label) < 1e-8:
+                        continue
 
-                # Don't plot empty images
-                if np.linalg.norm(test_label) < 1e-8:
-                    continue
+                    test_data, test_label = torch.Tensor(test_data[0]).cuda(), torch.Tensor(test_label).cuda()
+                    # test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
 
-                test_data, test_label = torch.Tensor(test_data[0]).cuda(), torch.Tensor(test_label).cuda()
-                # test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
+                    with torch.no_grad():
+                        # left interactions
+                        y_hat, hidden = model(test_data, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
+                        y_hat = y_hat.squeeze()
+                        y_hat, disregard = extract_diagonals(y_hat)
+                        # right interactions
+                        # y_hat_rev, hidden = model(test_data_rev, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
+                        # y_hat_rev = y_hat_rev.squeeze()
+                        # y_hat_rev, disregard = extract_diagonals(y_hat_rev)
+                        # y_hat = torch.cat(
+                        #     (torch.Tensor(y_hat), torch.flip(torch.Tensor(y_hat_rev), [0])))  # dims was set to 1...
+                        y_hat_list.append(y_hat) #.detach().cpu()
+                        # ONLY LOOKING AT THE LEFT (UP) VECTOR FOR NOW!
 
-                with torch.no_grad():
-                    # left interactions
-                    y_hat, hidden = model(test_data, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
-                    y_hat = y_hat.squeeze()
-                    y_hat, disregard = extract_diagonals(y_hat)
-                    # right interactions
-                    # y_hat_rev, hidden = model(test_data_rev, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
-                    # y_hat_rev = y_hat_rev.squeeze()
-                    # y_hat_rev, disregard = extract_diagonals(y_hat_rev)
-                    # y_hat = torch.cat(
-                    #     (torch.Tensor(y_hat), torch.flip(torch.Tensor(y_hat_rev), [0])))  # dims was set to 1...
-                    y_hat_list.append(y_hat) #.detach().cpu()
-                    # ONLY LOOKING AT THE LEFT (UP) VECTOR FOR NOW!
+                        test_label, disregard = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
+                        pred, hidden = model(test_data, hidden_state=None,seq_length=TEST_SEQ_LENGTH)
+                        loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
+                        test_loss.append(loss)
+                else:
+                    break
+                i += 1 # test
 
-                    test_label, disregard = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
-                    pred, hidden = model(test_data, hidden_state=None,seq_length=TEST_SEQ_LENGTH)
-                    loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
-                    test_loss.append(loss)
-
-
-            y_hat_list = [x.detach().cpu() for x in y_hat_list]
+            # y_hat_list = [x.detach().cpu() for x in y_hat_list]
             y_hat_list = np.concatenate([x for x in y_hat_list], axis=0)
             # y_hat_list = np.array(["test", "text"])
             im.append(
