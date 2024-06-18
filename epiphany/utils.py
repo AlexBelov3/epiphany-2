@@ -412,7 +412,7 @@ def test_model(model, test_loader, device, seq_length):
 
 def extract_diagonals(arr):
     if isinstance(arr, torch.Tensor):
-        arr = arr.detach().numpy()
+        arr = arr.detach().cpu().numpy()
     elif not isinstance(arr, np.ndarray):
         arr = np.array(arr)
     assert arr.shape == (200, 100), "Input array must be 200x100 in size"
