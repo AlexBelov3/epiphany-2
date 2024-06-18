@@ -327,13 +327,14 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     path = os.path.join(path, 'ex_test.png')
     # label = np.squeeze(label.numpy()).T
     # Ensure label is a numpy array
+    print(type(label))
     if isinstance(label, torch.Tensor):
         label = label.detach().numpy()
     elif not isinstance(label, np.ndarray):
         label = np.array(label)
 
     label = np.squeeze(label).T
-    # print(type(label))
+
 
     # Extract the diagonals
     # label_up, label_down = extract_diagonals(label.T)
