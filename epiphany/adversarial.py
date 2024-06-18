@@ -166,11 +166,10 @@ def main():
                         test_loss.append(loss)
                 else:
                     break
-                i += 1 # test
+                # i += 1 # test
 
             # y_hat_list = [x.detach().cpu() for x in y_hat_list]
             # y_hat_list = np.concatenate([x for x in y_hat_list], axis=0)
-            print(np.shape(y_hat_list))
             # y_hat_list = np.array(["test", "text"])
             im.append(
                 wandb.Image(generate_image_test(labels, y_hat_list, y_down_list, path=LOG_PATH, seq_length=TEST_SEQ_LENGTH)))  # test_set.sizes
