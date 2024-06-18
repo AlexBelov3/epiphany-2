@@ -55,7 +55,7 @@ def main():
     TRAIN_SEQ_LENGTH = 200
     TEST_SEQ_LENGTH = 200
 
-    #torch.cuda.set_device(int(args.gpu))
+    torch.cuda.set_device(int(args.gpu))
 
 
     torch.manual_seed(0)
