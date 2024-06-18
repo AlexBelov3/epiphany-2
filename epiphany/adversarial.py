@@ -226,10 +226,10 @@ def main():
             mse_loss_up = model.loss(output_1d, label_1d, seq_length=TRAIN_SEQ_LENGTH)
             mse_loss = mse_loss_up
             mse_loss_down = model.loss(output_1d_v_down, label_1d_v_down, seq_length=TRAIN_SEQ_LENGTH)
-            disc_out = disc(output.view(1,1,output.shape[0], output.shape[1]))
+            # disc_out = disc(output.view(1,1,output.shape[0], output.shape[1]))
             #adv_loss = F.binary_cross_entropy_with_logits(disc_out.view(1), torch.Tensor([1]).cuda()) # how close is disc pred to 1
-            adv_loss = F.binary_cross_entropy_with_logits(disc_out.view(1), torch.Tensor([1]))
-            loss = (LAMBDA)*mse_loss_up + (1 - LAMBDA)*adv_loss
+            # adv_loss = F.binary_cross_entropy_with_logits(disc_out.view(1), torch.Tensor([1]))
+            loss = (LAMBDA)*mse_loss_up #+ (1 - LAMBDA)*adv_loss
             # loss = float(0.5)*mse_loss_up + float(0.5)*mse_loss_down
 
             loss.backward()
