@@ -324,17 +324,18 @@ def generate_image_vstripe(label, pred, path='./', seq_length=1000):
 
 
 def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200):
+    path = os.path.join(path, 'ex_test.png')
+    # label = np.squeeze(label.numpy()).T
+    label = np.squeeze(label).T
+    print(type(label))
     # Ensure label is a numpy array
     if isinstance(label, torch.Tensor):
         label = label.detach().numpy()
     elif not isinstance(label, np.ndarray):
         label = np.array(label)
-    path = os.path.join(path, 'ex_test.png')
-    # label = np.squeeze(label.numpy()).T
-    label = np.squeeze(np.array(label)).T
 
     # Extract the diagonals
-    # label_up, label_down = extract_dgiagonals(label.T)
+    # label_up, label_down = extract_diagonals(label.T)
     # label_up = label_up
     # label_down = label_down
 
@@ -399,38 +400,20 @@ def test_model(model, test_loader, device, seq_length):
         y_hat_list = test(test_loader, model, device, seq_length)
     return y_hat_list
 
-# def extract_diagonals(arr):
-#     if isinstance(arr, torch.Tensor):
-#         arr = arr.detach().numpy()
-#     elif not isinstance(arr, np.ndarray):
-#         arr = np.array(arr)
-#     assert arr.shape == (200, 100), "Input array must be 200x100 in size"
-#
-#     up_diagonal = np.zeros(100)
-#     down_diagonal = np.zeros(100)
-#
-#     for i in range(100):
-#         up_diagonal[i] = arr[99 + i//2, i]
-#         down_diagonal[i] = arr[99 - i//2, i]
-#         # up_diagonal[i] = arr[0, i]
-#         # down_diagonal[i] = arr[i, 0]
-#
-#     return up_diagonal, down_diagonal
-
 def extract_diagonals(arr):
-    if not isinstance(arr, torch.Tensor):
-        arr = torch.tensor(arr)
-
-    # Ensure the tensor is on the GPU
-    arr = arr.to('cuda')
-
+    if isinstance(arr, torch.Tensor):
+        arr = arr.detach().numpy()
+    elif not isinstance(arr, np.ndarray):
+        arr = np.array(arr)
     assert arr.shape == (200, 100), "Input array must be 200x100 in size"
 
-    up_diagonal = torch.zeros(100, device='cuda')
-    down_diagonal = torch.zeros(100, device='cuda')
+    up_diagonal = np.zeros(100)
+    down_diagonal = np.zeros(100)
 
     for i in range(100):
-        up_diagonal[i] = arr[99 + i // 2, i]
-        down_diagonal[i] = arr[99 - i // 2, i]
+        up_diagonal[i] = arr[99 + i//2, i]
+        down_diagonal[i] = arr[99 - i//2, i]
+        # up_diagonal[i] = arr[0, i]
+        # down_diagonal[i] = arr[i, 0]
 
     return up_diagonal, down_diagonal
