@@ -322,21 +322,27 @@ def generate_image_vstripe(label, pred, path='./', seq_length=1000):
 
     return plt.imread(path)
 
-
-def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200):
-    path = os.path.join(path, 'ex_test.png')
-    # label = np.squeeze(label.numpy()).T
-    # Ensure label is a numpy array
-    print(type(label[0]))
+def safe_tensor_to_numpy(label):
     if isinstance(label, list):
-        label = [item.detach().numpy() if isinstance(label, torch.Tensor) else item for item in label]
+        # Convert each tensor in the list to a numpy array
+        label = [item.detach().numpy() if isinstance(item, torch.Tensor) else item for item in label]
+        # Stack the list into a single numpy array
+        label = np.stack(label)
     elif isinstance(label, torch.Tensor):
         label = label.detach().numpy()
     elif not isinstance(label, np.ndarray):
         label = np.array(label)
 
     label = np.squeeze(label).T
+    return label
 
+
+def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200):
+    path = os.path.join(path, 'ex_test.png')
+    # label = np.squeeze(label.numpy()).T
+    # Ensure label is a numpy array
+    print(type(label[0]))
+    label = safe_tensor_to_numpy(label)
 
     # Extract the diagonals
     # label_up, label_down = extract_diagonals(label.T)
