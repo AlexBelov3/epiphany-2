@@ -59,7 +59,7 @@ def main():
 
 
     torch.manual_seed(0)
-    model = Net(1, 5, int(args.window_size))#.cuda()
+    model = Net(1, 5, int(args.window_size)).cuda()
     disc = Disc()#.cuda()
     if args.wandb:
         wandb.watch(model, log='all')
@@ -142,8 +142,8 @@ def main():
                 if np.linalg.norm(test_label) < 1e-8:
                     continue
 
-                #test_data, test_label = torch.Tensor(test_data[0]).cuda(), torch.Tensor(test_label).cuda()
-                test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
+                test_data, test_label = torch.Tensor(test_data[0]).cuda(), torch.Tensor(test_label).cuda()
+                # test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
 
                 with torch.no_grad():
                     # left interactions
@@ -192,8 +192,8 @@ def main():
                 continue
 
             hidden = None
-            label = torch.Tensor(np.squeeze(label))#.cuda()
-            data = data[0]#.cuda()
+            label = torch.Tensor(np.squeeze(label)).cuda()
+            data = data[0].cuda()
             optimizer.zero_grad()
 
             output, hidden = model(data,seq_length=TRAIN_SEQ_LENGTH)
