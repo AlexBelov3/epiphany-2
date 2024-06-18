@@ -341,7 +341,6 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     path = os.path.join(path, 'ex_test.png')
     # label = np.squeeze(label.numpy()).T
     # Ensure label is a numpy array
-    print(type(label[0]))
     label = safe_tensor_to_numpy(label)
 
     # Extract the diagonals
@@ -351,6 +350,7 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
 
     # Initialize the image arrays
     im1 = np.zeros((seq_length, seq_length))
+    print(f"im1 shape: {np.shape(im1)}")
     im2 = np.zeros((seq_length, seq_length))
 
     # Fill the top diagonal with the reconstructed Hi-C from label diagonals
@@ -359,6 +359,7 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
         diag_values_down = y_down_list[i]
 
         for j in range(min(100, seq_length - i)):
+            print(f"j: {j}")
             im1[i, i+j] = diag_values_up[j]
 
         # # Handle the down_array values as well
