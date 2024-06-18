@@ -164,9 +164,9 @@ def main():
                         pred, hidden = model(test_data, hidden_state=None,seq_length=TEST_SEQ_LENGTH)
                         loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
                         test_loss.append(loss)
-                else:
-                    break
-                i += 1 # test
+                # else:
+                #     break
+                # i += 1 # test
 
             # y_hat_list = [x.detach().cpu() for x in y_hat_list]
             y_hat_list = np.concatenate([x for x in y_hat_list], axis=0)
