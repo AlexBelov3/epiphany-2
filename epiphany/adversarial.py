@@ -135,7 +135,7 @@ def main():
         y_hat_list = []
         model.eval()
 
-        if epoch % 5 == 0:
+        if epoch % 1 == 0:
             i = 0
             for (test_data, test_label, test_data_rev, test_label_rev) in tqdm(test_loader):
                 if i < 400:
