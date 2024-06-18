@@ -138,7 +138,7 @@ def main():
         if epoch % 5 == 0:
             i = 0
             for (test_data, test_label, test_data_rev, test_label_rev) in tqdm(test_loader):
-                if i <= 1:
+                if i <= 4:
                     # Don't plot empty images
                     if np.linalg.norm(test_label) < 1e-8:
                         continue
