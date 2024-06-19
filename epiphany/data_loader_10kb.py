@@ -27,6 +27,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         self.labels = {}
         self.sizes = []
         self.zero_pad = zero_pad
+        self.co_signals = []
 
         print("Loading input:")
         self.inputs = h5.File(save_path_X, 'r')
@@ -43,6 +44,11 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             self.sizes.append((len(diag_log_list[0]) - 2 * self.buf) + 1)
 
         print(self.sizes)
+
+        for chr in self.chroms:
+            for signal in self.inputs:
+                print(f"self.inputs[chr] shape: {np.shape(self.inputs[chr][signal])}")
+                self.co_signals.append(np.outer(self.inputs[chr][signal], self.inputs[chr][signal]))
 
         return
 
