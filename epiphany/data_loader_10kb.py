@@ -117,6 +117,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
 
         X_chr_rev = torch.empty_like(torch.tensor(X_chr)).copy_(torch.tensor(X_chr))
         X_chr_rev = torch.flip(X_chr_rev, [1]).numpy()
-
+        print(f"X_chr type: {type(X_chr)}")
+        print(f"X_chr shape: {np.shape(np.array(X_chr))}")
         return X_chr.astype('float32'), y_chr.astype('float32'), X_chr_rev.astype('float32'), y_chr_rev.astype('float32')
 
