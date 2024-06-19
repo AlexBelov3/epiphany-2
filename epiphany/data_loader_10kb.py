@@ -30,7 +30,6 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
 
         print("Loading input:")
         self.inputs = h5.File(save_path_X, 'r')
-        print(f"inputs size: {len(self.inputs)}")
         print("Loading labels:")
         with open(save_path_y, 'rb') as handle:
             self.labels = pickle.load(handle)
@@ -69,7 +68,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         for t in range(idx + self.buf, np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1):
             contact_vec = data_preparation(t,self.labels[chr],self.inputs[chr], distance=100)
             contact_data.append(contact_vec)
-
+        print(f"inputs[chr] size: {len(self.inputs[chr])}")
         X_chr = self.inputs[chr][:self.num_channels, 100*start-(self.window_size//2):100*end+(self.window_size//2)].astype('float32') #100
         y_chr = np.array(contact_data)
         y_chr_rev = np.array(torch.flip(torch.tensor(contact_data), [0]))
