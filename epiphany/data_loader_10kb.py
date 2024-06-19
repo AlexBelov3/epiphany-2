@@ -54,7 +54,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
                 # print(f"self.inputs[chr({chr})][signal({signal})] shape: {np.shape(self.inputs[chr][signal])}")
                 # print(f"self.inputs[chr({chr})] shape: {np.shape(self.inputs[chr])}")
                 # self.co_signals.append(np.outer(self.inputs[chr][signal], self.inputs[chr][signal])
-                self.co_signals.append(np.outer(signal, signal))
+                self.co_signals.append(np.outer(signal.astype('float32'), signal))
 
         return
 
