@@ -45,16 +45,14 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
 
         print(self.sizes)
 
-        for chr in self.chroms:
-            for signal in self.inputs[chr]:
-                print(f"inputs[chr] shape: {np.shape(self.inputs[chr])}")
-                print(f"number of signals: {len(self.inputs[chr])}")
-                print(f"signal type: {type(signal)}")
-                print(f"signal shape: {np.shape(signal)}")
-                # print(f"self.inputs[chr({chr})][signal({signal})] shape: {np.shape(self.inputs[chr][signal])}")
-                # print(f"self.inputs[chr({chr})] shape: {np.shape(self.inputs[chr])}")
-                # self.co_signals.append(np.outer(self.inputs[chr][signal], self.inputs[chr][signal])
-                self.co_signals.append(np.outer(signal.astype('float16'), signal.astype('float16')))
+        # for chr in self.chroms:
+        #     for signal in self.inputs[chr]:
+        #         for i in range ()
+        #             print(f"inputs[chr] shape: {np.shape(self.inputs[chr])}")
+        #             print(f"number of signals: {len(self.inputs[chr])}")
+        #             print(f"signal type: {type(signal)}")
+        #             print(f"signal shape: {np.shape(signal)}")
+        #             self.co_signals.append(np.outer(signal.astype('float16'), signal.astype('float16')))
 
         return
 
