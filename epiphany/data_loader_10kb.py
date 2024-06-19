@@ -64,45 +64,14 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         end = np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
         contact_data = []
         hic_dict = {}
-        # if idx%100 == 0:
-        #     print(f"index: {idx}")
-
-        # for t in range(idx*self.seq_length + self.buf, np.minimum(idx*self.seq_length + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1):
-        #     contact_vec = data_preparation(t,self.labels[chr],self.inputs[chr], distance=100)
-        #     contact_data.append(contact_vec)
 
         for t in range(idx + self.buf, np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1):
             contact_vec = data_preparation(t,self.labels[chr],self.inputs[chr], distance=100)
             contact_data.append(contact_vec)
 
-        # Convert to a NumPy array if not already
-        # data_array = np.array(contact_data)
-        # plt.clf()
-        # # Create a plot
-        # plt.figure(figsize=(10, 10))
-        # plt.imshow(data_array, cmap='viridis', aspect='auto')
-        # plt.colorbar()
-        # plt.title('2D Array Visualization')
-        # plt.xlabel('X-axis')
-        # plt.ylabel('Y-axis')
-        #
-        # # Save the plot as an image file
-        # plt.savefig('2d_array_visualization_100.png')
-        #
-        # print("Plot saved as '2d_array_visualization_100.png'")
-
-        y = torch.tensor(contact_data)
-        y_rev = torch.flip(y, [0])
-        # THESE ARE NOT THE FINAL VECTORS!!! THESE ARE HORIZONTAL AND VERTICAL VECTORS AND NOT DIAGONAL ONES!
-        #up_diagonal, y_rev = extract_diagonals(contact_data)
-        y = y[0:200]
-        # y_rev = y_rev[0, :]
-
-
         X_chr = self.inputs[chr][:self.num_channels, 100*start-(self.window_size//2):100*end+(self.window_size//2)].astype('float32') #100
         y_chr = np.array(contact_data)
-        #y_chr = np.array(y)
-        y_chr_rev = np.array(y_rev)
+        y_chr_rev = np.array(torch.flip(torch.tensor(contact_data), [0]))
 
         if self.zero_pad and y_chr.shape[0] < self.seq_length:
 
@@ -115,12 +84,11 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             pad_X = np.zeros((X_chr.shape[0],self.seq_length*100+self.window_size - X_chr.shape[1])) #100
             X_chr = np.concatenate((X_chr, pad_X), axis=1)
 
-        X_chr_rev = torch.empty_like(torch.tensor(X_chr)).copy_(torch.tensor(X_chr))
-        X_chr_rev = torch.flip(X_chr_rev, [1]).numpy()
-        print(f"X_chr type: {type(X_chr)}")
-        print(f"X_chr shape: {np.shape(X_chr)}")
-        # print("Shape of the Outer Product of the two array is:")
-        # result = np.outer(X_chr, X_chr)
+
+        flat_X_chr = X_chr.flatten()
+        print(f"X_chr.flatten() shape: {np.shape(X_chr.flatten())}")
+        X_chr_co_signal = np.outer(flat_X_chr, flat_X_chr)
+        print(f"X_chr_co_signal shape: {np.shape(X_chr_co_signal)}")
         # print(np.shape(result))
-        return X_chr.astype('float32'), y_chr.astype('float32'), X_chr_rev.astype('float32'), y_chr_rev.astype('float32')
+        return X_chr.astype('float32'), y_chr.astype('float32'), X_chr_co_signal.astype('float32'), y_chr_rev.astype('float32')
 
