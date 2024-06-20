@@ -121,7 +121,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         print("Add bottom product:")
         # print(np.outer(x_next[-1], x_next))
         new_matrix[-1] = np.outer([x_next[-1]], x_next)
-        print()
+        print(new_matrix)
 
 
         if index == 0:
