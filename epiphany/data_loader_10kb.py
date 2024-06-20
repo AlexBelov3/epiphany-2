@@ -108,15 +108,21 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         print(new_matrix)
 
         x = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        x_next = [2, 3, 4, 5, 6, 7, 8, 9, 10]
         x_co_signal = np.outer(x, x)
+        x_next_co_signal = np.outer(x_next, x_next)
         print(f"x: {x}")
         print("x_co_signal:")
         print(x_co_signal)
-        print(f"x_co_signal shifted:")
+        print("x_co_signal shifted:")
         new_matrix = np.zeros_like(x_co_signal)
         new_matrix[:-1, :-1] = x_co_signal[1:, 1:]
         print(new_matrix)
-        
+        print("Add bottom product:")
+        # print(np.outer(x_next[-1], x_next))
+        new_matrix[-1] = np.outer([x_next[-1]], x_next)
+        print()
+
 
         if index == 0:
             print("calculate the entire product")
