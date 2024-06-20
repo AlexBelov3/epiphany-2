@@ -95,44 +95,19 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             X_chr = np.concatenate((X_chr, pad_X), axis=1)
 
 
-        flat_X_chr = X_chr.flatten()
-        print(f"X_chr.flatten() shape: {np.shape(flat_X_chr)}")
-        print(f"flat_X_chr values: {flat_X_chr[0:20]}")
-        X_chr_one_co_signal = np.outer(X_chr[0].astype('float16'), X_chr[0].astype('float16'))
-        print(f"X_chr_one_co_signal shape: {np.shape(X_chr_one_co_signal)}")
-        # print(np.shape(result))
-        example_matrix = np.array([[1, 2, 3], [4, 5, 6], [7, 8 , 9]])
-        print(example_matrix)
-        new_matrix = np.zeros_like(example_matrix)
-        new_matrix[:-1, :-1] = example_matrix[1:, 1:]
-        print(new_matrix)
 
-        x = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        x_next = [2, 3, 4, 5, 6, 7, 8, 9, 10]
-        x_co_signal = np.outer(x, x)
-        x_next_co_signal = np.outer(x_next, x_next)
-        print(f"x: {x}")
-        print("x_co_signal:")
-        print(x_co_signal)
-        print("x_co_signal shifted:")
-        new_matrix = np.zeros_like(x_co_signal)
-        new_matrix[:-1, :-1] = x_co_signal[1:, 1:]
-        print(new_matrix)
-        print("Add new product:")
-        # print(np.outer(x_next[-1], x_next))
-        new_prod = np.outer([x_next[-1]], x_next)
-        new_matrix[-1] = new_prod
-        new_matrix[:, -1] = new_prod
-        print(new_matrix)
-        print("Ground Truth:")
-        print(x_next_co_signal)
 
 
         if index == 0:
             print("calculate the entire product")
+            X_chr_one_co_signal = np.outer(X_chr[0].astype('float32'), X_chr[0].astype('float32'))
         else:
-            print("create empty large matrix")
-
+            print(self.__getitem__(self, index-1))
+            # new_matrix = np.zeros_like(x_co_signal)
+            # new_matrix[:-1, :-1] = x_co_signal[1:, 1:]
+            # new_prod = np.outer([X_chr[0][-1]], X_chr[0])
+            # new_matrix[-1] = new_prod
+            # new_matrix[:, -1] = new_prod
             # fill in the 0:n-1 values with the 1:n values of the previous co_signal matrix
             # calculate the right product (X[n] x X)
             # calculate the bottom product (same as above?)
