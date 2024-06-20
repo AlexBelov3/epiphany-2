@@ -158,7 +158,58 @@ class Disc(nn.Module):
         return loss_val
 
 
+class branch_pbulk(nn.Module):
+    def __init__(self):
+        super(branch_pbulk, self).__init__()
 
+        pbulk_res = 50
+        scatac_res = 500
+
+
+        self.total_extractor_2d = nn.Sequential(
+            nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
+            nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=2),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+        )
+
+        self.classifier = nn.Sequential(
+            nn.Linear(in_features=(1936), out_features=512),
+        )
+        self.classifier2 = nn.Sequential(nn.Linear(in_features=(512), out_features=200))
+        def forward(self, x2):
+            x3 = self.total_extractor_2d(x2)
+            x3 = torch.flatten(x3, 1)
+            x3 = self.classifier(x3)
+            return x3
+
+
+class trunk(nn.Module):
+    def __init__(self, branch_pbulk, Net):
+        super(trunk, self).__init__()
+
+        self.branch_pbulk = branch_pbulk
+        self.Net = Net
+
+        self.out = nn.Sequential(
+            nn.Linear(in_features=(512 * 2), out_features=512),
+            nn.Linear(in_features=(512), out_features=200),
+        )
+
+    def forward(self, x, x2):
+        x = self.branch_cov(x, x2)
+        with torch.no_grad():
+            x2 = self.branch_pbulk(x2)
+        x = self.out(torch.cat((x, x2), 1))
+
+        return x
 
 
 
