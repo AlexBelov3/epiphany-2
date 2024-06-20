@@ -150,12 +150,11 @@ def main():
 
         if epoch % 1 == 0:
             i = 0
-            for (test_data, test_label, test_data_rev, test_label_rev) in tqdm(test_loader):
+            for (test_data, test_label, co_signal, test_label_rev) in tqdm(test_loader):
                 if i < 400:
                     # Don't plot empty images
                     if np.linalg.norm(test_label) < 1e-8:
                         continue
-                    test_co_signal = test_data.co_signals[i]
                     test_data, test_label = torch.Tensor(test_data[0]).cuda(), torch.Tensor(test_label).cuda()
                     # test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
 
@@ -165,7 +164,7 @@ def main():
                         y_hat = y_hat.squeeze()
                         y_hat, disregard = extract_diagonals(y_hat)
 
-                        y_hat_new, hidden = new_model(test_data, torch.Tensor(test_co_signal).cuda())
+                        y_hat_new, hidden = new_model(test_data, torch.Tensor(co_signal).cuda())
                         y_hat_new = y_hat_new.squeeze()
                         y_hat_new, disregard = extract_diagonals(y_hat_new)
                         # right interactions
