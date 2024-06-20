@@ -94,23 +94,15 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             pad_X = np.zeros((X_chr.shape[0],self.seq_length*100+self.window_size - X_chr.shape[1])) #100
             X_chr = np.concatenate((X_chr, pad_X), axis=1)
 
-
-
-
-
         if index == 0:
             print("calculate the entire product")
             X_chr_one_co_signal = np.outer(X_chr[0].astype('float32'), X_chr[0].astype('float32'))
         else:
-            print(self.__getitem__(index-1))
-            # new_matrix = np.zeros_like(x_co_signal)
-            # new_matrix[:-1, :-1] = x_co_signal[1:, 1:]
-            # new_prod = np.outer([X_chr[0][-1]], X_chr[0])
-            # new_matrix[-1] = new_prod
-            # new_matrix[:, -1] = new_prod
-            # fill in the 0:n-1 values with the 1:n values of the previous co_signal matrix
-            # calculate the right product (X[n] x X)
-            # calculate the bottom product (same as above?)
-            # fill in the new values
-        return X_chr.astype('float32'), y_chr.astype('float32'), X_chr_one_co_signal.astype('float32'), y_chr_rev.astype('float32')
+            X_chr_prev,  y_chr_prev, X_chr_one_co_signal_prev, X_chr_one_co_signal_prev = self.__getitem__(index-1)
+            X_chr_one_co_signal = np.zeros_like(X_chr_one_co_signal_prev)
+            X_chr_one_co_signal[:-1, :-1] = X_chr_one_co_signal[1:, 1:]
+            new_prod = np.outer([X_chr[0][-1]], X_chr[0])
+            X_chr_one_co_signal[-1] = new_prod
+            X_chr_one_co_signal[:, -1] = new_prod
+        return X_chr.astype('float32'), y_chr.astype('float32'), X_chr_one_co_signal.astype('float32'), X_chr_one_co_signal.astype('float32')
 
