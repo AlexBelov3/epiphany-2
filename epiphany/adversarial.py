@@ -63,9 +63,6 @@ def main():
     # TESTING:
     # Define Model
     mod_branch_pbulk = nn.DataParallel(branch_pbulk(), device_ids=[0])
-    PATH_branch_pbulk = args.bulk_checkpoint
-    mod_branch_pbulk.load_state_dict(torch.load(PATH_branch_pbulk), strict=True)
-
     mod_branch_cov = nn.DataParallel(Net(), device_ids=[0])
     new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0])
 
