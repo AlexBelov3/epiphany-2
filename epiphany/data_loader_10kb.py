@@ -101,12 +101,20 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             else:
                 print("calculate edge of the product")
                 X_chr_one_co_signal_prev = self.co_signals[index-1]
+                print("X_chr_one_co_signal_prev = self.co_signals[index-1]")
                 X_chr_one_co_signal = np.zeros_like(X_chr_one_co_signal_prev)
+                print("X_chr_one_co_signal = np.zeros_like(X_chr_one_co_signal_prev)")
                 X_chr_one_co_signal[:-1, :-1] = X_chr_one_co_signal[1:, 1:]
+                print("X_chr_one_co_signal[:-1, :-1] = X_chr_one_co_signal[1:, 1:]")
                 new_prod = np.outer([X_chr[0][-1]], X_chr[0])
+                print("new_prod = np.outer([X_chr[0][-1]], X_chr[0])")
                 X_chr_one_co_signal[-1] = new_prod
+                print("X_chr_one_co_signal[-1] = new_prod")
                 X_chr_one_co_signal[:, -1] = new_prod
+                print("X_chr_one_co_signal[:, -1] = new_prod")
                 self.co_signals.append(X_chr_one_co_signal)
+                print("self.co_signals.append(X_chr_one_co_signal)")
         co_signal = self.co_signals[index]
+        print("co_signal = self.co_signals[index]")
         return X_chr.astype('float32'), y_chr.astype('float32'), co_signal.astype('float32'), X_chr.astype('float32')
 
