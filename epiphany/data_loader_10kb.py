@@ -97,7 +97,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
 
         flat_X_chr = X_chr.flatten()
         print(f"X_chr.flatten() shape: {np.shape(flat_X_chr)}")
-        print(f"flat_X_chr valies: {flat_X_chr[0:20]}")
+        print(f"flat_X_chr values: {flat_X_chr[0:20]}")
         X_chr_one_co_signal = np.outer(X_chr[0].astype('float16'), X_chr[0].astype('float16'))
         print(f"X_chr_one_co_signal shape: {np.shape(X_chr_one_co_signal)}")
         # print(np.shape(result))
@@ -105,7 +105,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         print(example_matrix)
         new_matrix = np.zeros(np.shape(example_matrix))
         for i in range(len(example_matrix)-1):
-            for j in range(len(example_matrix[0]-1)):
+            for j in range(len(example_matrix[0])-1):
                 new_matrix[i][j] = example_matrix[i+1][j+1]
         print(new_matrix)
         if index == 0:
