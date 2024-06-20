@@ -162,9 +162,12 @@ def main():
                     with torch.no_grad():
                         # left interactions
                         y_hat, hidden = model(test_data, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
-                        # COME BACK HERE!!
                         y_hat = y_hat.squeeze()
                         y_hat, disregard = extract_diagonals(y_hat)
+
+                        y_hat_new, hidden = new_model(test_data, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
+                        y_hat_new = y_hat_new.squeeze()
+                        y_hat_new, disregard = extract_diagonals(y_hat_new)
                         # right interactions
                         # y_hat_rev, hidden = model(test_data_rev, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
                         # y_hat_rev = y_hat_rev.squeeze()
