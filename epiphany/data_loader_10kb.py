@@ -118,10 +118,14 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         new_matrix = np.zeros_like(x_co_signal)
         new_matrix[:-1, :-1] = x_co_signal[1:, 1:]
         print(new_matrix)
-        print("Add bottom product:")
+        print("Add new product:")
         # print(np.outer(x_next[-1], x_next))
-        new_matrix[-1] = np.outer([x_next[-1]], x_next)
+        new_prod = np.outer([x_next[-1]], x_next)
+        new_matrix[-1] = new_prod
+        new_matrix[:, -1] = new_prod
         print(new_matrix)
+        print("Ground Truth:")
+        print(x_next_co_signal)
 
 
         if index == 0:
