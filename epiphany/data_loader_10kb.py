@@ -93,7 +93,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
 
             pad_X = np.zeros((X_chr.shape[0],self.seq_length*100+self.window_size - X_chr.shape[1])) #100
             X_chr = np.concatenate((X_chr, pad_X), axis=1)
-        if len(self.co_signals) < index:
+        if len(self.co_signals) <= index:
             if index == 0:
                 print("calculate the entire product")
                 X_chr_one_co_signal = np.outer(X_chr[0].astype('float32'), X_chr[0].astype('float32'))
