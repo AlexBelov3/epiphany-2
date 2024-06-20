@@ -102,7 +102,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             print("calculate the entire product")
             X_chr_one_co_signal = np.outer(X_chr[0].astype('float32'), X_chr[0].astype('float32'))
         else:
-            print(self.__getitem__(self, index-1))
+            print(self.__getitem__(index-1))
             # new_matrix = np.zeros_like(x_co_signal)
             # new_matrix[:-1, :-1] = x_co_signal[1:, 1:]
             # new_prod = np.outer([X_chr[0][-1]], X_chr[0])
