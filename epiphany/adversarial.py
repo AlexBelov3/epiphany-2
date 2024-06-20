@@ -60,6 +60,9 @@ def main():
 
     torch.manual_seed(0)
     model = Net(1, 5, int(args.window_size)).cuda()
+    # TESTING:
+
+
     disc = Disc()#.cuda()
     if args.wandb:
         wandb.watch(model, log='all')
@@ -112,13 +115,17 @@ def main():
         labels.append(test_label[100])
         if i > 400:
             break
-    im = generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400) #test_set.sizes
+
+    if args.wandb:
+        im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400))
+        wandb.log({"Validation Examples": im})
+
     fig, ax = plt.subplots()
     ax.imshow(im, cmap='RdYlBu_r', vmin=0)
     plt.savefig('2d_array_visualization_V_test.png')
     print("Plot saved as '2d_array_visualization_V_test.png'")
 
-    #scaler = torch.cuda.amp.GradScaler()
+    #scaler = torch.cuda.amp.GracddScaler()
     for epoch in range(int(args.e)):
         disc_preds_train = []
 
