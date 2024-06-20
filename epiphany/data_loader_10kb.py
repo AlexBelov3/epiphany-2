@@ -101,5 +101,15 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         X_chr_one_co_signal = np.outer(X_chr[0].astype('float16'), X_chr[0].astype('float16'))
         print(f"X_chr_one_co_signal shape: {np.shape(X_chr_one_co_signal)}")
         # print(np.shape(result))
+        example_matrix = [3][3]
+        print(example_matrix)
+        if index == 1:
+            print("calculate the entire product")
+        else:
+            print("create empty large matrix")
+            # fill in the 0:n-1 values with the 1:n values of the previous co_signal matrix
+            # calculate the right product (X[n] x X)
+            # calculate the bottom product (same as above?)
+            # fill in the new values
         return X_chr.astype('float32'), y_chr.astype('float32'), X_chr_one_co_signal.astype('float32'), y_chr_rev.astype('float32')
 
