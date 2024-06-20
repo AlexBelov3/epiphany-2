@@ -103,11 +103,21 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         # print(np.shape(result))
         example_matrix = np.array([[1, 2, 3], [4, 5, 6], [7, 8 , 9]])
         print(example_matrix)
-        new_matrix = np.zeros(np.shape(example_matrix))
-        for i in range(len(example_matrix)-1):
-            for j in range(len(example_matrix[0])-1):
-                new_matrix[i][j] = example_matrix[i+1][j+1]
+        new_matrix = np.zeros_like(example_matrix)
+        new_matrix[:-1, :-1] = example_matrix[1:, 1:]
         print(new_matrix)
+
+        x = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+        x_co_signal = np.outer(x, x)
+        print(f"x: {x}")
+        print("x_co_signal:")
+        print(x_co_signal)
+        print(f"x_co_signal shifted:")
+        new_matrix = np.zeros_like(x_co_signal)
+        new_matrix[:-1, :-1] = x_co_signal[1:, 1:]
+        print(new_matrix)
+        
+
         if index == 0:
             print("calculate the entire product")
         else:
