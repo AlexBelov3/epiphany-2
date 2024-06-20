@@ -73,6 +73,7 @@ def main():
 
     if os.path.exists(LOG_PATH):
         restore_latest(model, LOG_PATH, ext='.pt_model')
+        restore_latest(new_model, LOG_PATH, ext='.pt_new_model')
     else:
         os.makedirs(LOG_PATH)
 
@@ -101,6 +102,7 @@ def main():
     hidden = None
     log_interval = 50
     parameters = list(model.parameters())
+    parameters = list(new_model.parameters())
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
     min_loss = -10
@@ -144,6 +146,7 @@ def main():
         labs = []
         y_hat_list = []
         model.eval()
+        new_model.eval()
 
         if epoch % 1 == 0:
             i = 0
@@ -159,6 +162,7 @@ def main():
                     with torch.no_grad():
                         # left interactions
                         y_hat, hidden = model(test_data, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
+                        # COME BACK HERE!!
                         y_hat = y_hat.squeeze()
                         y_hat, disregard = extract_diagonals(y_hat)
                         # right interactions
