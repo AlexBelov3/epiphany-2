@@ -108,5 +108,5 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
                 X_chr_one_co_signal[:, -1] = new_prod
                 self.co_signals.append(X_chr_one_co_signal)
         co_signal = self.co_signals[index]
-        return X_chr.astype('float32'), y_chr.astype('float32'), co_signal.astype('float32'), X_chr.astype('float32')
+        return X_chr.astype('float32'), y_chr.astype('float32'), X_chr.astype('float32'), X_chr.astype('float32')
 
