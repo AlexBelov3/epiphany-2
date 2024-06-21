@@ -95,9 +95,12 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             X_chr = np.concatenate((X_chr, pad_X), axis=1)
         if len(self.co_signals) <= index:
             if index == 0:
-                print("calculate the entire product")
+                print("calculate the entire product:")
+                t0 = time.time()
                 X_chr_one_co_signal = np.outer(X_chr[0].astype('float32'), X_chr[0].astype('float32'))
                 self.co_signals.append(X_chr_one_co_signal)
+                t1 = time.time()
+                print(t1-t0)
             else:
                 print("calculate edge of the product")
                 t0 = time.time()
