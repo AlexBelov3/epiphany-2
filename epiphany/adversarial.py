@@ -58,6 +58,8 @@ def main():
         new_prod = np.outer([new_X_chr[-1]], new_X_chr)
         co_signals[len(X_chr) + index - 1][index:len(X_chr) + index] = new_prod
         co_signals[:, index + len(X_chr) - 1][index:index + len(X_chr)] = new_prod
+        if index%5==0:
+            print(index)
     print("-" * 40)
     # print(co_signals)
 
