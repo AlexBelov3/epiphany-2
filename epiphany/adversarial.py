@@ -45,7 +45,7 @@ def main():
         import wandb
         wandb.init()
 
-    X_chr = np.arange(1, 100000)  # 6
+    X_chr = np.arange(1, 34000)  # 6
     num = 10
     co_signals = np.zeros((len(X_chr) * num, len(X_chr) * num)).astype('float32')
     index = 0
