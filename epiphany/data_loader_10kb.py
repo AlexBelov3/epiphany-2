@@ -31,7 +31,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
 
         print("Loading input:")
         self.inputs = h5.File(save_path_X, 'r')
-        print(f"inputs shape: {np.shape(self.inputs)}")
+        print(f"inputs shape: {np.shape(self.inputs['chr22'])}")
         print("Loading labels:")
         with open(save_path_y, 'rb') as handle:
             self.labels = pickle.load(handle)
