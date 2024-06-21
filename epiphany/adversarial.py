@@ -45,6 +45,23 @@ def main():
         import wandb
         wandb.init()
 
+    X_chr = np.arange(1, 100000)  # 6
+    num = 10
+    co_signals = np.zeros((len(X_chr) * num, len(X_chr) * num)).astype('float32')
+    index = 0
+    X_chr_one_co_signal = np.outer(X_chr, X_chr)
+    co_signals[:len(X_chr), :len(X_chr)] = X_chr_one_co_signal
+
+    ground_truth = np.outer(np.arange(1, len(X_chr) * num), np.arange(1, len(X_chr) * num))
+    for index in range(1, len(X_chr) + 1):
+        new_X_chr = np.arange(index + 1, index + len(X_chr) + 1)
+        new_prod = np.outer([new_X_chr[-1]], new_X_chr)
+        co_signals[len(X_chr) + index - 1][index:len(X_chr) + index] = new_prod
+        co_signals[:, index + len(X_chr) - 1][index:index + len(X_chr)] = new_prod
+    print("-" * 40)
+    # print(co_signals)
+
+
 
     print("Run: " + args.m)
 
