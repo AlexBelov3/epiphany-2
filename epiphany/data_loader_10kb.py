@@ -112,7 +112,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
                 t1 = time.time()
                 print(f"X_chr_one_co_signal = np.zeros_like(X_chr_one_co_signal_prev): {t1-t0}")
                 t0 = time.time()
-                X_chr_one_co_signal[:-1, :-1] = X_chr_one_co_signal[1:, 1:]
+                X_chr_one_co_signal[:-1, :-1] = X_chr_one_co_signal_prev[1:, 1:]
                 t1 = time.time()
                 print(f"X_chr_one_co_signal[:-1, :-1] = X_chr_one_co_signal[1:, 1:]: {t1-t0}")
                 t0 = time.time()
