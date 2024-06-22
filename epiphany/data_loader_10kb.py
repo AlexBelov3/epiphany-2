@@ -94,7 +94,6 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             pad_X = np.zeros((X_chr.shape[0],self.seq_length*100+self.window_size - X_chr.shape[1])) #100
             X_chr = np.concatenate((X_chr, pad_X), axis=1)
 
-        print(len(self.co_signals))
         if len(self.co_signals) == 0:
             t0 = time.time()
             MAX_LEN = np.shape(self.inputs[chr])[1]  # Maximum length to extend
