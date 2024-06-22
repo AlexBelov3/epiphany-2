@@ -45,41 +45,81 @@ def main():
         import wandb
         wandb.init()
 
-    import numpy as np
-    import time
-    t0 = time.time()
-    X_chr = np.arange(1, 34000)  # 6
+    # import numpy as np
+    # import time
+    # t0 = time.time()
+    # X_chr = np.arange(1, 34000)  # 6
+    #
+    # MAX_LEN = 1  # 25
+    # co_signals = np.outer(X_chr, X_chr)
+    # print("-" * 40)
+    #
+    # # print(co_signals)
+    # n = len(X_chr)
+    # L = MAX_LEN + co_signals.shape[1]
+    # new_matrix = np.zeros((2 * n - 1, L))
+    #
+    # for i in range(-n, n):
+    #     diagonal = np.diagonal(co_signals, offset=i)
+    #     new_matrix[n - 1 + i][abs(i):len(diagonal) + abs(i)] = diagonal
+    # # print(new_matrix)
+    #
+    # # ADD NEW PRODUCTS
+    # for index in range(1, MAX_LEN + 1):
+    #     new_X_chr = np.arange(index + 1, index + len(X_chr) + 1)
+    #     new_prod = [new_X_chr[-1]] * new_X_chr
+    #     new_matrix[:, len(X_chr) + index - 1][:len(new_prod)] = new_prod
+    #     new_matrix[:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
+    # # print(new_matrix)
+    # print(time.time() - t0)
 
-    MAX_LEN = 1  # 25
-    co_signals = np.outer(X_chr, X_chr)
+    import numpy as np
+    import torch
+    import time
+
+    t0 = time.time()
+
+    # Initialize the data
+    X_chr = np.arange(1, 34000)  # Original array
+
+    MAX_LEN = 1  # Maximum length to extend
+    n = len(X_chr)
+
+    # Convert numpy arrays to PyTorch tensors and move them to the GPU
+    X_chr_tensor = torch.tensor(X_chr, dtype=torch.float32).cuda()
+
+    # Perform outer product on GPU
+    co_signals_tensor = torch.outer(X_chr_tensor, X_chr_tensor)
+
+    # Move result back to CPU for further processing
+    co_signals = co_signals_tensor.cpu().numpy()
+
     print("-" * 40)
 
-    # print(co_signals)
+    L = MAX_LEN + co_signals.shape[1]
+    new_matrix = np.zeros((2 * n - 1, L))
 
-    def compact_diagonal_matrix(matrix, n, MAX_LEN):
-        matrix = np.array(matrix)
-        L = MAX_LEN + matrix.shape[1]
-        new_matrix = np.zeros((2 * n - 1, L))
+    # Process diagonals
+    for i in range(-n, n):
+        diagonal = np.diagonal(co_signals, offset=i)
+        new_matrix[n - 1 + i][abs(i):len(diagonal) + abs(i)] = diagonal
 
-        for i in range(-n, n):
-            diagonal = np.diagonal(matrix, offset=i)
-            new_matrix[n - 1 + i][abs(i):len(diagonal) + abs(i)] = diagonal
-        return new_matrix
-
-    n = len(X_chr)
-    new_matrix = compact_diagonal_matrix(co_signals, n, MAX_LEN)
-    # print(new_matrix)
-
-    # ADD NEW PRODUCTS
+    # Add new products
     for index in range(1, MAX_LEN + 1):
         new_X_chr = np.arange(index + 1, index + len(X_chr) + 1)
-        new_prod = [new_X_chr[-1]] * new_X_chr
+        new_X_chr_tensor = torch.tensor(new_X_chr, dtype=torch.float32).cuda()
+
+        # Perform element-wise multiplication on GPU
+        new_prod_tensor = new_X_chr_tensor[-1] * new_X_chr_tensor
+
+        # Move result back to CPU
+        new_prod = new_prod_tensor.cpu().numpy()
+
+        # Update new_matrix with the new products
         new_matrix[:, len(X_chr) + index - 1][:len(new_prod)] = new_prod
         new_matrix[:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
-    # print(new_matrix)
+
     print(time.time() - t0)
-
-
 
     print("Run: " + args.m)
 
