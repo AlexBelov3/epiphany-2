@@ -97,9 +97,8 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
 
         t0 = time.time()
         MAX_LEN = np.shape(self.inputs[chr])[1]  # Maximum length to extend
-        print(f"MAX_LEN: {MAX_LEN}")
         n = len(X_chr)
-        if self.co_signals == []:
+        if len(self.co_signals) == 0:
             print("calculate the entire product:")
             # X_chr = np.arange(1, 34000)  # Original array
             # Convert numpy arrays to PyTorch tensors and move them to the GPU
