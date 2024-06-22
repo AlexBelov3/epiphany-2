@@ -95,10 +95,10 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             X_chr = np.concatenate((X_chr, pad_X), axis=1)
 
 
-        t0 = time.time()
-        MAX_LEN = np.shape(self.inputs[chr])[1]  # Maximum length to extend
-        n = len(X_chr)
         if len(self.co_signals) == 0:
+            t0 = time.time()
+            MAX_LEN = np.shape(self.inputs[chr])[1]  # Maximum length to extend
+            n = len(X_chr)
             print("Calculate the entire product:")
             # X_chr = np.arange(1, 34000)  # Original array
             # Convert numpy arrays to PyTorch tensors and move them to the GPU
@@ -114,57 +114,17 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             for i in range(-n, n):
                 diagonal = np.diagonal(co_signals, offset=i)
                 self.co_signals[n - 1 + i][abs(i):len(diagonal) + abs(i)] = diagonal
-        else:
-            new_X_chr = np.arange(index + 1, index + len(X_chr) + 1)
-            new_X_chr_tensor = torch.tensor(new_X_chr, dtype=torch.float32)#.cuda()
-            # Perform element-wise multiplication on GPU
-            new_prod_tensor = new_X_chr_tensor[-1] * new_X_chr_tensor
-            # Move result back to CPU
-            new_prod = new_prod_tensor.cpu().numpy()
-            # Update self.co_signals with the new products
-            self.co_signals[:, len(X_chr) + index - 1][:len(new_prod)] = new_prod
-            self.co_signals[:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
+            for index in range(i,MAX_LEN+1):
+                new_X_chr = np.arange(index + 1, index + len(X_chr) + 1)
+                new_X_chr_tensor = torch.tensor(new_X_chr, dtype=torch.float32)#.cuda()
+                # Perform element-wise multiplication on GPU
+                new_prod_tensor = new_X_chr_tensor[-1] * new_X_chr_tensor
+                # Move result back to CPU
+                new_prod = new_prod_tensor.cpu().numpy()
+                # Update self.co_signals with the new products
+                self.co_signals[:, len(X_chr) + index - 1][:len(new_prod)] = new_prod
+                self.co_signals[:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
             print(time.time() - t0)
 
-        # if len(self.co_signals) <= index:
-        #     if index == 0:
-        #         print("calculate the entire product:")
-        #         t0 = time.time()
-        #         X_chr_one_co_signal = np.outer(X_chr[0].astype('float32'), X_chr[0].astype('float32'))
-        #         self.co_signals.append(X_chr_one_co_signal)
-        #         t1 = time.time()
-        #         print(t1-t0)
-        #     else:
-        #         print("calculate edge of the product")
-        #         t0 = time.time()
-        #         X_chr_one_co_signal_prev = self.co_signals[index-1]
-        #         t1 = time.time()
-        #         print(f"X_chr_one_co_signal_prev = self.co_signals[index-1]: {t1-t0}")
-        #         t0 = time.time()
-        #         X_chr_one_co_signal = np.zeros_like(X_chr_one_co_signal_prev)
-        #         t1 = time.time()
-        #         print(f"X_chr_one_co_signal = np.zeros_like(X_chr_one_co_signal_prev): {t1-t0}")
-        #         t0 = time.time()
-        #         X_chr_one_co_signal[:-1, :-1] = X_chr_one_co_signal_prev[1:, 1:]
-        #         t1 = time.time()
-        #         print(f"X_chr_one_co_signal[:-1, :-1] = X_chr_one_co_signal[1:, 1:]: {t1-t0}")
-        #         t0 = time.time()
-        #         new_prod = np.outer([X_chr[0][-1]], X_chr[0])
-        #         t1 = time.time()
-        #         print(f"new_prod = np.outer([X_chr[0][-1]], X_chr[0]): {t1-t0}")
-        #         t0 = time.time()
-        #         X_chr_one_co_signal[-1] = new_prod
-        #         t1 = time.time()
-        #         print(f"X_chr_one_co_signal[-1] = new_prod: {t1-t0}")
-        #         t0 = time.time()
-        #         X_chr_one_co_signal[:, -1] = new_prod
-        #         t1 = time.time()
-        #         print(f"X_chr_one_co_signal[:, -1] = new_prod: {t1-t0}")
-        #         t0 = time.time()
-        #         self.co_signals.append(X_chr_one_co_signal)
-        #         t1 = time.time()
-        #         print(f"self.co_signals.append(X_chr_one_co_signal): {t1-t0}")
-        # co_signal = self.co_signals[index]
-        # print("co_signal = self.co_signals[index]")
         return X_chr.astype('float32'), y_chr.astype('float32'), X_chr.astype('float32'), X_chr.astype('float32')
 
