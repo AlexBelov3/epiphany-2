@@ -73,53 +73,6 @@ def main():
     # # print(new_matrix)
     # print(time.time() - t0)
 
-    import numpy as np
-    import torch
-    import time
-
-    t0 = time.time()
-
-    # Initialize the data
-    X_chr = np.arange(1, 34000)  # Original array
-
-    MAX_LEN = 34000  # Maximum length to extend
-    n = len(X_chr)
-
-    # Convert numpy arrays to PyTorch tensors and move them to the GPU
-    X_chr_tensor = torch.tensor(X_chr, dtype=torch.float32).cuda()
-
-    # Perform outer product on GPU
-    co_signals_tensor = torch.outer(X_chr_tensor, X_chr_tensor)
-
-    # Move result back to CPU for further processing
-    co_signals = co_signals_tensor.cpu().numpy()
-
-    print("-" * 40)
-
-    L = MAX_LEN + co_signals.shape[1]
-    new_matrix = np.zeros((2 * n - 1, L))
-
-    # Process diagonals
-    for i in range(-n, n):
-        diagonal = np.diagonal(co_signals, offset=i)
-        new_matrix[n - 1 + i][abs(i):len(diagonal) + abs(i)] = diagonal
-
-    # Add new products
-    for index in range(1, MAX_LEN + 1):
-        new_X_chr = np.arange(index + 1, index + len(X_chr) + 1)
-        new_X_chr_tensor = torch.tensor(new_X_chr, dtype=torch.float32).cuda()
-
-        # Perform element-wise multiplication on GPU
-        new_prod_tensor = new_X_chr_tensor[-1] * new_X_chr_tensor
-
-        # Move result back to CPU
-        new_prod = new_prod_tensor.cpu().numpy()
-
-        # Update new_matrix with the new products
-        new_matrix[:, len(X_chr) + index - 1][:len(new_prod)] = new_prod
-        new_matrix[:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
-
-    print(time.time() - t0)
 
     print("Run: " + args.m)
 
