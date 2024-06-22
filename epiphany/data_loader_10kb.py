@@ -103,7 +103,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             print("calculate the entire product:")
             # X_chr = np.arange(1, 34000)  # Original array
             # Convert numpy arrays to PyTorch tensors and move them to the GPU
-            X_chr_tensor = torch.tensor(X_chr, dtype=torch.float32).cuda()
+            X_chr_tensor = X_chr #torch.tensor(X_chr, dtype=torch.float32).cuda()
             # Perform outer product on GPU
             co_signals_tensor = torch.outer(X_chr_tensor, X_chr_tensor)
             # Move result back to CPU for further processing
