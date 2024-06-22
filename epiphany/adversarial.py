@@ -45,23 +45,39 @@ def main():
         import wandb
         wandb.init()
 
+    import numpy as np
+    import time
+    t0 = time.time()
     X_chr = np.arange(1, 34000)  # 6
-    num = 10
-    co_signals = np.zeros((len(X_chr) * num, len(X_chr) * num)).astype('float32')
-    index = 0
-    X_chr_one_co_signal = np.outer(X_chr, X_chr)
-    co_signals[:len(X_chr), :len(X_chr)] = X_chr_one_co_signal
 
-    ground_truth = np.outer(np.arange(1, len(X_chr) * num), np.arange(1, len(X_chr) * num))
-    for index in range(1, len(X_chr) + 1):
-        new_X_chr = np.arange(index + 1, index + len(X_chr) + 1)
-        new_prod = np.outer([new_X_chr[-1]], new_X_chr)
-        co_signals[len(X_chr) + index - 1][index:len(X_chr) + index] = new_prod
-        co_signals[:, index + len(X_chr) - 1][index:index + len(X_chr)] = new_prod
-        if index%5==0:
-            print(index)
+    MAX_LEN = 1  # 25
+    co_signals = np.outer(X_chr, X_chr)
     print("-" * 40)
+
     # print(co_signals)
+
+    def compact_diagonal_matrix(matrix, n, MAX_LEN):
+        matrix = np.array(matrix)
+        L = MAX_LEN + matrix.shape[1]
+        new_matrix = np.zeros((2 * n - 1, L))
+
+        for i in range(-n, n):
+            diagonal = np.diagonal(matrix, offset=i)
+            new_matrix[n - 1 + i][abs(i):len(diagonal) + abs(i)] = diagonal
+        return new_matrix
+
+    n = len(X_chr)
+    new_matrix = compact_diagonal_matrix(co_signals, n, MAX_LEN)
+    # print(new_matrix)
+
+    # ADD NEW PRODUCTS
+    for index in range(1, MAX_LEN + 1):
+        new_X_chr = np.arange(index + 1, index + len(X_chr) + 1)
+        new_prod = [new_X_chr[-1]] * new_X_chr
+        new_matrix[:, len(X_chr) + index - 1][:len(new_prod)] = new_prod
+        new_matrix[:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
+    # print(new_matrix)
+    print(time.time() - t0)
 
 
 
