@@ -106,6 +106,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             X_chr_tensor = torch.Tensor(X_chr)#.cuda()
             # Perform outer product on GPU
             co_signals_tensor = torch.outer(X_chr_tensor, X_chr_tensor)
+            print(f"co_signals_tensor shape: {co_signals_tensor.shape}")
             # Move result back to CPU for further processing
             co_signals = co_signals_tensor.cpu().numpy()
             L = MAX_LEN + co_signals.shape[1]
@@ -115,7 +116,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             for i in range(-n, n):
                 diagonal = np.diagonal(co_signals, offset=i)
                 self.co_signals[n - 1 + i][abs(i):len(diagonal) + abs(i)] = diagonal
-                # Add new products
+        else:
             new_X_chr = np.arange(index + 1, index + len(X_chr) + 1)
             new_X_chr_tensor = torch.tensor(new_X_chr, dtype=torch.float32).cuda()
             # Perform element-wise multiplication on GPU
