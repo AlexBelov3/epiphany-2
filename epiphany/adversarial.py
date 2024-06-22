@@ -1,5 +1,4 @@
-#!/x0/arnavmd/python3/bin/python3
-import torch as torch
+import torch
 import torch.nn as nn
 from torchvision import datasets
 from torchvision import transforms
@@ -17,6 +16,7 @@ print(torch.__version__)
 
 
 def main():
+    import torch
     torch.multiprocessing.set_sharing_strategy('file_system')
     parser = argparse.ArgumentParser()
     parser.add_argument("--gpu", help="CUDA ID", default="0")
