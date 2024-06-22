@@ -125,5 +125,8 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
                 self.co_signals[:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
             print(time.time() - t0)
 
+        if index == 200:
+            print( self.co_signals[:, len(X_chr) + 50000 - 1][:5])
+
         return X_chr.astype('float32'), y_chr.astype('float32'), X_chr.astype('float32'), X_chr.astype('float32')
 
