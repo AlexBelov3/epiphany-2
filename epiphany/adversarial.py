@@ -82,7 +82,7 @@ def main():
     # Initialize the data
     X_chr = np.arange(1, 34000)  # Original array
 
-    MAX_LEN = 1  # Maximum length to extend
+    MAX_LEN = 25  # Maximum length to extend
     n = len(X_chr)
 
     # Convert numpy arrays to PyTorch tensors and move them to the GPU
