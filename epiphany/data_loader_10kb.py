@@ -10,6 +10,7 @@ import os
 from torch.autograd import Variable
 import h5py 
 import time
+import sys
 #wandb.init()
 
 class Chip2HiCDataset(torch.utils.data.Dataset):
