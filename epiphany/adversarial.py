@@ -1,5 +1,5 @@
 #!/x0/arnavmd/python3/bin/python3
-import torch
+import torch as torch
 import torch.nn as nn
 from torchvision import datasets
 from torchvision import transforms
