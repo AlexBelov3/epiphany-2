@@ -116,7 +116,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
                 self.co_signals[n - 1 + i][abs(i):len(diagonal) + abs(i)] = diagonal
         else:
             new_X_chr = np.arange(index + 1, index + len(X_chr) + 1)
-            new_X_chr_tensor = torch.tensor(new_X_chr, dtype=torch.float32).cuda()
+            new_X_chr_tensor = torch.tensor(new_X_chr, dtype=torch.float32)#.cuda()
             # Perform element-wise multiplication on GPU
             new_prod_tensor = new_X_chr_tensor[-1] * new_X_chr_tensor
             # Move result back to CPU
