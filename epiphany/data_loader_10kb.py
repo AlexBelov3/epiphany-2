@@ -124,6 +124,8 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
                 # Update self.co_signals with the new products
                 self.co_signals[:, len(X_chr) + index - 1][:len(new_prod)] = new_prod
                 self.co_signals[:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
+                if index%1000 == 0:
+                    print(f"index: {index}")
             print(time.time() - t0)
 
         if index == 200:
