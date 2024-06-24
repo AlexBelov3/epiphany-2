@@ -193,8 +193,9 @@ def main():
                         y_hat = y_hat.squeeze()
                         y_hat, disregard = extract_diagonals(y_hat)
 
-                        y_hat_new, hidden = new_model(test_data, co_signal)
-                        y_hat_new = y_hat_new.squeeze()
+                        y_hat_new = new_model(test_data, co_signal)
+                        # y_hat_new = y_hat_new.squeeze()
+                        print(f"y_hat_new shape: {y_hat_new.shape}")
                         y_hat_new, disregard = extract_diagonals(y_hat_new)
 
                         # right interactions
