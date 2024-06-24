@@ -125,6 +125,8 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         #     print(time.time() - t0)
 
         co_signal = bin_and_average(X_chr, 10)
+        print(f"shape of binned co_signal: {np.shape(co_signal)}")
         co_signal = np.outer(co_signal, co_signal)
+        print(f"shape of co_signal: {np.shape(co_signal)}")
         return X_chr.astype('float32'), y_chr.astype('float32'), co_signal#, self.co_signals[chr][:, index:len(X_chr) + index] .astype('float32')
 
