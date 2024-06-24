@@ -127,7 +127,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         for i in range(np.shape(X_chr)[0]):
             binned_signals.append(bin_and_sum(X_chr[i], 100))
         co_signal = np.outer(binned_signals, binned_signals)
-        co_signal = np.zeros_like(co_signal)
+        # co_signal = np.zeros_like(co_signal)
         # print(f"co_signal shape: {np.shape(co_signal)}")
         return X_chr.astype('float32'), y_chr.astype('float32'), co_signal.astype('float32')#, self.co_signals[chr][:, index:len(X_chr) + index] .astype('float32')
 
