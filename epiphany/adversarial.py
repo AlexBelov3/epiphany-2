@@ -238,7 +238,7 @@ def main():
         if np.mean(test_loss) > min_loss:
             min_loss = np.mean(test_loss)
         # save(model, os.path.join(LOG_PATH, '%03d.pt_model' % epoch), num_to_keep=1)
-        save(new_model, os.path.join(LOG_PATH, '%03d.pt_model' % epoch), num_to_keep=1)
+        save(new_model, os.path.join(LOG_PATH, '%03d.pt_new_model' % epoch), num_to_keep=1)
         with open(test_log, 'a+') as f:
             f.write(str(np.mean(test_loss)) + "\n")
 
