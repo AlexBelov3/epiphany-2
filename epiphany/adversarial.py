@@ -259,7 +259,7 @@ def main():
             hidden = None
             label = torch.Tensor(np.squeeze(label)).cuda()
             data = data[0].cuda()
-            optimizer.zero_grad()
+            # optimizer.zero_grad()
 
             # output, hidden = model(data,seq_length=TRAIN_SEQ_LENGTH)
             output = new_model(data, torch.Tensor(co_signal).cuda())
@@ -307,9 +307,9 @@ def main():
 
             optimizer.step()
 
-            for name, param in new_model.named_parameters():
-                if torch.equal(param, initial_params[name]):
-                    print(f"Parameter {name} has NOT been updated.")
+            # for name, param in new_model.named_parameters():
+            #     if torch.equal(param, initial_params[name]):
+            #         print(f"Parameter {name} has NOT been updated.")
 
             # # Train discriminator
             # disc_optimizer.zero_grad()
