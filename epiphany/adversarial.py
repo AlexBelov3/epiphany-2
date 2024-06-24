@@ -193,7 +193,7 @@ def main():
                         y_hat = y_hat.squeeze()
                         y_hat, disregard = extract_diagonals(y_hat)
 
-                        y_hat_new, hidden = new_model(test_data, torch.Tensor(co_signal)#.cuda())
+                        y_hat_new, hidden = new_model(test_data, torch.Tensor(co_signal).cuda())
                         y_hat_new = y_hat_new.squeeze()
                         y_hat_new, disregard = extract_diagonals(y_hat_new)
 
