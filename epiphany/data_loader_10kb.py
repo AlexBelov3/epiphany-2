@@ -28,7 +28,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         self.labels = {}
         self.sizes = []
         self.zero_pad = zero_pad
-        self.co_signals = []
+        self.co_signals = {}
 
         print("Loading input:")
         self.inputs = h5.File(save_path_X, 'r')
@@ -73,9 +73,6 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         start = idx + self.buf
         # end = np.minimum(idx*self.seq_length + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
         end = np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
-        print(f"start: {start}, end: {end}")
-        print(f"idx: {idx}, chrom_idx: {chrom_idx}")
-        print(f"self.seq_length: {self.seq_length}")
         contact_data = []
 
         for t in range(idx + self.buf, np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1):
@@ -83,6 +80,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             contact_data.append(contact_vec)
 
         X_chr = self.inputs[chr][:self.num_channels, 100*start-(self.window_size//2):100*end+(self.window_size//2)].astype('float32') #100
+
         y_chr = np.array(contact_data)
 
         if self.zero_pad and y_chr.shape[0] < self.seq_length:
@@ -95,8 +93,9 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
 
             pad_X = np.zeros((X_chr.shape[0],self.seq_length*100+self.window_size - X_chr.shape[1])) #100
             X_chr = np.concatenate((X_chr, pad_X), axis=1)
-
-        if len(self.co_signals) == 0:
+        if chr not in self.co_signals.keys():
+            self.co_signals[chr] = []
+        if len(self.co_signals[chr]) == 0:
             t0 = time.time()
             MAX_LEN = np.shape(self.inputs[chr])[1]  # Maximum length to extend
             n = len(X_chr)
@@ -109,12 +108,10 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             # Move result back to CPU for further processing
             co_signals = co_signals_tensor.cpu().numpy()
             L = MAX_LEN + co_signals.shape[1]
-            self.co_signals = np.zeros((2 * n - 1, L))
-            print(f"outer prod time: {time.time()-t0}")
-            print("Calculate the entire product:")
+            self.co_signals[chr] = np.zeros((2 * n - 1, L))
             for i in range(-n, n):
                 diagonal = np.diagonal(co_signals, offset=i)
-                self.co_signals[n - 1 + i][abs(i):len(diagonal) + abs(i)] = diagonal
+                self.co_signals[chr][n - 1 + i][abs(i):len(diagonal) + abs(i)] = diagonal
             for index in range(i,MAX_LEN+1):
                 new_X_chr = np.arange(index + 1, index + len(X_chr) + 1)
                 new_X_chr_tensor = torch.tensor(new_X_chr, dtype=torch.float32)#.cuda()
@@ -123,8 +120,8 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
                 # Move result back to CPU
                 new_prod = new_prod_tensor.cpu().numpy()
                 # Update self.co_signals with the new products
-                self.co_signals[:, len(X_chr) + index - 1][:len(new_prod)] = new_prod
-                self.co_signals[:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
+                self.co_signals[chr][:, len(X_chr) + index - 1][:len(new_prod)] = new_prod
+                self.co_signals[chr][:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
             print(time.time() - t0)
 
         return X_chr.astype('float32'), y_chr.astype('float32')
