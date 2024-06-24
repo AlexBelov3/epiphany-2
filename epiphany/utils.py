@@ -411,21 +411,36 @@ def test_model(model, test_loader, device, seq_length):
         y_hat_list = test(test_loader, model, device, seq_length)
     return y_hat_list
 
-def extract_diagonals(arr):
-    if isinstance(arr, torch.Tensor):
-        arr = arr.detach().cpu().numpy()
-    elif not isinstance(arr, np.ndarray):
-        arr = np.array(arr)
-    assert arr.shape == (200, 100), "Input array must be 200x100 in size"
+# def extract_diagonals(arr):
+#     if isinstance(arr, torch.Tensor):
+#         arr = arr.detach().cpu().numpy()
+#     elif not isinstance(arr, np.ndarray):
+#         arr = np.array(arr)
+#     assert arr.shape == (200, 100), "Input array must be 200x100 in size"
+#
+#     up_diagonal = np.zeros(100)
+#     down_diagonal = np.zeros(100)
+#
+#     for i in range(100):
+#         up_diagonal[i] = arr[99 + i//2, i]
+#         down_diagonal[i] = arr[99 - i//2, i]
+#         # up_diagonal[i] = arr[0, i]
+#         # down_diagonal[i] = arr[i, 0]
+#
+#     return up_diagonal, down_diagonal
 
-    up_diagonal = np.zeros(100)
-    down_diagonal = np.zeros(100)
+def extract_diagonals(tensor):
+    assert tensor.shape == (200, 100), "Input tensor must be 200x100 in size"
+
+    device = tensor.device
+    dtype = tensor.dtype
+
+    up_diagonal = torch.zeros(100, device=device, dtype=dtype)
+    down_diagonal = torch.zeros(100, device=device, dtype=dtype)
 
     for i in range(100):
-        up_diagonal[i] = arr[99 + i//2, i]
-        down_diagonal[i] = arr[99 - i//2, i]
-        # up_diagonal[i] = arr[0, i]
-        # down_diagonal[i] = arr[i, 0]
+        up_diagonal[i] = tensor[99 + i // 2, i]
+        down_diagonal[i] = tensor[99 - i // 2, i]
 
     return up_diagonal, down_diagonal
 
