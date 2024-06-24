@@ -162,10 +162,6 @@ class branch_pbulk(nn.Module):
     def __init__(self):
         super(branch_pbulk, self).__init__()
 
-        pbulk_res = 50
-        scatac_res = 500
-
-
         self.total_extractor_2d = nn.Sequential(
             nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),

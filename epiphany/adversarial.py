@@ -92,7 +92,7 @@ def main():
     # Define Model
     mod_branch_pbulk = nn.DataParallel(branch_pbulk(), device_ids=[0])
     mod_branch_cov = nn.DataParallel(Net(), device_ids=[0])
-    new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0])
+    new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0]).cuda()
 
     disc = Disc()#.cuda()
     if args.wandb:
@@ -130,8 +130,9 @@ def main():
     hidden = None
     log_interval = 50
     parameters = list(model.parameters())
-    parameters = list(new_model.parameters())
+    new_parameters = list(new_model.parameters())
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
+    new_optimizer = optim.Adam(new_parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
     min_loss = -10
 
@@ -192,9 +193,9 @@ def main():
                         y_hat = y_hat.squeeze()
                         y_hat, disregard = extract_diagonals(y_hat)
 
-                        # y_hat_new, hidden = new_model(test_data, torch.Tensor(co_signal).cuda())
-                        # y_hat_new = y_hat_new.squeeze()
-                        # y_hat_new, disregard = extract_diagonals(y_hat_new)
+                        y_hat_new, hidden = new_model(test_data, torch.Tensor(co_signal).cuda())
+                        y_hat_new = y_hat_new.squeeze()
+                        y_hat_new, disregard = extract_diagonals(y_hat_new)
 
                         # right interactions
                         # y_hat_rev, hidden = model(test_data_rev, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
@@ -216,8 +217,11 @@ def main():
             # y_hat_list = [x.detach().cpu() for x in y_hat_list]
             # y_hat_list = np.concatenate([x for x in y_hat_list], axis=0)
             # y_hat_list = np.array(["test", "text"])
-            im.append(
-                wandb.Image(generate_image_test(labels, y_hat_list, y_down_list, path=LOG_PATH, seq_length=400)))  # TEST_SEQ_LENGTH
+            if args.wandb:
+                im.append(
+                    wandb.Image(generate_image_test(labels, y_hat_list, y_down_list, path=LOG_PATH,
+                                                    seq_length=400)))  # TEST_SEQ_LENGTH
+
         if args.wandb:
             wandb.log({"Validation Examples": im})
             wandb.log({'val_correlation': np.mean(test_loss)})
