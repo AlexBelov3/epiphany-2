@@ -140,7 +140,7 @@ def main():
     y_up_list = []
     y_down_list = []
     labels = []
-    for i, (test_data, test_label) in enumerate(test_loader):
+    for i, (test_data, test_label, co_signal) in enumerate(test_loader):
         test_label = test_label.squeeze()
         y, y_rev = extract_diagonals(test_label)
         y_up_list.append(y)
@@ -178,7 +178,7 @@ def main():
 
         if epoch % 1 == 0:
             i = 0
-            for (test_data, test_label) in tqdm(test_loader):
+            for (test_data, test_label, co_signal) in tqdm(test_loader):
                 if i < 400:
                     # Don't plot empty images
                     if np.linalg.norm(test_label) < 1e-8:
@@ -234,7 +234,7 @@ def main():
         losses = []
         model.train()
         disc.train()
-        for batch_idx, (data, label) in enumerate(train_loader):
+        for batch_idx, (data, label, co_signal) in enumerate(train_loader):
             if (np.linalg.norm(data)) < 1e-8:
                 continue
 

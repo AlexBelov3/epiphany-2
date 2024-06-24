@@ -99,7 +99,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             t0 = time.time()
             MAX_LEN = np.shape(self.inputs[chr])[1]  # Maximum length to extend
             n = len(X_chr)
-            print("Calculate the entire product:")
+            print("Pre-compute co-signal matrix:")
             # X_chr = np.arange(1, 34000)  # Original array
             # Convert numpy arrays to PyTorch tensors and move them to the GPU
             X_chr_tensor = torch.Tensor(X_chr[0])#.cuda()
@@ -124,5 +124,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
                 self.co_signals[chr][:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
             print(time.time() - t0)
 
-        return X_chr.astype('float32'), y_chr.astype('float32')
+        co_signal = bin_and_average(X_chr, 10)
+        co_signal = np.outer(co_signal, co_signal)
+        return X_chr.astype('float32'), y_chr.astype('float32'), co_signal#, self.co_signals[chr][:, index:len(X_chr) + index] .astype('float32')
 
