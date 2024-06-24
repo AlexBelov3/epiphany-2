@@ -243,7 +243,7 @@ class trunk(nn.Module):
         x = self.Net(x)[0].squeeze()
         with torch.no_grad():
             x2 = self.branch_pbulk(x2)
-        x = self.out(torch.cat((x, x2.transpose()), 1))
+        x = self.out(torch.cat((x, torch.t(x2)), 1))
 
         return x
 
