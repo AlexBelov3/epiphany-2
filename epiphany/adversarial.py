@@ -135,7 +135,10 @@ def main():
     # parameters = list(model.parameters())
     # for param in new_model.parameters():
     #     param.requires_grad = True
+    for name, param in new_model.named_parameters():
+        print(f"Parameter: {name}, Requires Grad: {param.requires_grad}")
     parameters = list(new_model.parameters())
+    parameters = new_model.parameters()
 
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
@@ -298,7 +301,22 @@ def main():
             # loss = float(0.5)*mse_loss_up + float(0.5)*mse_loss_down
 
             loss.backward()
+            for name, param in new_model.named_parameters():
+                if param.grad is not None:
+                    print(f"Gradients for {name} - Mean: {param.grad.mean()}, Std: {param.grad.std()}")
+                else:
+                    print(f"No gradients for {name}")
+
+
+            print("Before optimizer step:")
+            for name, param in new_model.named_parameters():
+                print(f"{name}: {param.data.norm()}")
+
             optimizer.step()
+
+            print("After optimizer step:")
+            for name, param in new_model.named_parameters():
+                print(f"{name}: {param.data.norm()}")
 
 
             # # Train discriminator
