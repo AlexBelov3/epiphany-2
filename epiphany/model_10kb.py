@@ -205,15 +205,14 @@ class branch_pbulk(nn.Module):
             nn.ReLU(),
         )
 
-        # Calculate the final output size after all convolutions and pooling
-        final_feature_map_size = 16 * 25 * 25
-
         self.classifier = nn.Sequential(
-            nn.Linear(in_features=final_feature_map_size, out_features=512),
+            nn.Linear(in_features=576, out_features=512),  # Adjust in_features based on the final output size
         )
         self.classifier2 = nn.Sequential(nn.Linear(in_features=512, out_features=200))
 
     def forward(self, x2):
+        # Adding a channel dimension to the input tensor
+        x2 = x2.unsqueeze(1)  # Shape: [batch_size, 1, height, width]
         x3 = self.total_extractor_2d(x2)
         x3 = torch.flatten(x3, 1)
         x3 = self.classifier(x3)
