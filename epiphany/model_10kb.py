@@ -223,7 +223,8 @@ class branch_pbulk(nn.Module):
         x3 = self.total_extractor_2d(x2)
         x3 = torch.flatten(x3, 1)
         x3 = self.classifier(x3)
-        return x3
+        x4 = self.classifier2(x3)
+        return x4
 
 
 class trunk(nn.Module):
@@ -239,7 +240,7 @@ class trunk(nn.Module):
         )
 
     def forward(self, x, x2):
-        x = self.Net(x)[0]
+        x = self.Net(x)[0].squeeze()
         with torch.no_grad():
             x2 = self.branch_pbulk(x2)
         print(f"x shape: {x.shape}")
