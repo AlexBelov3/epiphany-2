@@ -212,7 +212,7 @@ class branch_pbulk(nn.Module):
         # After third conv+pool: (105-3)/2 + 1 = 51/2 = 25.5, rounded down to 25x25
 
         # So the final output feature map size is 16 (channels) * 25 * 25
-        final_feature_map_size = 43264
+        final_feature_map_size = 2704
 
         self.classifier = nn.Sequential(
             nn.Linear(in_features=final_feature_map_size, out_features=512),
