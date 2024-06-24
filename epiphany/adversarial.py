@@ -237,7 +237,7 @@ def main():
 
         if args.wandb:
             wandb.log({"Validation Examples": im})
-            wandb.log({'val_correlation': np.mean(test_loss)})
+            wandb.log({'val_correlation': np.mean(torch.stack(test_loss).cpu().numpy())})
 
         print('Test Loss: ', np.mean(test_loss), ' Best: ', str(min_loss))
 
@@ -307,9 +307,9 @@ def main():
 
             optimizer.step()
 
-            # for name, param in new_model.named_parameters():
-            #     if torch.equal(param, initial_params[name]):
-            #         print(f"Parameter {name} has NOT been updated.")
+            for name, param in new_model.named_parameters():
+                if torch.equal(param, initial_params[name]):
+                    print(f"Parameter {name} has NOT been updated.")
 
             # # Train discriminator
             # disc_optimizer.zero_grad()
