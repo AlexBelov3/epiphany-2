@@ -299,25 +299,17 @@ def main():
 
             loss = (LAMBDA)*mse_loss_up #+ (1 - LAMBDA)*adv_loss
             # loss = float(0.5)*mse_loss_up + float(0.5)*mse_loss_down
-
+            initial_params = {name: param.clone() for name, param in new_model.named_parameters()}
             loss.backward()
             for name, param in new_model.named_parameters():
-                if param.grad is not None:
-                    print(f"Gradients for {name} - Mean: {param.grad.mean()}, Std: {param.grad.std()}")
-                else:
+                if param.grad is None:
                     print(f"No gradients for {name}")
-
-
-            print("Before optimizer step:")
-            for name, param in new_model.named_parameters():
-                print(f"{name}: {param.data.norm()}")
 
             optimizer.step()
 
-            print("After optimizer step:")
             for name, param in new_model.named_parameters():
-                print(f"{name}: {param.data.norm()}")
-
+                if torch.equal(param, initial_params[name]):
+                    print(f"Parameter {name} has NOT been updated.")
 
             # # Train discriminator
             # disc_optimizer.zero_grad()
