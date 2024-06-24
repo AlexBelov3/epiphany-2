@@ -176,7 +176,7 @@ def main():
         preds = []
         labs = []
         y_hat_list = []
-        model.eval()
+        # model.eval()
         new_model.eval()
 
         if epoch % 1 == 0:
@@ -191,9 +191,9 @@ def main():
 
                     with torch.no_grad():
                         # left interactions
-                        y_hat, hidden = model(test_data, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
-                        y_hat = y_hat.squeeze()
-                        y_hat, disregard = extract_diagonals(y_hat)
+                        # y_hat, hidden = model(test_data, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
+                        # y_hat = y_hat.squeeze()
+                        # y_hat, disregard = extract_diagonals(y_hat)
 
                         y_hat_new = new_model(test_data, co_signal)
                         # y_hat_new = y_hat_new.squeeze()
@@ -215,7 +215,7 @@ def main():
 
                         test_label, disregard = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
                         # loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
-                        loss = new_model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
+                        loss = new_model.loss(y_hat_new, test_label, seq_length=TEST_SEQ_LENGTH)
                         test_loss.append(loss)
                 else:
                     break
