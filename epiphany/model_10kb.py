@@ -236,7 +236,7 @@ class trunk(nn.Module):
 
         self.out = nn.Sequential(
             nn.Linear(in_features=(116), out_features=512), #replace 116 with 512 * 2
-            nn.Linear(in_features=(512), out_features=200),
+            nn.Linear(in_features=(512), out_features=100),
         )
 
     def forward(self, x, x2):
