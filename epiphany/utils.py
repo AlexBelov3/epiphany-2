@@ -462,17 +462,18 @@ def cpu_batch_corcoeff_vstripe(x):
     return c
 
 
-def bin_and_average(arr, bin_size=10):
+def bin_and_sum(arr, bin_size=100):
     # Ensure the array length is a multiple of bin_size
     n = len(arr)
+    print(f"n: {n}")
     remainder = n % bin_size
     if remainder != 0:
         arr = arr[:n - remainder]
 
     # Reshape the array to have bin_size columns
     reshaped_arr = arr.reshape(-1, bin_size)
-
+    print(f"reshaped_arr shape: {np.shape(reshaped_arr)}")
     # Calculate the mean across the columns
-    binned_avg = reshaped_arr.mean(axis=1)
+    binned_sum = reshaped_arr.sum(axis=1)
 
-    return binned_avg
+    return binned_sum
