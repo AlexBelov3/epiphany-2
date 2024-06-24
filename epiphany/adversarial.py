@@ -103,7 +103,7 @@ def main():
 
 
     if os.path.exists(LOG_PATH):
-        restore_latest(model, LOG_PATH, ext='.pt_model')
+        # restore_latest(model, LOG_PATH, ext='.pt_model')
         restore_latest(new_model, LOG_PATH, ext='.pt_new_model')
     else:
         os.makedirs(LOG_PATH)

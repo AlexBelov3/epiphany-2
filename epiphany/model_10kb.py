@@ -220,7 +220,13 @@ class branch_pbulk(nn.Module):
         self.classifier2 = nn.Sequential(nn.Linear(in_features=512, out_features=200))
 
     def forward(self, x2):
-        x2 = F.softmax(x2, dim=1)
+        # x2 = F.softmax(x2, dim=1)
+        # Apply softmax across the height and width dimensions
+        batch_size, height, width = x2.size()
+        x2 = x2.view(batch_size, -1)  # Flatten height and width dimensions
+        x2 = F.softmax(x2, dim=1)  # Apply softmax
+        x2 = x2.view(batch_size, height, width)  # Reshape back to original dimensions
+
         x3 = self.total_extractor_2d(x2)
         x3 = torch.flatten(x3, 1)
         x3 = self.classifier(x3)
