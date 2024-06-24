@@ -234,19 +234,19 @@ def main():
                 im.append(
                     wandb.Image(generate_image_test(labels, y_hat_list, y_down_list, path=LOG_PATH,
                                                     seq_length=400)))  # TEST_SEQ_LENGTH
-        test_loss = torch.stack(test_loss).cpu().numpy()
+        test_loss_cpu = torch.stack(test_loss).cpu().numpy()
         if args.wandb:
             wandb.log({"Validation Examples": im})
             wandb.log({'val_correlation': np.mean(test_loss)})
 
-        print('Test Loss: ', np.mean(test_loss), ' Best: ', str(min_loss))
+        print('Test Loss: ', np.mean(test_loss_cpu), ' Best: ', str(min_loss))
 
-        if np.mean(test_loss) > min_loss:
-            min_loss = np.mean(test_loss)
+        if np.mean(test_loss_cpu) > min_loss:
+            min_loss = np.mean(test_loss_cpu)
         # save(model, os.path.join(LOG_PATH, '%03d.pt_model' % epoch), num_to_keep=1)
         save(new_model, os.path.join(LOG_PATH, '%03d.pt_new_model' % epoch), num_to_keep=1)
         with open(test_log, 'a+') as f:
-            f.write(str(np.mean(test_loss)) + "\n")
+            f.write(str(np.mean(test_loss_cpu)) + "\n")
 
         losses = []
         # model.train()
