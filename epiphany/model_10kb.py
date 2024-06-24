@@ -158,6 +158,35 @@ class Disc(nn.Module):
         return loss_val
 
 
+# class branch_pbulk(nn.Module):
+#     def __init__(self):
+#         super(branch_pbulk, self).__init__()
+#
+#         self.total_extractor_2d = nn.Sequential(
+#             nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
+#             nn.BatchNorm2d(64),
+#             nn.ReLU(),
+#             nn.MaxPool2d(kernel_size=2),
+#             nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=2),
+#             nn.BatchNorm2d(32),
+#             nn.ReLU(),
+#             nn.MaxPool2d(kernel_size=2),
+#             nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
+#             nn.BatchNorm2d(16),
+#             nn.ReLU(),
+#         )
+#
+#         self.classifier = nn.Sequential(
+#             nn.Linear(in_features=(1936), out_features=512),
+#         )
+#         self.classifier2 = nn.Sequential(nn.Linear(in_features=(512), out_features=200))
+#     def forward(self, x2):
+#         x3 = self.total_extractor_2d(x2)
+#         x3 = torch.flatten(x3, 1)
+#         x3 = self.classifier(x3)
+#         return x3
+
+
 class branch_pbulk(nn.Module):
     def __init__(self):
         super(branch_pbulk, self).__init__()
@@ -176,10 +205,20 @@ class branch_pbulk(nn.Module):
             nn.ReLU(),
         )
 
+        # Calculate the final output size after all convolutions and pooling
+        # Input size: 1700x1700
+        # After first conv+pool: (1700-3)/2 + 1 = 849/2 = 424.5, rounded down to 424x424
+        # After second conv+pool: (424-3)/2 + 1 = 211/2 = 105.5, rounded down to 105x105
+        # After third conv+pool: (105-3)/2 + 1 = 51/2 = 25.5, rounded down to 25x25
+
+        # So the final output feature map size is 16 (channels) * 25 * 25
+        final_feature_map_size = 16 * 25 * 25
+
         self.classifier = nn.Sequential(
-            nn.Linear(in_features=(1936), out_features=512),
+            nn.Linear(in_features=final_feature_map_size, out_features=512),
         )
-        self.classifier2 = nn.Sequential(nn.Linear(in_features=(512), out_features=200))
+        self.classifier2 = nn.Sequential(nn.Linear(in_features=512, out_features=200))
+
     def forward(self, x2):
         x3 = self.total_extractor_2d(x2)
         x3 = torch.flatten(x3, 1)
