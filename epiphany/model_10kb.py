@@ -212,7 +212,7 @@ class branch_pbulk(nn.Module):
 
     def forward(self, x2):
         # Adding a channel dimension to the input tensor
-        x2 = x2.unsqueeze(1)  # Shape: [batch_size, 1, height, width]
+        # x2 = x2.unsqueeze(1)  # Shape: [batch_size, 1, height, width]
         x3 = self.total_extractor_2d(x2)
         x3 = torch.flatten(x3, 1)
         x3 = self.classifier(x3)
