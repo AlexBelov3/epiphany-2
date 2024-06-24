@@ -136,6 +136,25 @@ def main():
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
     min_loss = -10
 
+    def calculate_flattened_size(model, input_shape):
+        with torch.no_grad():
+            dummy_input = torch.zeros(1, *input_shape)
+            dummy_output = model.total_extractor_2d(dummy_input)
+            flattened_size = dummy_output.view(-1).size(0)
+        return flattened_size
+
+    # Initialize the model
+    model = branch_pbulk()
+
+    # Calculate the flattened size
+    input_shape = (1, 1700, 1700)  # Channel dimension added
+    flattened_size = calculate_flattened_size(model, input_shape[1:])  # Exclude batch size
+    print(f"flattened_size: {flattened_size}")
+
+
+
+
+
     t0 = time.time()
 
     y_up_list = []
