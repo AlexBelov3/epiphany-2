@@ -239,8 +239,9 @@ class trunk(nn.Module):
         )
 
     def forward(self, x, x2):
-        x = self.Net(x)
+        # x = self.Net(x)
         with torch.no_grad():
+            x = self.Net(x)
             x2 = self.branch_pbulk(x2)
         print(f"type(x):{type(x)}")
         print(f"type(x2):{type(x2)}")
