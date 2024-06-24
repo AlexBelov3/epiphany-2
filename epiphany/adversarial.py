@@ -134,8 +134,8 @@ def main():
     log_interval = 50
     parameters = list(model.parameters())
     new_parameters = list(new_model.parameters())
-    optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
-    new_optimizer = optim.Adam(new_parameters, lr=LEARNING_RATE, weight_decay=0.0005)
+    # optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
+    optimizer = optim.Adam(new_parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
     min_loss = -10
 
@@ -285,7 +285,7 @@ def main():
             # mse_loss_up = model.loss(output_1d, label_1d, seq_length=TRAIN_SEQ_LENGTH)
             mse_loss_up = new_model.loss(output_1d, label_1d, seq_length=TRAIN_SEQ_LENGTH)
             mse_loss = mse_loss_up
-            mse_loss_down = model.loss(output_1d_v_down, label_1d_v_down, seq_length=TRAIN_SEQ_LENGTH)
+            # mse_loss_down = model.loss(output_1d_v_down, label_1d_v_down, seq_length=TRAIN_SEQ_LENGTH)
             # disc_out = disc(output.view(1,1,output.shape[0], output.shape[1]))
             #adv_loss = F.binary_cross_entropy_with_logits(disc_out.view(1), torch.Tensor([1]).cuda()) # how close is disc pred to 1
             # adv_loss = F.binary_cross_entropy_with_logits(disc_out.view(1), torch.Tensor([1]))
