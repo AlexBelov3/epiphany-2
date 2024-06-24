@@ -242,6 +242,8 @@ class trunk(nn.Module):
         x = self.Net(x)
         with torch.no_grad():
             x2 = self.branch_pbulk(x2)
+        print(f"type(x):{type(x)}")
+        print(f"type(x2):{type(x2)}")
         x = self.out(torch.cat((x, x2), 1))
 
         return x
