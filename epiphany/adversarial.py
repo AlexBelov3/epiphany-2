@@ -257,7 +257,7 @@ def main():
             optimizer.zero_grad()
 
             # output, hidden = model(data,seq_length=TRAIN_SEQ_LENGTH)
-            output = new_model(data, co_signal)
+            output = new_model(data, torch.Tensor(co_signal))
             output = torch.squeeze(output)
 
             # 1 -> real, 0 -> fake
