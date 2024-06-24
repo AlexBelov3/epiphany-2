@@ -133,7 +133,10 @@ def main():
     hidden = None
     log_interval = 50
     # parameters = list(model.parameters())
+    for param in new_model.parameters():
+        param.requires_grad = True
     parameters = list(new_model.parameters())
+
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
     min_loss = -10
