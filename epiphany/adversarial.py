@@ -94,7 +94,7 @@ def main():
     # mod_branch_cov = nn.DataParallel(Net(), device_ids=[0])
     # new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0]).cuda()
 
-    new_model = trunk(branch_pbulk(), Net())
+    new_model = trunk(branch_pbulk(), Net()).cuda()
 
     disc = Disc()#.cuda()
     if args.wandb:
