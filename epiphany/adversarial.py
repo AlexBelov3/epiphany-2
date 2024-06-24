@@ -90,9 +90,11 @@ def main():
     model = Net(1, 5, int(args.window_size)).cuda()
     # TESTING:
     # Define Model
-    mod_branch_pbulk = nn.DataParallel(branch_pbulk(), device_ids=[0])
-    mod_branch_cov = nn.DataParallel(Net(), device_ids=[0])
-    new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0]).cuda()
+    # mod_branch_pbulk = nn.DataParallel(branch_pbulk(), device_ids=[0])
+    # mod_branch_cov = nn.DataParallel(Net(), device_ids=[0])
+    # new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0]).cuda()
+
+    new_model = trunk(branch_pbulk(), Net())
 
     disc = Disc()#.cuda()
     if args.wandb:
