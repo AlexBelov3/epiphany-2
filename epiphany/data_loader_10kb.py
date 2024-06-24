@@ -73,8 +73,8 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         start = idx + self.buf
         # end = np.minimum(idx*self.seq_length + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
         end = np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
+        print(f"start: {start}, end: {end}")
         contact_data = []
-        hic_dict = {}
 
         for t in range(idx + self.buf, np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1):
             contact_vec = data_preparation(t,self.labels[chr],self.inputs[chr], distance=100)
@@ -82,7 +82,6 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
 
         X_chr = self.inputs[chr][:self.num_channels, 100*start-(self.window_size//2):100*end+(self.window_size//2)].astype('float32') #100
         y_chr = np.array(contact_data)
-        y_chr_rev = np.array(torch.flip(torch.tensor(contact_data), [0]))
 
         if self.zero_pad and y_chr.shape[0] < self.seq_length:
 
@@ -109,8 +108,8 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             co_signals = co_signals_tensor.cpu().numpy()
             L = MAX_LEN + co_signals.shape[1]
             self.co_signals = np.zeros((2 * n - 1, L))
-
-            # Process diagonals
+            print(f"outer prod time: {time.time()-t0}")
+            print("Calculate the entire product:")
             for i in range(-n, n):
                 diagonal = np.diagonal(co_signals, offset=i)
                 self.co_signals[n - 1 + i][abs(i):len(diagonal) + abs(i)] = diagonal
@@ -124,12 +123,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
                 # Update self.co_signals with the new products
                 self.co_signals[:, len(X_chr) + index - 1][:len(new_prod)] = new_prod
                 self.co_signals[:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
-                if index%1000 == 0:
-                    print(f"index: {index}")
             print(time.time() - t0)
 
-        if index == 200:
-            print( self.co_signals[:, len(X_chr) + 50000 - 1][:5])
-
-        return X_chr.astype('float32'), y_chr.astype('float32'), X_chr.astype('float32'), X_chr.astype('float32')
+        return X_chr.astype('float32'), y_chr.astype('float32')
 
