@@ -274,13 +274,13 @@ def main():
             # mse_loss = model.loss(output_1d, label_1d, seq_length=TRAIN_SEQ_LENGTH)
             # Ensure they are tensors
             if not isinstance(label_1d_v_up, torch.Tensor):
-                label_1d_v_up = torch.tensor(label_1d_v_up)
+                label_1d_v_up = torch.tensor(label_1d_v_up, requires_grad=True)
             if not isinstance(output_1d_v_up, torch.Tensor):
-                output_1d_v_up = torch.tensor(output_1d_v_up)
+                output_1d_v_up = torch.tensor(output_1d_v_up, requires_grad=True)
             if not isinstance(label_1d_v_down, torch.Tensor):
-                label_1d_v_down = torch.tensor(label_1d_v_down)
+                label_1d_v_down = torch.tensor(label_1d_v_down, requires_grad=True)
             if not isinstance(output_1d_v_down, torch.Tensor):
-                output_1d_v_down = torch.tensor(output_1d_v_down)
+                output_1d_v_down = torch.tensor(output_1d_v_down, requires_grad=True)
 
 
             # mse_loss_up = model.loss(output_1d_v_up, label_1d_v_up, seq_length=TRAIN_SEQ_LENGTH)
