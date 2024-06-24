@@ -237,7 +237,7 @@ def main():
         test_loss_cpu = torch.stack(test_loss).cpu().numpy()
         if args.wandb:
             wandb.log({"Validation Examples": im})
-            wandb.log({'val_correlation': np.mean(test_loss)})
+            wandb.log({'val_correlation': np.mean(test_loss_cpu)})
 
         print('Test Loss: ', np.mean(test_loss_cpu), ' Best: ', str(min_loss))
 
