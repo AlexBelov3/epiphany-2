@@ -360,6 +360,7 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
 
         for j in range(min(100, seq_length - i)):
             # print(f"j: {j}")
+
             im1[i, i+j] = diag_values_up[j]
 
         # # Handle the down_array values as well
@@ -428,3 +429,50 @@ def extract_diagonals(arr):
         # down_diagonal[i] = arr[i, 0]
 
     return up_diagonal, down_diagonal
+
+
+def cpu_jaccard_vstripe(x):
+    # calculate jaccard similarity of rows
+    scatac_res = 500
+    size = x.shape[1]
+    eps = 1e-8
+    i = np.int16(1000 / scatac_res)
+
+    x = torch.where(x > 0.0, torch.tensor([1.0]), torch.tensor([0.0]))
+    num = torch.mm(
+        x[2000 * i : 2010 * i, :],
+        x[np.r_[:, 0 : 2000 * i, 2010 * i : 4010 * i]].transpose(0, 1),
+    )
+
+    x = torch.where(x == 0.0, torch.tensor([1.0]), torch.tensor([0.0]))
+    denom = torch.mm(
+        x[2000 * i : 2010 * i, :],
+        x[np.r_[:, 0 : 2000 * i, 2010 * i : 4010 * i]].transpose(0, 1),
+    )
+    denom = size - denom
+
+    num = torch.div(num, torch.max(denom, eps * torch.ones_like(denom)))
+
+    return num
+
+
+def cpu_batch_corcoeff_vstripe(x):
+    c = cpu_jaccard_vstripe(x.permute(1, 0))
+    c[c != c] = 0
+    return c
+
+
+def bin_and_average(arr, bin_size=10):
+    # Ensure the array length is a multiple of bin_size
+    n = len(arr)
+    remainder = n % bin_size
+    if remainder != 0:
+        arr = arr[:n - remainder]
+
+    # Reshape the array to have bin_size columns
+    reshaped_arr = arr.reshape(-1, bin_size)
+
+    # Calculate the mean across the columns
+    binned_avg = reshaped_arr.mean(axis=1)
+
+    return binned_avg
