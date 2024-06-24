@@ -180,11 +180,11 @@ class branch_pbulk(nn.Module):
             nn.Linear(in_features=(1936), out_features=512),
         )
         self.classifier2 = nn.Sequential(nn.Linear(in_features=(512), out_features=200))
-        def forward(self, x2):
-            x3 = self.total_extractor_2d(x2)
-            x3 = torch.flatten(x3, 1)
-            x3 = self.classifier(x3)
-            return x3
+    def forward(self, x2):
+        x3 = self.total_extractor_2d(x2)
+        x3 = torch.flatten(x3, 1)
+        x3 = self.classifier(x3)
+        return x3
 
 
 class trunk(nn.Module):
