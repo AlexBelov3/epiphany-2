@@ -192,7 +192,7 @@ class branch_pbulk(nn.Module):
         super(branch_pbulk, self).__init__()
 
         self.total_extractor_2d = nn.Sequential(
-            nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
+            nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
