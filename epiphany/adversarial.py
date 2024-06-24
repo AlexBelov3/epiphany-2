@@ -195,7 +195,6 @@ def main():
 
                         y_hat_new = new_model(test_data, co_signal)
                         # y_hat_new = y_hat_new.squeeze()
-                        print(f"y_hat_new shape: {y_hat_new.shape}")
                         y_hat_new, disregard = extract_diagonals(y_hat_new)
 
                         # right interactions
@@ -204,12 +203,17 @@ def main():
                         # y_hat_rev, disregard = extract_diagonals(y_hat_rev)
                         # y_hat = torch.cat(
                         #     (torch.Tensor(y_hat), torch.flip(torch.Tensor(y_hat_rev), [0])))  # dims was set to 1...
-                        y_hat_list.append(y_hat) #.detach().cpu()
+
+
+
+                        # y_hat_list.append(y_hat) #.detach().cpu()
+                        y_hat_list.append(y_hat_new)
+
                         # ONLY LOOKING AT THE LEFT (UP) VECTOR FOR NOW!
 
                         test_label, disregard = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
-                        pred, hidden = model(test_data, hidden_state=None,seq_length=TEST_SEQ_LENGTH)
-                        loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
+                        # loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
+                        loss = new_model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
                         test_loss.append(loss)
                 else:
                     break
