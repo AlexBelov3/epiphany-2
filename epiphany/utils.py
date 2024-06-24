@@ -350,7 +350,6 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
 
     # Initialize the image arrays
     im1 = np.zeros((seq_length, seq_length))
-    print(f"im1 shape: {np.shape(im1)}")
     im2 = np.zeros((seq_length, seq_length))
 
     # Fill the top diagonal with the reconstructed Hi-C from label diagonals
