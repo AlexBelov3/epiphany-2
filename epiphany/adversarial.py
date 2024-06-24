@@ -282,6 +282,8 @@ def main():
 
             # mse_loss_up = model.loss(output_1d_v_up, label_1d_v_up, seq_length=TRAIN_SEQ_LENGTH)
             # mse_loss_up = model.loss(output_1d, label_1d, seq_length=TRAIN_SEQ_LENGTH)
+            print(type(output_1d_v_up))
+            print(type(label_1d_v_up))
             mse_loss_up = new_model.loss(output_1d_v_up, label_1d_v_up, seq_length=TRAIN_SEQ_LENGTH)
             mse_loss = mse_loss_up
             # mse_loss_down = model.loss(output_1d_v_down, label_1d_v_down, seq_length=TRAIN_SEQ_LENGTH)
