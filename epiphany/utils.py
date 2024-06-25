@@ -357,14 +357,17 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
         diag_values_up = y_up_list[i]
         diag_values_down = y_down_list[i]
 
+        # Handle the down_array values as well
+        for j in range(min(100, seq_length - i)):
+            im1[i - j, i] = diag_values_down[j]
+
         for j in range(min(100, seq_length - i)):
             # print(f"j: {j}")
+            if im1[i, i+j] != 0:
+                im1[i, i+j] = np.average(diag_values_up[j], im1[i, i+j])
+            else:
+                im1[i, i + j] = diag_values_up[j]
 
-            im1[i, i+j] = diag_values_up[j]
-
-        # # Handle the down_array values as well
-        # for j in range(min(100, seq_length - i)):
-        #     im1[i - j, i] = diag_values_down[j]
     bands = len(label)
     label = np.flip(label, axis=0)
     for j in range(bands - 1):

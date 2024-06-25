@@ -157,9 +157,9 @@ def main():
         if i > 400:
             break
     #
-    # if args.wandb:
-    #     im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400))
-    #     wandb.log({"Validation Examples": im})
+    if args.wandb:
+        im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400))
+        wandb.log({"Validation Examples": im})
 
     # fig, ax = plt.subplots()
     # ax.imshow(im, cmap='RdYlBu_r', vmin=0)
