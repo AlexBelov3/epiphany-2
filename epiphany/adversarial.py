@@ -202,7 +202,8 @@ def main():
 
                         y_hat_new = new_model(test_data, co_signal)
                         # y_hat_new = y_hat_new.squeeze()
-                        y_hat_new, disregard = extract_diagonals(y_hat_new)
+                        y_hat_new_L, y_hat_new_R = extract_diagonals(y_hat_new)
+                        y_hat_new = torch.concat((y_hat_new_L,  y_hat_new_R), dim=0)
 
                         # right interactions
                         # y_hat_rev, hidden = model(test_data_rev, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
@@ -219,7 +220,8 @@ def main():
 
                         # ONLY LOOKING AT THE LEFT (UP) VECTOR FOR NOW!
 
-                        test_label, disregard = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
+                        test_label_L, test_label_R = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
+                        test_label = torch.concat((test_label_L, test_label_L), dim=0)
                         # loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
                         loss = new_model.loss(y_hat_new, test_label)
                         test_loss.append(loss)
