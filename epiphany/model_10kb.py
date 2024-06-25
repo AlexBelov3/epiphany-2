@@ -684,22 +684,22 @@ class branch_cov(nn.Module):
         return x_out
 
 
-class trunk(nn.Module):
-    def __init__(self, branch_pbulk, branch_cov):
-        super(trunk, self).__init__()
-
-        self.branch_pbulk = branch_pbulk
-        self.branch_cov = branch_cov
-
-        self.out = nn.Sequential(
-            nn.Linear(in_features=(512 * 2), out_features=512),
-            nn.Linear(in_features=(512), out_features=200),
-        )
-
-    def forward(self, x, x2):
-        x = self.branch_cov(x, x2)
-        with torch.no_grad():
-            x2 = self.branch_pbulk(x2)
-        x = self.out(torch.cat((x, x2), 1))
-
-        return x
+# class trunk(nn.Module):
+#     def __init__(self, branch_pbulk, branch_cov):
+#         super(trunk, self).__init__()
+#
+#         self.branch_pbulk = branch_pbulk
+#         self.branch_cov = branch_cov
+#
+#         self.out = nn.Sequential(
+#             nn.Linear(in_features=(512 * 2), out_features=512),
+#             nn.Linear(in_features=(512), out_features=200),
+#         )
+#
+#     def forward(self, x, x2):
+#         x = self.branch_cov(x, x2)
+#         with torch.no_grad():
+#             x2 = self.branch_pbulk(x2)
+#         x = self.out(torch.cat((x, x2), 1))
+#
+#         return x
