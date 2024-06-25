@@ -221,11 +221,11 @@ class branch_pbulk(nn.Module):
 
     def forward(self, x2):
         # # x2 = F.softmax(x2, dim=1)
-        # # Apply softmax across the height and width dimensions
-        # batch_size, height, width = x2.size()
-        # x2 = x2.view(batch_size, -1)  # Flatten height and width dimensions
-        # x2 = F.softmax(x2, dim=1)  # Apply softmax
-        # x2 = x2.view(batch_size, height, width)  # Reshape back to original dimensions
+        # Apply softmax across the height and width dimensions
+        batch_size, height, width = x2.size()
+        x2 = x2.view(batch_size, -1)  # Flatten height and width dimensions
+        x2 = F.softmax(x2, dim=1)  # Apply softmax
+        x2 = x2.view(batch_size, height, width)  # Reshape back to original dimensions
 
         x3 = self.total_extractor_2d(x2)
         x3 = torch.flatten(x3, 1)
