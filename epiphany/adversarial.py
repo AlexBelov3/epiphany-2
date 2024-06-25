@@ -156,10 +156,10 @@ def main():
     #     labels.append(test_label[100])
     #     if i > 400:
     #         break
-
-    if args.wandb:
-        im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400))
-        wandb.log({"Validation Examples": im})
+    #
+    # if args.wandb:
+    #     im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400))
+    #     wandb.log({"Validation Examples": im})
 
     # fig, ax = plt.subplots()
     # ax.imshow(im, cmap='RdYlBu_r', vmin=0)
@@ -171,7 +171,7 @@ def main():
         disc_preds_train = []
 
         lr = np.maximum(LEARNING_RATE * np.power(0.5, (int(epoch / 16))), 1e-6) # learning rate decay
-        optimizer = optim.Adam(parameters, lr=lr, weight_decay=0.0005)
+        # optimizer = optim.Adam(parameters, lr=lr, weight_decay=0.0005)
         disc_optimizer = optim.Adam(disc.parameters(), lr=lr, weight_decay=0.0005)
 
         print("="*10 + "Epoch " + str(epoch) + "="*10)
@@ -196,9 +196,9 @@ def main():
 
                     with torch.no_grad():
                         # left interactions
-                        # y_hat, hidden = model(test_data, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
-                        # y_hat = y_hat.squeeze()
-                        # y_hat, disregard = extract_diagonals(y_hat)
+                        y_hat, hidden = model(test_data, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
+                        y_hat = y_hat.squeeze()
+                        y_hat, disregard = extract_diagonals(y_hat)
 
                         y_hat_new = new_model(test_data, co_signal)
                         # y_hat_new = y_hat_new.squeeze()
@@ -215,12 +215,13 @@ def main():
 
                         # y_hat_list.append(y_hat) #.detach().cpu()
                         y_hat_list.append(y_hat_new)
+                        # y_hat_list.append(y_hat)
 
                         # ONLY LOOKING AT THE LEFT (UP) VECTOR FOR NOW!
 
                         test_label, disregard = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
                         # loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
-                        loss = new_model.loss(y_hat_new, test_label, seq_length=TEST_SEQ_LENGTH)
+                        loss = new_model.loss(y_hat_new, test_label)
                         test_loss.append(loss)
                 else:
                     break
