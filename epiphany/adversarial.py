@@ -256,7 +256,7 @@ def main():
                 continue
 
             hidden = None
-            label = torch.Tensor(np.squeeze(label, requires_grad=True)).cuda()
+            label = torch.Tensor(np.squeeze(label), requires_grad=True).cuda()
             data = data[0].cuda()
             optimizer.zero_grad()
 
