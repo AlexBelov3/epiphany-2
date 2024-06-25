@@ -153,7 +153,7 @@ class Net(nn.Module):
         x = self.pool(x)
         x = self.do4(x)
 
-        # x = x.view(1, seq_length, x.shape[1] * x.shape[2])
+        x = x.view(1, seq_length, x.shape[1] * x.shape[2])
         # res1, hidden_state = self.rnn1(x, None)
         # res2, hidden_state = self.rnn2(res1, None)
         # res2 = res2 + res1
