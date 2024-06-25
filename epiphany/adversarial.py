@@ -133,10 +133,10 @@ def main():
     hidden = None
     log_interval = 50
     # parameters = list(model.parameters())
-    for param in list(new_model.parameters()):
-        param.requires_grad = True
-    # for name, param in new_model.named_parameters():
-    #     print(f"Parameter: {name}, Requires Grad: {param.requires_grad}")
+    # for param in list(new_model.parameters()):
+    #     param.requires_grad = True
+    for name, param in new_model.named_parameters():
+        print(f"Parameter: {name}, Requires Grad: {param.requires_grad}")
     parameters = list(new_model.parameters())
     # parameters = new_model.parameters()
 
@@ -257,12 +257,12 @@ def main():
                 continue
 
             hidden = None
-            label = torch.Tensor(np.squeeze(label)).cuda()
+            label = torch.Tensor(np.squeeze(label, requires_grad=True)).cuda()
             data = data[0].cuda()
             optimizer.zero_grad()
 
             # output, hidden = model(data,seq_length=TRAIN_SEQ_LENGTH)
-            output = new_model(data, torch.Tensor(co_signal).cuda())
+            output = new_model(data, torch.Tensor(co_signal, requires_grad=True).cuda())
             output = torch.squeeze(output)
 
             # 1 -> real, 0 -> fake
