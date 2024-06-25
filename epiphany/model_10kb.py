@@ -322,7 +322,7 @@ class trunk(nn.Module):
         self.Net = Net
 
         self.out = nn.Sequential(
-            nn.Linear(in_features=(116), out_features=512), #replace 116 with 512 * 2
+            nn.Linear(in_features=(916), out_features=512), #replace 116 with 512 * 2
             nn.Linear(in_features=(512), out_features=100),
         )
 
@@ -331,7 +331,7 @@ class trunk(nn.Module):
         x2 = self.branch_pbulk(x2)
         # with torch.no_grad():
         #     x2 = self.branch_pbulk(x2)
-        x = self.out(torch.cat((x, torch.t(x2)), 1))
+        x = self.out(torch.cat((x, x2), 1)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
 
         return x
 
