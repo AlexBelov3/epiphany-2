@@ -331,7 +331,7 @@ class trunk(nn.Module):
         x2 = self.branch_pbulk(x2)
         # with torch.no_grad():
         #     x2 = self.branch_pbulk(x2)
-        x = self.out(torch.cat((x, x2), 1)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
+        x = self.out(torch.cat((x, torch.t(x2)), 1)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
 
         return x
 
