@@ -300,9 +300,9 @@ def main():
             # loss = float(0.5)*mse_loss_up + float(0.5)*mse_loss_down
             initial_params = {name: param.clone() for name, param in new_model.named_parameters()}
             loss.backward()
-            for name, param in new_model.named_parameters():
-                if param.grad is None:
-                    print(f"No gradients for {name}")
+            # for name, param in new_model.named_parameters():
+            #     if param.grad is None:
+            #         print(f"No gradients for {name}")
 
             optimizer.step()
 
