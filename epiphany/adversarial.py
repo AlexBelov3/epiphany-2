@@ -138,7 +138,6 @@ def main():
     for name, param in new_model.named_parameters():
         print(f"Parameter: {name}, Requires Grad: {param.requires_grad}")
     parameters = list(new_model.parameters())
-    # parameters = new_model.parameters()
 
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
