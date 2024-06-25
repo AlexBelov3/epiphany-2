@@ -135,8 +135,8 @@ def main():
     # parameters = list(model.parameters())
     # for param in list(new_model.parameters()):
     #     param.requires_grad = True
-    for name, param in new_model.named_parameters():
-        print(f"Parameter: {name}, Requires Grad: {param.requires_grad}")
+    # for name, param in new_model.named_parameters():
+    #     print(f"Parameter: {name}, Requires Grad: {param.requires_grad}")
     parameters = list(new_model.parameters())
 
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
