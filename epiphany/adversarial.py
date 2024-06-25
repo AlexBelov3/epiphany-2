@@ -256,12 +256,12 @@ def main():
                 continue
 
             hidden = None
-            label = torch.Tensor(np.squeeze(label), requires_grad=True).cuda()
+            label = torch.tensor(np.squeeze(label), requires_grad=True).cuda()
             data = data[0].cuda()
             optimizer.zero_grad()
 
             # output, hidden = model(data,seq_length=TRAIN_SEQ_LENGTH)
-            output = new_model(data, torch.Tensor(co_signal, requires_grad=True).cuda())
+            output = new_model(data, torch.tensor(co_signal, requires_grad=True).cuda())
             output = torch.squeeze(output)
 
             # 1 -> real, 0 -> fake
