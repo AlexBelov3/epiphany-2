@@ -47,16 +47,16 @@ class Net(nn.Module):
         self.pool = nn.AdaptiveMaxPool1d(900//20)
         self.do4 = nn.Dropout(p = .1)
   
-        self.rnn1 = nn.LSTM(input_size=900, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
-        self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
-        self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
-        self.fc = nn.Linear(2400, 900)
-        self.act = nn.ReLU()
-        self.fc2 = nn.Linear(900, 100)
-        self.act2 = nn.ReLU()
-        #ADDED:
-        # self.fc3 = nn.Linear(100, 1)
-        # self.act3 = nn.ReLU()
+        # self.rnn1 = nn.LSTM(input_size=900, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        # self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        # self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        # self.fc = nn.Linear(2400, 900)
+        # self.act = nn.ReLU()
+        # self.fc2 = nn.Linear(900, 100)
+        # self.act2 = nn.ReLU()
+        # #ADDED:
+        # # self.fc3 = nn.Linear(100, 1)
+        # # self.act3 = nn.ReLU()
 
     def forward(self, x, hidden_state=None, seq_length=200):
 
