@@ -357,17 +357,17 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
         diag_values_up = y_up_list[i].cpu()
         diag_values_down = y_down_list[i].cpu()
 
-        # for j in range(min(100, seq_length - i)):
-        #     im1[i - j, i] = diag_values_down[j]
-
         for j in range(min(100, seq_length - i)):
-            # print(f"j: {j}")
-            if im1[i, i+j] != 0:
-                # print(f"diag_values_up[j]: {diag_values_up[j]}")
-                # print(f"im1[i, i+j]: {im1[i, i+j]}")
-                im1[i, i+j] = np.mean([diag_values_up[j], im1[i, i+j]])
-            else:
-                im1[i, i + j] = diag_values_up[j]
+            im1[i - j, i] = diag_values_down[j]
+
+        # for j in range(min(100, seq_length - i)):
+        #     # print(f"j: {j}")
+        #     if im1[i, i+j] != 0:
+        #         # print(f"diag_values_up[j]: {diag_values_up[j]}")
+        #         # print(f"im1[i, i+j]: {im1[i, i+j]}")
+        #         im1[i, i+j] = np.mean([diag_values_up[j], im1[i, i+j]])
+        #     else:
+        #         im1[i, i + j] = diag_values_up[j]
 
     bands = len(label)
     label = np.flip(label, axis=0)
