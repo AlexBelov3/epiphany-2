@@ -798,7 +798,7 @@ class branch_cov(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            nn.BatchNorm1d(34000),
+            # nn.BatchNorm1d(34000),
             nn.ReLU(),
         )
 
@@ -808,7 +808,7 @@ class branch_cov(nn.Module):
 
     def forward(self, x):
         x = self.cov_extractor(x)
-        x = torch.flatten(x, 1)
+        # x = torch.flatten(x, 1)
         x_out = self.classifier(x)
 
         return x_out
