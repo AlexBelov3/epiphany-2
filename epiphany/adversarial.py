@@ -97,9 +97,9 @@ def main():
     new_model = trunk(branch_outerprod(), Net()).cuda()
 
     # Define Model
-    mod_branch_pbulk = nn.DataParallel(branch_outerprod(), device_ids=[0])
-    PATH_branch_pbulk = args.bulk_checkpoint
-    mod_branch_pbulk.load_state_dict(torch.load(PATH_branch_pbulk), strict=True)
+    # mod_branch_pbulk = nn.DataParallel(branch_outerprod(), device_ids=[0])
+    # PATH_branch_pbulk = args.bulk_checkpoint
+    # mod_branch_pbulk.load_state_dict(torch.load(PATH_branch_pbulk), strict=True)
 
     mod_branch_cov = nn.DataParallel(branch_cov(), device_ids=[0])
     # model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0])
