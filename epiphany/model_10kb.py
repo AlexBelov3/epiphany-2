@@ -387,17 +387,8 @@ class trunk(nn.Module):
         return total_loss
 
 
-
-
-
-
-
-
-
 # ------------------------------------------------------------------------------------------------------------------
 #CHROMAFOLD:
-
-
 class resblock(nn.Module):
     def __init__(self, ni):
         super(resblock, self).__init__()
@@ -646,7 +637,7 @@ class branch_cov(nn.Module):
 
         self.cov_extractor = nn.Sequential(
             nn.Conv1d(
-                in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
+                in_channels=self.input_channels, out_channels=16, kernel_size=5, stride=1, padding=2
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),

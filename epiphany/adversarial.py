@@ -208,7 +208,7 @@ def main():
                         y_hat_new = new_model(test_data, co_signal)
                         y_hat_L, y_hat_R = extract_diagonals(y_hat_new)
                         #Testing inputting data into new thingy thing
-                        mod_branch_cov(test_data)
+                        mod_branch_cov(test_data.squeeze())
 
                         y_hat_L_list.append(y_hat_L)
                         y_hat_R_list.append(y_hat_R)
