@@ -101,18 +101,20 @@ def main():
     # PATH_branch_pbulk = args.bulk_checkpoint
     # mod_branch_pbulk.load_state_dict(torch.load(PATH_branch_pbulk), strict=True)
 
-    mod_branch_cov = nn.DataParallel(branch_cov(), device_ids=[0])
+    # mod_branch_cov = nn.DataParallel(branch_cov(), device_ids=[0])
     # model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0])
 
     disc = Disc()#.cuda()
     if args.wandb:
         # wandb.watch(model, log='all')
         wandb.watch(new_model, log='all')
+        # wandb.watch(mod_branch_cov, log='all')
 
 
     if os.path.exists(LOG_PATH):
         # restore_latest(model, LOG_PATH, ext='.pt_model')
         restore_latest(new_model, LOG_PATH, ext='.pt_new_model')
+        # restore_latest(mod_branch_cov, LOG_PATH, ext='.pt_new_model')
     else:
         os.makedirs(LOG_PATH)
 
@@ -146,6 +148,7 @@ def main():
     # for name, param in new_model.named_parameters():
     #     print(f"Parameter: {name}, Requires Grad: {param.requires_grad}")
     parameters = list(new_model.parameters())
+    # cov_parameters = list(mod_branch_cov.parameters())
 
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
@@ -192,7 +195,7 @@ def main():
         y_hat_R_list = []
         # model.eval()
         new_model.eval()
-        mod_branch_cov.eval()
+        # mod_branch_cov.eval()
 
         if epoch % 1 == 0:
             i = 0
@@ -208,7 +211,7 @@ def main():
                         y_hat_new = new_model(test_data, co_signal)
                         y_hat_L, y_hat_R = extract_diagonals(y_hat_new)
                         #Testing inputting data into new thingy thing
-                        mod_branch_cov(test_data)
+                        # mod_branch_cov(test_data)
 
                         y_hat_L_list.append(y_hat_L)
                         y_hat_R_list.append(y_hat_R)
