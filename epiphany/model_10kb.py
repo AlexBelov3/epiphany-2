@@ -206,7 +206,7 @@ class old_Net(nn.Module):
 
 
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, num_layers=1, input_channels=5, window_size=14000):
         super(Net, self).__init__()
 
         self.cov_extractor = nn.Sequential(
