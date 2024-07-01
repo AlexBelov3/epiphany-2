@@ -180,7 +180,8 @@ def main():
         test_loss = []
         preds = []
         labs = []
-        y_hat_list = []
+        y_hat_L_list = []
+        y_hat_R_list = []
         # model.eval()
         new_model.eval()
 
@@ -195,46 +196,25 @@ def main():
                     # test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
 
                     with torch.no_grad():
-                        # left interactions
-                        # y_hat, hidden = model(test_data, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
-                        # y_hat = y_hat.squeeze()
-                        # y_hat, disregard = extract_diagonals(y_hat)
-
                         y_hat_new = new_model(test_data, co_signal)
-                        # y_hat_new = y_hat_new.squeeze()
-                        y_hat_new_L, y_hat_new_R = extract_diagonals(y_hat_new)
-                        y_hat_new = torch.concat((y_hat_new_L,  y_hat_new_R), dim=0)
+                        y_hat_L, y_hat_R = extract_diagonals(y_hat_new)
 
-                        # right interactions
-                        # y_hat_rev, hidden = model(test_data_rev, hidden_state=None, seq_length=TEST_SEQ_LENGTH)
-                        # y_hat_rev = y_hat_rev.squeeze()
-                        # y_hat_rev, disregard = extract_diagonals(y_hat_rev)
-                        # y_hat = torch.cat(
-                        #     (torch.Tensor(y_hat), torch.flip(torch.Tensor(y_hat_rev), [0])))  # dims was set to 1...
-
-
-
-                        # y_hat_list.append(y_hat) #.detach().cpu()
-                        y_hat_list.append(y_hat_new)
+                        y_hat_L_list.append(y_hat_L)
+                        y_hat_R_list.append(y_hat_R)
                         # y_hat_list.append(y_hat)
 
-                        # ONLY LOOKING AT THE LEFT (UP) VECTOR FOR NOW!
-
                         test_label_L, test_label_R = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
-                        test_label = torch.concat((test_label_L, test_label_L), dim=0)
+                        test_label = torch.concat((test_label_L, test_label_R), dim=0)
                         # loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
-                        loss = new_model.loss(y_hat_new, test_label)
+                        loss = new_model.loss(torch.concat((y_hat_L,  y_hat_R), dim=0), test_label)
                         test_loss.append(loss)
                 else:
                     break
                 i += 1 # test
 
-            # y_hat_list = [x.detach().cpu() for x in y_hat_list]
-            # y_hat_list = np.concatenate([x for x in y_hat_list], axis=0)
-            # y_hat_list = np.array(["test", "text"])
             if args.wandb:
                 im.append(
-                    wandb.Image(generate_image_test(labels, y_hat_list, y_down_list, path=LOG_PATH,
+                    wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
                                                     seq_length=400)))  # TEST_SEQ_LENGTH
         test_loss_cpu = torch.stack(test_loss).cpu().numpy()
         if args.wandb:
@@ -266,38 +246,14 @@ def main():
             # output, hidden = model(data,seq_length=TRAIN_SEQ_LENGTH)
             output = new_model(data, torch.tensor(co_signal, requires_grad=True).cuda())
             output = torch.squeeze(output)
+            output_L, output_R = extract_diagonals(output.squeeze())  # ONLY LOOKING AT THE LEFT VECTOR
+            output = torch.concat((output_L, output_R), dim=0)
 
-            # 1 -> real, 0 -> fake
-
-            label_1d = label[0, :]  # First row of label
             label_1d_v_up, label_1d_v_down = extract_diagonals(label)
-            output_1d = output[0, :]  # First row of output
-            output_1d_v_up, output_1d_v_down = extract_diagonals(output)
+            label = torch.concat((label_1d_v_up, label_1d_v_down), dim=0)
 
-            # Train generator
-            # mse_loss = model.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
-            # mse_loss = model.loss(output_1d, label_1d, seq_length=TRAIN_SEQ_LENGTH)
-            # Ensure they are tensors
-            # if not isinstance(label_1d_v_up, torch.Tensor):
-            #     label_1d_v_up = torch.tensor(label_1d_v_up, requires_grad=True)
-            # if not isinstance(output_1d_v_up, torch.Tensor):
-            #     output_1d_v_up = torch.tensor(output_1d_v_up, requires_grad=True)
-            # if not isinstance(label_1d_v_down, torch.Tensor):
-            #     label_1d_v_down = torch.tensor(label_1d_v_down, requires_grad=True)
-            # if not isinstance(output_1d_v_down, torch.Tensor):
-            #     output_1d_v_down = torch.tensor(output_1d_v_down, requires_grad=True)
-
-
-            # mse_loss_up = model.loss(output_1d_v_up, label_1d_v_up, seq_length=TRAIN_SEQ_LENGTH)
-            # mse_loss_up = model.loss(output_1d, label_1d, seq_length=TRAIN_SEQ_LENGTH)
-            mse_loss_up = new_model.loss(output_1d_v_up, label_1d_v_up, seq_length=TRAIN_SEQ_LENGTH)
+            mse_loss_up = new_model.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
             mse_loss = mse_loss_up
-            # mse_loss_down = model.loss(output_1d_v_down, label_1d_v_down, seq_length=TRAIN_SEQ_LENGTH)
-            # disc_out = disc(output.view(1,1,output.shape[0], output.shape[1]))
-            #adv_loss = F.binary_cross_entropy_with_logits(disc_out.view(1), torch.Tensor([1]).cuda()) # how close is disc pred to 1
-            # adv_loss = F.binary_cross_entropy_with_logits(disc_out.view(1), torch.Tensor([1]))
-
-
 
             loss = (LAMBDA)*mse_loss_up #+ (1 - LAMBDA)*adv_loss
             # loss = float(0.5)*mse_loss_up + float(0.5)*mse_loss_down
