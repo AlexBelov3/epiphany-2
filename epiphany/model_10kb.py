@@ -463,7 +463,8 @@ class trunk(nn.Module):
         )
 
     def forward(self, x, x2):
-        x = self.Net(x)[0].squeeze()
+        # x = self.Net(x)[0].squeeze()
+        x = self.Net(x)[0]
         x2 = self.branch_pbulk(x2)
         # with torch.no_grad():
         #     x2 = self.branch_pbulk(x2)
