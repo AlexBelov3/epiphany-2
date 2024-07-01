@@ -357,7 +357,7 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
         diag_values_up = y_up_list[i].cpu()
         diag_values_down = y_down_list[i].cpu()
         for j in range(min(100, seq_length - i)):
-            im1[i, i+ j] = diag_values_down[j]
+            im1[i+ j, i] = diag_values_down[j]
 
         # for j in range(min(100, seq_length - i)):
         #     # print(f"j: {j}")
