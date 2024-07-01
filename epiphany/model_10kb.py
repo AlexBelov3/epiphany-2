@@ -136,7 +136,7 @@ class Net(nn.Module):
         self.conv4 = ConvBlock(in_channels=70, out_channels=50, kernel_width=5, stride=1)
         self.do4 = nn.Dropout(p=.1)
         self.conv5 = ConvBlock(in_channels=50, out_channels=20, kernel_width=5, stride=1)
-        # self.pool = nn.AdaptiveMaxPool1d(900 // 20)
+        self.pool = nn.AdaptiveMaxPool1d(900 // 20)
         self.do5 = nn.Dropout(p=.1)
 
         # self.rnn1 = nn.LSTM(input_size=900, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
@@ -162,8 +162,10 @@ class Net(nn.Module):
         x = self.conv3(x)
         x = self.do3(x)
         x = self.conv4(x)
-        x = self.pool(x)
         x = self.do4(x)
+        x = self.conv5(x)
+        x = self.pool(x)
+        x = self.do5(x)
 
         x = x.view(1, seq_length, x.shape[1] * x.shape[2])
         # res1, hidden_state = self.rnn1(x, None)
