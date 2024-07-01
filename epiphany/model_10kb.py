@@ -646,7 +646,7 @@ class branch_cov(nn.Module):
 
         self.cov_extractor = nn.Sequential(
             nn.Conv1d(
-                in_channels=20, out_channels=16, kernel_size=5, stride=1, padding=2
+                in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
