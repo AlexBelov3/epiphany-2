@@ -698,7 +698,7 @@ class branch_cov(nn.Module):
         )
 
         self.classifier = nn.Sequential(
-            nn.Linear(in_features=(992), out_features=512),
+            nn.Linear(in_features=(265), out_features=512), #992
         )
 
     def forward(self, x):
