@@ -710,7 +710,7 @@ class branch_cov(nn.Module):
             nn.Linear(in_features=(992), out_features=512),
         )
 
-    def forward(self, x, x_pb):
+    def forward(self, x):
         x = self.cov_extractor(x)
         x = torch.flatten(x, 1)
         x_out = self.classifier(x)
