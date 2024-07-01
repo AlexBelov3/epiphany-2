@@ -94,7 +94,15 @@ def main():
     # mod_branch_cov = nn.DataParallel(Net(), device_ids=[0])
     # new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0]).cuda()
 
-    new_model = trunk(branch_pbulk(), Net()).cuda()
+    new_model = trunk(branch_outerprod(), Net()).cuda()
+
+    # Define Model
+    mod_branch_pbulk = nn.DataParallel(branch_outerprod(), device_ids=[0])
+    PATH_branch_pbulk = args.bulk_checkpoint
+    mod_branch_pbulk.load_state_dict(torch.load(PATH_branch_pbulk), strict=True)
+
+    mod_branch_cov = nn.DataParallel(branch_cov(), device_ids=[0])
+    # model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0])
 
     disc = Disc()#.cuda()
     if args.wandb:
@@ -184,6 +192,7 @@ def main():
         y_hat_R_list = []
         # model.eval()
         new_model.eval()
+        mod_branch_cov.eval()
 
         if epoch % 1 == 0:
             i = 0
@@ -198,6 +207,8 @@ def main():
                     with torch.no_grad():
                         y_hat_new = new_model(test_data, co_signal)
                         y_hat_L, y_hat_R = extract_diagonals(y_hat_new)
+                        #Testing inputting data into new thingy thing
+                        mod_branch_cov(test_data)
 
                         y_hat_L_list.append(y_hat_L)
                         y_hat_R_list.append(y_hat_R)
