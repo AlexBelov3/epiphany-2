@@ -299,7 +299,7 @@ class branch_pbulk(nn.Module):
         #     nn.ReLU(),
         # )
 
-        l_extractor_2d = nn.Sequential(
+        self.total_extractor_2d = nn.Sequential(
             nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, stride=2),
             # nn.BatchNorm2d(64),
             nn.ReLU(),
