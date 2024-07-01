@@ -136,7 +136,7 @@ class Net(nn.Module):
         self.conv4 = ConvBlock(in_channels=70, out_channels=50, kernel_width=5, stride=1)
         self.do4 = nn.Dropout(p=.1)
         self.conv5 = ConvBlock(in_channels=50, out_channels=20, kernel_width=5, stride=1)
-        self.pool = nn.AdaptiveMaxPool1d(900 // 20)
+        self.pool = nn.AdaptiveMaxPool1d(200 // 20) #900 // 20
         self.do5 = nn.Dropout(p=.1)
 
         # self.rnn1 = nn.LSTM(input_size=900, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
@@ -311,6 +311,10 @@ class branch_pbulk(nn.Module):
             nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=2),
             # nn.BatchNorm2d(16),
             nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=2),
+            # nn.BatchNorm2d(16),
+            nn.ReLU(),
         )
 
         # Calculate the final output size after all convolutions and pooling
@@ -351,8 +355,8 @@ class trunk(nn.Module):
 
         self.out = nn.Sequential(
             # nn.Linear(in_features=(916), out_features=512), #replace 116 with 512 * 2
-            nn.Linear(in_features=(964), out_features=512),
-            nn.Linear(in_features=(512), out_features=100),
+            nn.Linear(in_features=(264), out_features=100),
+            # nn.Linear(in_features=(512), out_features=100),
         )
 
     def forward(self, x, x2):
