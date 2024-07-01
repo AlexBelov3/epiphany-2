@@ -117,15 +117,27 @@ class Net(nn.Module):
         self.input_channels = input_channels
         self.window_size = window_size
 
+        # self.conv1 = ConvBlock(in_channels=self.input_channels, out_channels=70, kernel_width=17, stride=1, pool_size=4)
+        # self.do1 = nn.Dropout(p=.1)
+        # self.conv2 = ConvBlock(in_channels=70, out_channels=90, kernel_width=7, stride=1, pool_size=4)
+        # self.do2 = nn.Dropout(p=.1)
+        # self.conv3 = ConvBlock(in_channels=90, out_channels=70, kernel_width=5, stride=1, pool_size=4)
+        # self.do3 = nn.Dropout(p=.1)
+        # self.conv4 = ConvBlock(in_channels=70, out_channels=20, kernel_width=5, stride=1)
+        # self.pool = nn.AdaptiveMaxPool1d(900 // 20)
+        # self.do4 = nn.Dropout(p=.1)
+
         self.conv1 = ConvBlock(in_channels=self.input_channels, out_channels=70, kernel_width=17, stride=1, pool_size=4)
         self.do1 = nn.Dropout(p=.1)
         self.conv2 = ConvBlock(in_channels=70, out_channels=90, kernel_width=7, stride=1, pool_size=4)
         self.do2 = nn.Dropout(p=.1)
         self.conv3 = ConvBlock(in_channels=90, out_channels=70, kernel_width=5, stride=1, pool_size=4)
         self.do3 = nn.Dropout(p=.1)
-        self.conv4 = ConvBlock(in_channels=70, out_channels=20, kernel_width=5, stride=1)
-        self.pool = nn.AdaptiveMaxPool1d(900 // 20)
+        self.conv4 = ConvBlock(in_channels=70, out_channels=50, kernel_width=5, stride=1)
         self.do4 = nn.Dropout(p=.1)
+        self.conv5 = ConvBlock(in_channels=50, out_channels=20, kernel_width=5, stride=1)
+        # self.pool = nn.AdaptiveMaxPool1d(900 // 20)
+        self.do5 = nn.Dropout(p=.1)
 
         # self.rnn1 = nn.LSTM(input_size=900, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
         # self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
@@ -271,16 +283,30 @@ class branch_pbulk(nn.Module):
     def __init__(self):
         super(branch_pbulk, self).__init__()
 
-        self.total_extractor_2d = nn.Sequential(
+        # self.total_extractor_2d = nn.Sequential(
+        #     nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, stride=2),
+        #     # nn.BatchNorm2d(64),
+        #     nn.ReLU(),
+        #     nn.MaxPool2d(kernel_size=2),
+        #     nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=2),
+        #     # nn.BatchNorm2d(32),
+        #     nn.ReLU(),
+        #     nn.MaxPool2d(kernel_size=2),
+        #     nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
+        #     # nn.BatchNorm2d(16),
+        #     nn.ReLU(),
+        # )
+
+        l_extractor_2d = nn.Sequential(
             nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, stride=2),
             # nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=2),
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=2),
             # nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
+            nn.Conv2d(in_channels=64, out_channels=64, kernel_size=3, stride=2),
             # nn.BatchNorm2d(16),
             nn.ReLU(),
         )
@@ -322,7 +348,8 @@ class trunk(nn.Module):
         self.Net = Net
 
         self.out = nn.Sequential(
-            nn.Linear(in_features=(916), out_features=512), #replace 116 with 512 * 2
+            # nn.Linear(in_features=(916), out_features=512), #replace 116 with 512 * 2
+            nn.Linear(in_features=(964), out_features=512),
             nn.Linear(in_features=(512), out_features=100),
         )
 
