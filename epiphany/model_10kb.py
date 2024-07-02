@@ -861,11 +861,13 @@ class branch_cov(nn.Module):
         super(branch_cov, self).__init__()
 
         self.cov_extractor = nn.Sequential(
-            nn.Conv1d(
-                in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
-            ),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
+            # nn.Conv1d(
+            #     in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
+            # ),
+            # nn.BatchNorm1d(16),
+            # nn.ReLU(),
+            PrintLayer(),
+            FirstConvLayer(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
                 in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
@@ -912,7 +914,7 @@ class branch_cov(nn.Module):
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
                 in_channels=16,
-                out_channels=1,  # 16
+                out_channels=1, #16
                 kernel_size=3,
                 stride=1,
                 dilation=1,
@@ -922,27 +924,22 @@ class branch_cov(nn.Module):
             nn.ReLU(),
         )
 
+
         self.classifier = nn.Sequential(
             # nn.Linear(in_features=(265), out_features=512), #992
             nn.Linear(in_features=(312), out_features=200),
         )
 
-    def forward(self, x):
-        print(f"Input shape: {x.shape}")
-        x = self.cov_extractor[0](x)
-        print(f"After first Conv1d shape: {x.shape}")
-        x = self.cov_extractor[1](x)
-        print(f"After first BatchNorm1d shape: {x.shape}")
-        x = self.cov_extractor[2](x)
-        print(f"After first ReLU shape: {x.shape}")
-        x = self.cov_extractor[3](x)
-        print(f"After first MaxPool1d shape: {x.shape}")
-        # Continue with the rest of the cov_extractor layers
-        for layer in self.cov_extractor[4:]:
-            x = layer(x)
 
+    def forward(self, x):
+        # try:
+        #     x = self.cov_extractor(x)
+        # except:
+        #     x = self.cov_extractor_backup(x)
         x = torch.flatten(x, 1)
+        x = self.cov_extractor(x)
         x_out = self.classifier(x)
+
         return x_out
 
     def loss(self, prediction, label, seq_length = 200, reduction='mean', lam=1):
