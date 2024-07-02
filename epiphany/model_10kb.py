@@ -865,9 +865,9 @@ class branch_cov(nn.Module):
             nn.BatchNorm1d(10000),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            # resblock(34000),
+            resblock(10000),
             nn.MaxPool1d(kernel_size=2),
-            # resblock(34000),
+            resblock(10000),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
                 in_channels=16,
@@ -877,7 +877,7 @@ class branch_cov(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            # nn.BatchNorm1d(34000),
+            nn.BatchNorm1d(10000),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
@@ -888,7 +888,7 @@ class branch_cov(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            # nn.BatchNorm1d(34000),
+            nn.BatchNorm1d(10000),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
@@ -899,7 +899,7 @@ class branch_cov(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            # nn.BatchNorm1d(34000),
+            nn.BatchNorm1d(10000),
             nn.ReLU(),
         )
 
@@ -939,7 +939,7 @@ class branch_cov(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            nn.BatchNorm1d(16),
+            # nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
@@ -950,7 +950,7 @@ class branch_cov(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            nn.BatchNorm1d(16),
+            # nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
@@ -961,7 +961,7 @@ class branch_cov(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            nn.BatchNorm1d(16),
+            # nn.BatchNorm1d(16),
             nn.ReLU(),
         )
 
