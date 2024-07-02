@@ -262,8 +262,7 @@ def main():
                 continue
 
             hidden = None
-            # label = torch.tensor(np.squeeze(label), requires_grad=True).cuda()
-            #Removed above line
+            label = torch.tensor(np.squeeze(label), requires_grad=True).cuda()
             data = data[0].cuda()
             optimizer.zero_grad()
 
