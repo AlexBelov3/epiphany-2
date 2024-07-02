@@ -284,9 +284,9 @@ def main():
             # initial_params = {name: param.clone() for name, param in new_model.named_parameters()}
             initial_params = {name: param.clone() for name, param in mod_branch_cov.named_parameters()}
             loss.backward()
-            for name, param in mod_branch_cov.named_parameters():
-                if param.grad is None:
-                    print(f"No gradients for {name}")
+            # for name, param in mod_branch_cov.named_parameters():
+            #     if param.grad is None:
+            #         print(f"No gradients for {name}")
 
             optimizer.step()
 
