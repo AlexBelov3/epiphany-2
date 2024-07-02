@@ -91,7 +91,8 @@ def main():
     # TESTING:
     # Define Model
     # mod_branch_pbulk = nn.DataParallel(branch_pbulk(), device_ids=[0])
-    mod_branch_cov = nn.DataParallel(Net(), device_ids=[0])
+    # mod_branch_cov = nn.DataParallel(branch_cov(), device_ids=[0])
+    mod_branch_cov = branch_cov().cuda()
     # new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0]).cuda()
 
     # new_model = trunk(branch_outerprod(), Net()).cuda()
