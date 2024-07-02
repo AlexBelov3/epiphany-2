@@ -836,17 +836,38 @@ class branch_pbulk(nn.Module):
 #         # Combine losses with lambda
 #         total_loss = lam * l2_loss + (1 - lam) * l1_loss
 #         return total_loss
+class PrintLayer(nn.Module):
+    def forward(self, x):
+        print(f"Input shape to the first Conv layer: {x.shape}")
+        return x
+
+class FirstConvLayer(nn.Module):
+    def __init__(self):
+        super(FirstConvLayer, self).__init__()
+        self.conv = nn.Conv1d(in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2)
+        self.bn = nn.BatchNorm1d(16)
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        x = self.conv(x)
+        print(f"Output shape of the first Conv layer: {x.shape}")
+        x = self.bn(x)
+        x = self.relu(x)
+        return x
+
 
 class branch_cov(nn.Module):
     def __init__(self):
         super(branch_cov, self).__init__()
 
         self.cov_extractor = nn.Sequential(
-            nn.Conv1d(
-                in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
-            ),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
+            # nn.Conv1d(
+            #     in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
+            # ),
+            # nn.BatchNorm1d(16),
+            # nn.ReLU(),
+            PrintLayer(),
+            FirstConvLayer(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
                 in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
@@ -877,7 +898,7 @@ class branch_cov(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            nn.BatchNorm1d(16),
+            # nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
@@ -888,7 +909,7 @@ class branch_cov(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            nn.BatchNorm1d(16),
+            # nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
