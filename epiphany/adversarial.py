@@ -213,7 +213,7 @@ def main():
                         # y_hat_L, y_hat_R = extract_diagonals(y_hat_new)
                         #Testing inputting data into new thingy thing
                         y_hat = mod_branch_cov(test_data)
-                        print(f"y_hat shape: {y_hat.shape}")
+                        # print(f"y_hat shape: {y_hat.shape}")
 
                         # y_hat_L_list.append(y_hat_L)
                         # y_hat_R_list.append(y_hat_R)
@@ -223,7 +223,7 @@ def main():
 
                         test_label_L, test_label_R = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
                         test_label = torch.concat((test_label_L, test_label_R), dim=0)
-                        print(f"test_label shape: {test_label.shape}")
+                        # print(f"test_label shape: {test_label.shape}")
                         # loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
                         # loss = new_model.loss(torch.concat((y_hat_L,  y_hat_R), dim=0), test_label)
                         loss = mod_branch_cov.loss(y_hat, test_label)
