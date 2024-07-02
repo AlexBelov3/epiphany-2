@@ -936,8 +936,10 @@ class branch_cov(nn.Module):
         #     x = self.cov_extractor(x)
         # except:
         #     x = self.cov_extractor_backup(x)
-        x = torch.flatten(x, 1)
+        if x.ndimension() == 2:
+            x = x.unsqueeze(0)
         x = self.cov_extractor(x)
+        x = torch.flatten(x, 1)
         x_out = self.classifier(x)
 
         return x_out
