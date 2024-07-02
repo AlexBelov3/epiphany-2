@@ -972,7 +972,7 @@ class branch_cov(nn.Module):
 
 
     def forward(self, x):
-        try:
+        # try:
         #     x = self.cov_extractor(x)
         # except:
         #     x = self.cov_extractor_backup(x)
