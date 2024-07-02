@@ -263,7 +263,8 @@ def main():
 
             hidden = None
             label = torch.tensor(np.squeeze(label), requires_grad=True).cuda()
-            data = data[0].cuda()
+            # data = data[0].cuda()
+            data = data.cuda()
             optimizer.zero_grad()
 
             # output, hidden = model(data,seq_length=TRAIN_SEQ_LENGTH)
