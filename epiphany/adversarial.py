@@ -217,8 +217,8 @@ def main():
 
                         # y_hat_L_list.append(y_hat_L)
                         # y_hat_R_list.append(y_hat_R)
-                        y_hat_L_list.append(np.array(y_hat)[:100])
-                        y_hat_R_list.append(np.array(y_hat)[100:])
+                        y_hat_L_list.append(np.array(y_hat.cpu())[:100])
+                        y_hat_R_list.append(np.array(y_hat.cpu())[100:])
                         # y_hat_list.append(y_hat)
 
                         test_label_L, test_label_R = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
