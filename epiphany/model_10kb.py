@@ -755,7 +755,7 @@ class branch_cov(nn.Module):
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
                 in_channels=16,
-                out_channels=16,
+                out_channels=8, #16
                 kernel_size=3,
                 stride=1,
                 dilation=1,
@@ -769,8 +769,8 @@ class branch_cov(nn.Module):
             # resblock(34000),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
-                in_channels=16,
-                out_channels=16,
+                in_channels=8, #16
+                out_channels=4, # 16
                 kernel_size=3,
                 stride=1,
                 dilation=1,
@@ -780,8 +780,8 @@ class branch_cov(nn.Module):
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
-                in_channels=16,
-                out_channels=16,
+                in_channels=4, #16
+                out_channels=2, #16
                 kernel_size=3,
                 stride=1,
                 dilation=1,
@@ -791,8 +791,8 @@ class branch_cov(nn.Module):
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
-                in_channels=16,
-                out_channels=16,
+                in_channels=2, #16
+                out_channels=1, #16
                 kernel_size=3,
                 stride=1,
                 dilation=1,
