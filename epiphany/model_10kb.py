@@ -903,6 +903,68 @@ class branch_cov(nn.Module):
             nn.ReLU(),
         )
 
+        self.cov_extractor_backup = nn.Sequential(
+            nn.Conv1d(
+                in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
+            ),
+            nn.BatchNorm1d(39984),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
+            ),
+            nn.BatchNorm1d(20000),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            nn.BatchNorm1d(10000),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            # resblock(34000),
+            nn.MaxPool1d(kernel_size=2),
+            # resblock(34000),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            # nn.BatchNorm1d(34000),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            # nn.BatchNorm1d(34000),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=1,  # 16
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            # nn.BatchNorm1d(34000),
+            nn.ReLU(),
+        )
+
         self.classifier = nn.Sequential(
             # nn.Linear(in_features=(265), out_features=512), #992
             nn.Linear(in_features=(312), out_features=200),
@@ -910,7 +972,11 @@ class branch_cov(nn.Module):
 
 
     def forward(self, x):
-        x = self.cov_extractor(x)
+        try:
+            x = self.cov_extractor(x)
+        except:
+            x = self.cov_extractor_backup(x)
+        # x = self.cov_extractor(x)
         x = torch.flatten(x, 1)
         x_out = self.classifier(x)
 
