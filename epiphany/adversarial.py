@@ -236,7 +236,9 @@ def main():
             print(f"y_hat_R_list len: {len(y_hat_R_list)}")
             print(f"y_hat_R_list type: {type(y_hat_R_list)}")
             print(f"y_hat_L_list first item len: {len(y_hat_L_list[0])}")
+            print(f"y_hat_L_list first item type: {type(y_hat_L_list[0])}")
             print(f"y_hat_R_list first item len: {len(y_hat_R_list[0])}")
+            print(f"y_hat_R_list first item type: {type(y_hat_R_list[0])}")
 
             if args.wandb:
                 im.append(
