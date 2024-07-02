@@ -232,7 +232,9 @@ def main():
                     break
                 i += 1 # test
             print(f"y_hat_L_list len: {len(y_hat_L_list)}")
+            print(f"y_hat_L_list type: {type(y_hat_L_list)}")
             print(f"y_hat_R_list len: {len(y_hat_R_list)}")
+            print(f"y_hat_R_list type: {type(y_hat_R_list)}")
             print(f"y_hat_L_list first item len: {len(y_hat_L_list[0])}")
             print(f"y_hat_R_list first item len: {len(y_hat_R_list[0])}")
 
