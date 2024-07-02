@@ -290,9 +290,9 @@ def main():
 
             optimizer.step()
 
-            for name, param in mod_branch_cov.named_parameters():
-                if torch.equal(param, initial_params[name]):
-                    print(f"Parameter {name} has NOT been updated.")
+            # for name, param in mod_branch_cov.named_parameters():
+            #     if torch.equal(param, initial_params[name]):
+            #         print(f"Parameter {name} has NOT been updated.")
 
             # # Train discriminator
             # disc_optimizer.zero_grad()
