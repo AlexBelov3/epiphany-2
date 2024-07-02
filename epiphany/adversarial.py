@@ -22,7 +22,7 @@ def main():
     parser.add_argument("--gpu", help="CUDA ID", default="0")
     parser.add_argument("--b", help="batch size", default="1")
     parser.add_argument("--e", help="number of epochs", default="55")
-    parser.add_argument("--lr", help="initial learning rate", default="1e-4")
+    parser.add_argument("--lr", help="initial learning rate", default="1e-6") #1e-4
     parser.add_argument("--v", help="experiment version", default="0.1")
     parser.add_argument("--lam", help="tradeoff between l2 and adversarial loss", default="0.95")
     parser.add_argument("--window_size", help="Context (in terms of 100kb) for each orthogonal vector", default="20000") #14000

@@ -845,7 +845,7 @@ class branch_cov(nn.Module):
             nn.Conv1d(
                 in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
             ),
-            # nn.BatchNorm1d(34000),
+            nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
