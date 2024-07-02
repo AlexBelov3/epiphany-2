@@ -271,6 +271,7 @@ def main():
             # output = torch.squeeze(output)
             # output_L, output_R = extract_diagonals(output.squeeze())
             # output = torch.concat((output_L, output_R), dim=0)
+            print(data.shape)
             output = mod_branch_cov(data)
 
             label_1d_v_up, label_1d_v_down = extract_diagonals(label)
