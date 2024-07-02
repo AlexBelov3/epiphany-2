@@ -286,15 +286,15 @@ def main():
             # initial_params = {name: param.clone() for name, param in new_model.named_parameters()}
             initial_params = {name: param.clone() for name, param in mod_branch_cov.named_parameters()}
             loss.backward()
-            # for name, param in mod_branch_cov.named_parameters():
-            #     if param.grad is None:
-            #         print(f"No gradients for {name}")
+            for name, param in mod_branch_cov.named_parameters():
+                if param.grad is None:
+                    print(f"No gradients for {name}")
 
             optimizer.step()
 
-            # for name, param in mod_branch_cov.named_parameters():
-            #     if torch.equal(param, initial_params[name]):
-            #         print(f"Parameter {name} has NOT been updated.")
+            for name, param in mod_branch_cov.named_parameters():
+                if torch.equal(param, initial_params[name]):
+                    print(f"Parameter {name} has NOT been updated.")
 
             # # Train discriminator
             # disc_optimizer.zero_grad()
