@@ -217,7 +217,8 @@ def main():
 
                         # y_hat_L_list.append(y_hat_L)
                         # y_hat_R_list.append(y_hat_R)
-                        print(torch.tensor(np.array(y_hat.cpu())[100:]).flatten(start_dim=1))
+                        R = np.array(y_hat.cpu())[100:]
+                        print(f"R len: {len(R)}")
                         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[:100]).squeeze())
                         y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[100:]).flatten(start_dim=1))
                         # y_hat_list.append(y_hat)
