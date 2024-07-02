@@ -87,14 +87,14 @@ def main():
 
 
     torch.manual_seed(0)
-    model = Net(1, 5, int(args.window_size)).cuda()
+    # model = Net(1, 5, int(args.window_size)).cuda()
     # TESTING:
     # Define Model
     # mod_branch_pbulk = nn.DataParallel(branch_pbulk(), device_ids=[0])
-    # mod_branch_cov = nn.DataParallel(Net(), device_ids=[0])
+    mod_branch_cov = nn.DataParallel(Net(), device_ids=[0])
     # new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0]).cuda()
 
-    new_model = trunk(branch_outerprod(), Net()).cuda()
+    # new_model = trunk(branch_outerprod(), Net()).cuda()
 
     # Define Model
     # mod_branch_pbulk = nn.DataParallel(branch_outerprod(), device_ids=[0])
@@ -107,14 +107,14 @@ def main():
     disc = Disc()#.cuda()
     if args.wandb:
         # wandb.watch(model, log='all')
-        wandb.watch(new_model, log='all')
-        # wandb.watch(mod_branch_cov, log='all')
+        # wandb.watch(new_model, log='all')
+        wandb.watch(mod_branch_cov, log='all')
 
 
     if os.path.exists(LOG_PATH):
         # restore_latest(model, LOG_PATH, ext='.pt_model')
-        restore_latest(new_model, LOG_PATH, ext='.pt_new_model')
-        # restore_latest(mod_branch_cov, LOG_PATH, ext='.pt_new_model')
+        # restore_latest(new_model, LOG_PATH, ext='.pt_new_model')
+        restore_latest(mod_branch_cov, LOG_PATH, ext='.pt_mod_branch_cov')
     else:
         os.makedirs(LOG_PATH)
 
@@ -147,8 +147,8 @@ def main():
     #     param.requires_grad = True
     # for name, param in new_model.named_parameters():
     #     print(f"Parameter: {name}, Requires Grad: {param.requires_grad}")
-    parameters = list(new_model.parameters())
-    # cov_parameters = list(mod_branch_cov.parameters())
+    # parameters = list(new_model.parameters())
+    parameters = list(mod_branch_cov.parameters())
 
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
@@ -194,8 +194,8 @@ def main():
         y_hat_L_list = []
         y_hat_R_list = []
         # model.eval()
-        new_model.eval()
-        # mod_branch_cov.eval()
+        # new_model.eval()
+        mod_branch_cov.eval()
 
         if epoch % 1 == 0:
             i = 0
@@ -208,19 +208,22 @@ def main():
                     # test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
 
                     with torch.no_grad():
-                        y_hat_new = new_model(test_data, co_signal)
-                        y_hat_L, y_hat_R = extract_diagonals(y_hat_new)
+                        # y_hat_new = new_model(test_data, co_signal)
+                        # y_hat_L, y_hat_R = extract_diagonals(y_hat_new)
                         #Testing inputting data into new thingy thing
-                        # mod_branch_cov(test_data)
+                        y_hat = mod_branch_cov(test_data)
 
-                        y_hat_L_list.append(y_hat_L)
-                        y_hat_R_list.append(y_hat_R)
+                        # y_hat_L_list.append(y_hat_L)
+                        # y_hat_R_list.append(y_hat_R)
+                        y_hat_L_list.append(y_hat[:100])
+                        y_hat_R_list.append(y_hat[100:])
                         # y_hat_list.append(y_hat)
 
                         test_label_L, test_label_R = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
                         test_label = torch.concat((test_label_L, test_label_R), dim=0)
                         # loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
-                        loss = new_model.loss(torch.concat((y_hat_L,  y_hat_R), dim=0), test_label)
+                        # loss = new_model.loss(torch.concat((y_hat_L,  y_hat_R), dim=0), test_label)
+                        loss = mod_branch_cov.loss(y_hat, test_label)
                         test_loss.append(loss)
                 else:
                     break
@@ -240,13 +243,16 @@ def main():
         if np.mean(test_loss_cpu) > min_loss:
             min_loss = np.mean(test_loss_cpu)
         # save(model, os.path.join(LOG_PATH, '%03d.pt_model' % epoch), num_to_keep=1)
-        save(new_model, os.path.join(LOG_PATH, '%03d.pt_new_model' % epoch), num_to_keep=1)
+        # save(new_model, os.path.join(LOG_PATH, '%03d.pt_new_model' % epoch), num_to_keep=1)
+        save(mod_branch_cov, os.path.join(LOG_PATH, '%03d.pt_mod_branch_cov' % epoch), num_to_keep=1)
+
         with open(test_log, 'a+') as f:
             f.write(str(np.mean(test_loss_cpu)) + "\n")
 
         losses = []
         # model.train()
-        new_model.train()
+        # new_model.train()
+        mod_branch_cov.train()
         disc.train()
         for batch_idx, (data, label, co_signal) in enumerate(train_loader):
             if (np.linalg.norm(data)) < 1e-8:
@@ -258,28 +264,30 @@ def main():
             optimizer.zero_grad()
 
             # output, hidden = model(data,seq_length=TRAIN_SEQ_LENGTH)
-            output = new_model(data, torch.tensor(co_signal, requires_grad=True).cuda())
-            output = torch.squeeze(output)
-            output_L, output_R = extract_diagonals(output.squeeze())  # ONLY LOOKING AT THE LEFT VECTOR
-            output = torch.concat((output_L, output_R), dim=0)
+            # output = new_model(data, torch.tensor(co_signal, requires_grad=True).cuda())
+            # output = torch.squeeze(output)
+            # output_L, output_R = extract_diagonals(output.squeeze())
+            # output = torch.concat((output_L, output_R), dim=0)
+            output = mod_branch_cov(data)
 
             label_1d_v_up, label_1d_v_down = extract_diagonals(label)
             label = torch.concat((label_1d_v_up, label_1d_v_down), dim=0)
 
-            mse_loss_up = new_model.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
-            mse_loss = mse_loss_up
+            # mse_loss = new_model.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
+            mse_loss = mod_branch_cov.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
 
-            loss = (LAMBDA)*mse_loss_up #+ (1 - LAMBDA)*adv_loss
+            loss = (LAMBDA)*mse_loss #+ (1 - LAMBDA)*adv_loss
             # loss = float(0.5)*mse_loss_up + float(0.5)*mse_loss_down
-            initial_params = {name: param.clone() for name, param in new_model.named_parameters()}
+            # initial_params = {name: param.clone() for name, param in new_model.named_parameters()}
+            initial_params = {name: param.clone() for name, param in mod_branch_cov.named_parameters()}
             loss.backward()
-            for name, param in new_model.named_parameters():
+            for name, param in mod_branch_cov.named_parameters():
                 if param.grad is None:
                     print(f"No gradients for {name}")
 
             optimizer.step()
 
-            for name, param in new_model.named_parameters():
+            for name, param in mod_branch_cov.named_parameters():
                 if torch.equal(param, initial_params[name]):
                     print(f"Parameter {name} has NOT been updated.")
 
