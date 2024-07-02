@@ -973,10 +973,10 @@ class branch_cov(nn.Module):
 
     def forward(self, x):
         try:
-            x = self.cov_extractor(x)
-        except:
-            x = self.cov_extractor_backup(x)
-        # x = self.cov_extractor(x)
+        #     x = self.cov_extractor(x)
+        # except:
+        #     x = self.cov_extractor_backup(x)
+        x = self.cov_extractor(x)
         x = torch.flatten(x, 1)
         x_out = self.classifier(x)
 
