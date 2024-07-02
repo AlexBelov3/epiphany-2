@@ -920,7 +920,7 @@ class branch_cov(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            nn.BatchNorm1d(16), #1
+            # nn.BatchNorm1d(16), #1
             nn.ReLU(),
         )
 
