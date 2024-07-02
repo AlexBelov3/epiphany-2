@@ -862,7 +862,7 @@ class branch_cov(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            nn.BatchNorm1d(20000),
+            nn.BatchNorm1d(10000),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
             # resblock(34000),
