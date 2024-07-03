@@ -93,6 +93,7 @@ def main():
     # mod_branch_pbulk = nn.DataParallel(branch_pbulk(), device_ids=[0])
     # mod_branch_cov = nn.DataParallel(branch_cov(), device_ids=[0])
     mod_branch_cov = branch_cov().cuda()
+    mod_branch_pbulk = branch_pbulk().cuda()
     # new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0]).cuda()
 
     # new_model = trunk(branch_outerprod(), Net()).cuda()
@@ -116,6 +117,7 @@ def main():
         # restore_latest(model, LOG_PATH, ext='.pt_model')
         # restore_latest(new_model, LOG_PATH, ext='.pt_new_model')
         restore_latest(mod_branch_cov, LOG_PATH, ext='.pt_mod_branch_cov')
+        restore_latest(mod_branch_pbulk, LOG_PATH, ext='.pt_mod_branch_pbulk')
     else:
         os.makedirs(LOG_PATH)
 
@@ -128,6 +130,7 @@ def main():
 
     # GM12878 Standard
     #test_chroms = ['chr3', 'chr11', 'chr17']
+    # match test chroms with chromafold!!
     test_chroms = ['chr17']
     #train_chroms = ['chr1', 'chr2', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22']
     train_chroms = ['chr22']
@@ -149,7 +152,8 @@ def main():
     # for name, param in new_model.named_parameters():
     #     print(f"Parameter: {name}, Requires Grad: {param.requires_grad}")
     # parameters = list(new_model.parameters())
-    parameters = list(mod_branch_cov.parameters())
+    # parameters = list(mod_branch_cov.parameters())
+    parameters = list(mod_branch_pbulk.parameters())
 
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
@@ -196,7 +200,8 @@ def main():
         y_hat_R_list = []
         # model.eval()
         # new_model.eval()
-        mod_branch_cov.eval()
+        # mod_branch_cov.eval()
+        mod_branch_pbulk.eval()
 
         if epoch % 1 == 0:
             i = 0
@@ -213,6 +218,7 @@ def main():
                         # y_hat_L, y_hat_R = extract_diagonals(y_hat_new)
                         #Testing inputting data into new thingy thing
                         y_hat = mod_branch_cov(test_data)
+                        y_hat = mod_branch_pbulk(test_data)
                         # print(f"y_hat shape: {y_hat.shape}")
 
                         # y_hat_L_list.append(y_hat_L)
