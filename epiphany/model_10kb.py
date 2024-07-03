@@ -1112,7 +1112,7 @@ class branch_cov_2d(nn.Module):
         #     x = self.cov_extractor_backup(x)
         print(f"x shape: {x.shape}")
         if x.ndimension() == 2:
-            x = x.unsqueeze(1)
+            x = x.unsqueeze(0)
         print(f"x unsqueezed shape: {x.shape}")
         x = self.cov_extractor(x)
         x = torch.flatten(x, 1)
