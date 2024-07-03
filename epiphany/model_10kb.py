@@ -1280,6 +1280,7 @@ class branch_cov_2d(nn.Module):
     def forward(self, x):
         x3_2d = self.bulk_summed_2d(x)
         # x2_2d = self.bulk_extractor_2d(x)
+        print(f"x shape: {x.shape}")
         x2_2d = self.cov_extractor(x)
         x4 = torch.cat((x3_2d, x2_2d), 1)
         x4 = self.total_extractor_2d(x4)
