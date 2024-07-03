@@ -210,7 +210,7 @@ def main():
                     # Don't plot empty images
                     if np.linalg.norm(test_label) < 1e-8:
                         continue
-                    test_data, test_label, co_signal = torch.Tensor(test_data[0]).cuda(), torch.Tensor(test_label).cuda(), torch.Tensor(co_signal).cuda()
+                    # test_data, test_label, co_signal = torch.Tensor(test_data[0]).cuda(), torch.Tensor(test_label).cuda(), torch.Tensor(co_signal).cuda()
                     # test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
 
                     with torch.no_grad():
