@@ -1023,7 +1023,7 @@ class branch_cov(nn.Module):
 class branch_cov_2d(nn.Module):
     def __init__(self):
         super(branch_cov_2d, self).__init__()
-        self.total_extractor_2d = nn.Sequential(
+        self.cov_extractor_2d = nn.Sequential(
             nn.Conv2d(in_channels=37, out_channels=64, kernel_size=3, stride=2),
             # nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
