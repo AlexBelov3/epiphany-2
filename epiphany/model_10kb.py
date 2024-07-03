@@ -545,13 +545,13 @@ class outter_prod(nn.Module):
             return None
         else:
             if len(x.shape) == 3:
-                # x = x.squeeze()
+                x = x.squeeze()
                 binned_signals = []
                 for i in range(np.shape(x)[0]):
                     binned_signals.append(np.outer(x[i].cpu(),x[i].cpu()))
                 co_signal = torch.tensor(binned_signals)
                 a, b, c = co_signal.shape
-                # co_signal = co_signal.reshape(1, a, b, c)
+                co_signal = co_signal.reshape(1, a, b, c)
                 return torch.tensor(co_signal).cuda()
             else:
                 return None
@@ -1113,7 +1113,7 @@ class branch_cov_2d(nn.Module):
         if x.ndimension() == 2:
             x = x.unsqueeze(0)
         print(f"x unsqueezed shape: {x.shape}")
-        x = self.cov_extractor_2d(x)
+        x = self.cov_extractor(x)
         x = torch.flatten(x, 1)
         x_out = self.classifier(x)
 
