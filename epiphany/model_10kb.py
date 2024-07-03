@@ -735,6 +735,30 @@ class branch_pbulk(nn.Module):
 
         return x4
 
+    def loss(self, prediction, label, seq_length = 200, reduction='mean', lam=1):
+        l1_loss = 0
+        if isinstance(prediction, np.ndarray):
+            prediction = torch.tensor(prediction)
+        if isinstance(label, np.ndarray):
+            label = torch.tensor(label)
+
+        if prediction.ndim != 1 or label.ndim != 1:
+            prediction = prediction.view(-1)
+            label = label.view(-1)
+
+        if prediction.size() != label.size():
+            raise ValueError(
+                f"Shape mismatch: prediction size {prediction.size()} does not match label size {label.size()}")
+
+        # Compute L1 and L2 losses
+        # l1_loss = F.l1_loss(prediction, label, reduction=reduction)
+        l2_loss = F.mse_loss(prediction, label, reduction=reduction)
+
+        # Combine losses with lambda
+        total_loss = lam * l2_loss + (1 - lam) * l1_loss
+        return total_loss
+
+
 
 # class branch_cov(nn.Module):
 #     def __init__(self):
@@ -855,28 +879,6 @@ class FirstConvLayer(nn.Module):
         x = self.relu(x)
         return x
 
-    def loss(self, prediction, label, seq_length = 200, reduction='mean', lam=1):
-        l1_loss = 0
-        if isinstance(prediction, np.ndarray):
-            prediction = torch.tensor(prediction)
-        if isinstance(label, np.ndarray):
-            label = torch.tensor(label)
-
-        if prediction.ndim != 1 or label.ndim != 1:
-            prediction = prediction.view(-1)
-            label = label.view(-1)
-
-        if prediction.size() != label.size():
-            raise ValueError(
-                f"Shape mismatch: prediction size {prediction.size()} does not match label size {label.size()}")
-
-        # Compute L1 and L2 losses
-        # l1_loss = F.l1_loss(prediction, label, reduction=reduction)
-        l2_loss = F.mse_loss(prediction, label, reduction=reduction)
-
-        # Combine losses with lambda
-        total_loss = lam * l2_loss + (1 - lam) * l1_loss
-        return total_loss
 
 
 
