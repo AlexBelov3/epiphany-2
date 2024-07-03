@@ -751,11 +751,8 @@ class branch_pbulk(nn.Module):
         self.classifier2 = nn.Sequential(nn.Linear(in_features=(400), out_features=200)) #(nn.Linear(in_features=(512), out_features=200))
 
     def forward(self, x2):
-        print(f"x2 shape: {x2.shape}")
         x3_2d = self.bulk_summed_2d(x2)
         x2_2d = self.bulk_extractor_2d(x2)
-        print(f"x3_2d shape: {x3_2d.shape}")
-        print(f"x2_2d shape: {x2_2d.shape}")
         x4 = torch.cat((x3_2d, x2_2d), 1)
         x4 = self.total_extractor_2d(x4)
         x4 = torch.flatten(x4, 1)
