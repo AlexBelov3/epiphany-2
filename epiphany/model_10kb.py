@@ -545,7 +545,7 @@ class outter_prod(nn.Module):
             return None
         else:
             if len(x.shape) == 3:
-                x = x.squeeze()
+                # x = x.squeeze()
                 binned_signals = []
                 for i in range(np.shape(x)[0]):
                     binned_signals.append(np.outer(x[i].cpu(),x[i].cpu()))
