@@ -538,8 +538,10 @@ class symmetrize_bulk(nn.Module):
 class outter_prod(nn.Module):
     def __init__(self):
         super(outter_prod, self).__init__()
+        print("INITIALIZING OUTER PROD LAYER")
 
     def forward(self, x):
+        print("FORWARDING OUTER PROD LAYER")
         if len(x.shape) == 2:
             print("not implemented")
             return None
@@ -1036,6 +1038,7 @@ class branch_cov_2d(nn.Module):
             nn.BatchNorm2d(16),
             nn.ReLU(),
         )
+        print("INITIALIZING cov_extractor")
         self.cov_extractor = nn.Sequential(
             nn.Conv2d(
                 in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
@@ -1110,9 +1113,9 @@ class branch_cov_2d(nn.Module):
         # except:
         #     x = self.cov_extractor_backup(x)
         print(f"x shape: {x.shape}")
-        if x.ndimension() == 2:
-            x = x.unsqueeze(0)
-        print(f"x unsqueezed shape: {x.shape}")
+        # if x.ndimension() == 2:
+        #     x = x.unsqueeze(0)
+        # print(f"x unsqueezed shape: {x.shape}")
         x = self.cov_extractor(x)
         x = torch.flatten(x, 1)
         x_out = self.classifier(x)
