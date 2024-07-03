@@ -548,10 +548,11 @@ class outter_prod(nn.Module):
                 print(f"x.shape: {x.shape}")
                 x = x.squeeze()
                 print(f"x.shape after squeeze: {x.shape}")
-                binned_signals = []
-                for i in range(np.shape(x)[0]):
-                    binned_signals.append(bin_and_sum(x[i], 100))
-                co_signal = np.outer(binned_signals, binned_signals)
+                # binned_signals = []
+                # for i in range(np.shape(x)[0]):
+                #     binned_signals.append(bin_and_sum(x[i], 100))
+                # co_signal = np.outer(binned_signals, binned_signals)
+                co_signal = np.outer(x.cpu(), x.cpu())
                 print(f"co_signal.shape: {co_signal.shape}")
                 return torch.tensor(co_signal).cuda()
             else:
