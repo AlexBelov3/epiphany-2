@@ -545,22 +545,13 @@ class outter_prod(nn.Module):
             return None
         else:
             if len(x.shape) == 3:
-                print(f"x.shape: {x.shape}")
                 x = x.squeeze()
-                c = x.shape[1]
-                print(f"x.shape after squeeze: {x.shape}")
                 binned_signals = []
                 for i in range(np.shape(x)[0]):
                     binned_signals.append(np.outer(x[i].cpu(),x[i].cpu()))
                 co_signal = torch.tensor(binned_signals)
-                # co_signal = torch.tensor(np.outer(x.cpu(), x.cpu()))
-                print(f"outer prod shape: {co_signal.shape}")
                 a, b, c = co_signal.shape
                 co_signal = co_signal.reshape(1, a, b, c)
-                # co_signal = co_signal.repeat(1, 1, c, 1)
-                # co_signal_t = co_signal.permute(0, 1, 3, 2)
-                # co_signal_sym = torch.concat((co_signal, co_signal_t), axis=1)
-                print(f"co_signal.shape: {co_signal.shape}")
                 return torch.tensor(co_signal).cuda()
             else:
                 return None
@@ -741,7 +732,7 @@ class branch_pbulk(nn.Module):
         )
 
         self.total_extractor_2d = nn.Sequential(
-            nn.Conv2d(in_channels=42, out_channels=64, kernel_size=3, stride=2), #nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
+            nn.Conv2d(in_channels=37, out_channels=64, kernel_size=3, stride=2), #nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
