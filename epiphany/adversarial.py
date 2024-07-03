@@ -110,13 +110,14 @@ def main():
     if args.wandb:
         # wandb.watch(model, log='all')
         # wandb.watch(new_model, log='all')
-        wandb.watch(mod_branch_cov, log='all')
+        # wandb.watch(mod_branch_cov, log='all')
+        wandb.watch(mod_branch_pbulk, log='all')
 
 
     if os.path.exists(LOG_PATH):
         # restore_latest(model, LOG_PATH, ext='.pt_model')
         # restore_latest(new_model, LOG_PATH, ext='.pt_new_model')
-        restore_latest(mod_branch_cov, LOG_PATH, ext='.pt_mod_branch_cov')
+        # restore_latest(mod_branch_cov, LOG_PATH, ext='.pt_mod_branch_cov')
         restore_latest(mod_branch_pbulk, LOG_PATH, ext='.pt_mod_branch_pbulk')
     else:
         os.makedirs(LOG_PATH)
@@ -232,7 +233,8 @@ def main():
                         # print(f"test_label shape: {test_label.shape}")
                         # loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
                         # loss = new_model.loss(torch.concat((y_hat_L,  y_hat_R), dim=0), test_label)
-                        loss = mod_branch_cov.loss(y_hat, test_label)
+                        # loss = mod_branch_cov.loss(y_hat, test_label)
+                        loss = mod_branch_pbulk.loss(y_hat, test_label)
                         test_loss.append(loss)
                 else:
                     break
@@ -253,7 +255,8 @@ def main():
             min_loss = np.mean(test_loss_cpu)
         # save(model, os.path.join(LOG_PATH, '%03d.pt_model' % epoch), num_to_keep=1)
         # save(new_model, os.path.join(LOG_PATH, '%03d.pt_new_model' % epoch), num_to_keep=1)
-        save(mod_branch_cov, os.path.join(LOG_PATH, '%03d.pt_mod_branch_cov' % epoch), num_to_keep=1)
+        # save(mod_branch_cov, os.path.join(LOG_PATH, '%03d.pt_mod_branch_cov' % epoch), num_to_keep=1)
+        save(mod_branch_pbulk, os.path.join(LOG_PATH, '%03d.pt_mod_branch_cov' % epoch), num_to_keep=1)
 
         with open(test_log, 'a+') as f:
             f.write(str(np.mean(test_loss_cpu)) + "\n")
@@ -261,7 +264,8 @@ def main():
         losses = []
         # model.train()
         # new_model.train()
-        mod_branch_cov.train()
+        # mod_branch_cov.train()
+        mod_branch_pbulk.train()
         disc.train()
         for batch_idx, (data, label, co_signal) in enumerate(train_loader):
             if (np.linalg.norm(data)) < 1e-8:
@@ -279,26 +283,29 @@ def main():
             # output_L, output_R = extract_diagonals(output.squeeze())
             # output = torch.concat((output_L, output_R), dim=0)
 
-            output = mod_branch_cov(data)
+            # output = mod_branch_cov(data)
+            output = mod_branch_pbulk(data)
 
             label_1d_v_up, label_1d_v_down = extract_diagonals(label)
             label = torch.concat((label_1d_v_up, label_1d_v_down), dim=0)
 
             # mse_loss = new_model.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
-            mse_loss = mod_branch_cov.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
+            # mse_loss = mod_branch_cov.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
+            mse_loss = mod_branch_pbulk.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
 
             loss = (LAMBDA)*mse_loss #+ (1 - LAMBDA)*adv_loss
             # loss = float(0.5)*mse_loss_up + float(0.5)*mse_loss_down
             # initial_params = {name: param.clone() for name, param in new_model.named_parameters()}
-            initial_params = {name: param.clone() for name, param in mod_branch_cov.named_parameters()}
+            # initial_params = {name: param.clone() for name, param in mod_branch_cov.named_parameters()}
+            initial_params = {name: param.clone() for name, param in mod_branch_pbulk.named_parameters()}
             loss.backward()
-            for name, param in mod_branch_cov.named_parameters():
+            for name, param in mod_branch_pbulk.named_parameters():
                 if param.grad is None:
                     print(f"No gradients for {name}")
 
             optimizer.step()
 
-            for name, param in mod_branch_cov.named_parameters():
+            for name, param in mod_branch_pbulk.named_parameters():
                 if torch.equal(param, initial_params[name]):
                     print(f"Parameter {name} has NOT been updated.")
 
