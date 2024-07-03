@@ -158,8 +158,8 @@ def main():
     #     print(f"Parameter: {name}, Requires Grad: {param.requires_grad}")
     # parameters = list(new_model.parameters())
     # parameters = list(mod_branch_cov.parameters())
-    parameters = list(mod_branch_pbulk.parameters())
-    # parameters = list(mod_branch_cov_2d.parameters())
+    # parameters = list(mod_branch_pbulk.parameters())
+    parameters = list(mod_branch_cov_2d.parameters())
 
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
@@ -225,9 +225,9 @@ def main():
                         # y_hat_L, y_hat_R = extract_diagonals(y_hat_new)
                         #Testing inputting data into new thingy thing
                         # y_hat = mod_branch_cov(test_data)
-                        y_hat = mod_branch_pbulk(test_data)
+                        # y_hat = mod_branch_pbulk(test_data)
                         # test_data = test_data.squeeze()
-                        # y_hat = mod_branch_cov_2d(test_data)
+                        y_hat = mod_branch_cov_2d(test_data)
                         # print(f"y_hat shape: {y_hat.shape}")
 
                         # y_hat_L_list.append(y_hat_L)
