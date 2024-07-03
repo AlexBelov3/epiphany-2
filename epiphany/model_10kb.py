@@ -6,6 +6,7 @@ import numpy as np
 import torch.nn.functional as F
 import torch.optim as optim
 import sys
+from utils import *
 
 
 class ConvBlock(nn.Module):
@@ -534,6 +535,29 @@ class symmetrize_bulk(nn.Module):
                 return None
 
 
+class outter_prod(nn.Module):
+    def __init__(self):
+        super(outter_prod, self).__init__()
+
+    def forward(self, x):
+        if len(x.shape) == 2:
+            print("not implemented")
+            return None
+        else:
+            if len(x.shape) == 3:
+                print(f"x.shape: {x.shape}")
+                x = x.squeeze()
+                print(f"x.shape after squeeze: {x.shape}")
+                binned_signals = []
+                for i in range(np.shape(x)[0]):
+                    binned_signals.append(bin_and_sum(x[i], 100))
+                co_signal = np.outer(binned_signals, binned_signals)
+                print(f"co_signal.shape: {co_signal.shape}")
+                return torch.tensor(co_signal).cuda()
+            else:
+                return None
+
+
 class branch_pbulk(nn.Module):
     def __init__(self):
         super(branch_pbulk, self).__init__()
@@ -541,8 +565,12 @@ class branch_pbulk(nn.Module):
         pbulk_res = 50
         scatac_res = 500
 
+        # self.bulk_summed_2d = nn.Sequential(
+        #     nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), symmetrize_bulk()
+        # )
+
         self.bulk_summed_2d = nn.Sequential(
-            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), symmetrize_bulk()
+            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outter_prod()
         )
 
         self.bulk_extractor_2d = nn.Sequential(
