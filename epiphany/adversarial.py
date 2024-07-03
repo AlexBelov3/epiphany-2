@@ -93,6 +93,7 @@ def main():
     # mod_branch_pbulk = nn.DataParallel(branch_pbulk(), device_ids=[0])
     # mod_branch_cov = nn.DataParallel(branch_cov(), device_ids=[0])
     mod_branch_cov = branch_cov().cuda()
+    mod_branch_cov_2d = branch_cov_2d().cuda()
     mod_branch_pbulk = branch_pbulk().cuda()
     # new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0]).cuda()
 
@@ -111,7 +112,9 @@ def main():
         # wandb.watch(model, log='all')
         # wandb.watch(new_model, log='all')
         # wandb.watch(mod_branch_cov, log='all')
-        wandb.watch(mod_branch_pbulk, log='all')
+        # wandb.watch(mod_branch_pbulk, log='all')
+        wandb.watch(mod_branch_cov_2d, log='all')
+
 
 
     if os.path.exists(LOG_PATH):
@@ -119,6 +122,7 @@ def main():
         # restore_latest(new_model, LOG_PATH, ext='.pt_new_model')
         # restore_latest(mod_branch_cov, LOG_PATH, ext='.pt_mod_branch_cov')
         restore_latest(mod_branch_pbulk, LOG_PATH, ext='.pt_mod_branch_pbulk')
+        restore_latest(mod_branch_cov_2d, LOG_PATH, ext='.pt_mod_branch_cov_2d')
     else:
         os.makedirs(LOG_PATH)
 
@@ -154,7 +158,8 @@ def main():
     #     print(f"Parameter: {name}, Requires Grad: {param.requires_grad}")
     # parameters = list(new_model.parameters())
     # parameters = list(mod_branch_cov.parameters())
-    parameters = list(mod_branch_pbulk.parameters())
+    # parameters = list(mod_branch_pbulk.parameters())
+    parameters = list(mod_branch_cov_2d.parameters())
 
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
@@ -202,7 +207,8 @@ def main():
         # model.eval()
         # new_model.eval()
         # mod_branch_cov.eval()
-        mod_branch_pbulk.eval()
+        # mod_branch_pbulk.eval()
+        mod_branch_cov_2d.eval()
 
         if epoch % 1 == 0:
             i = 0
@@ -219,7 +225,8 @@ def main():
                         # y_hat_L, y_hat_R = extract_diagonals(y_hat_new)
                         #Testing inputting data into new thingy thing
                         # y_hat = mod_branch_cov(test_data)
-                        y_hat = mod_branch_pbulk(test_data)
+                        # y_hat = mod_branch_pbulk(test_data)
+                        y_hat = mod_branch_cov_2d(test_data)
                         # print(f"y_hat shape: {y_hat.shape}")
 
                         # y_hat_L_list.append(y_hat_L)
@@ -234,7 +241,8 @@ def main():
                         # loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
                         # loss = new_model.loss(torch.concat((y_hat_L,  y_hat_R), dim=0), test_label)
                         # loss = mod_branch_cov.loss(y_hat, test_label)
-                        loss = mod_branch_pbulk.loss(y_hat, test_label)
+                        # loss = mod_branch_pbulk.loss(y_hat, test_label)
+                        loss = mod_branch_cov_2d.loss(y_hat, test_label)
                         test_loss.append(loss)
                 else:
                     break
@@ -257,6 +265,7 @@ def main():
         # save(new_model, os.path.join(LOG_PATH, '%03d.pt_new_model' % epoch), num_to_keep=1)
         # save(mod_branch_cov, os.path.join(LOG_PATH, '%03d.pt_mod_branch_cov' % epoch), num_to_keep=1)
         save(mod_branch_pbulk, os.path.join(LOG_PATH, '%03d.pt_mod_branch_pbulk' % epoch), num_to_keep=1)
+        save(mod_branch_cov_2d, os.path.join(LOG_PATH, '%03d.pt_mod_branch_cov_2d' % epoch), num_to_keep=1)
 
         with open(test_log, 'a+') as f:
             f.write(str(np.mean(test_loss_cpu)) + "\n")
@@ -265,7 +274,8 @@ def main():
         # model.train()
         # new_model.train()
         # mod_branch_cov.train()
-        mod_branch_pbulk.train()
+        # mod_branch_pbulk.train()
+        mod_branch_cov_2d.train()
         disc.train()
         for batch_idx, (data, label, co_signal) in enumerate(train_loader):
             if (np.linalg.norm(data)) < 1e-8:
@@ -284,28 +294,31 @@ def main():
             # output = torch.concat((output_L, output_R), dim=0)
 
             # output = mod_branch_cov(data)
-            output = mod_branch_pbulk(data)
+            # output = mod_branch_pbulk(data)
+            output = mod_branch_cov_2d(data)
 
             label_1d_v_up, label_1d_v_down = extract_diagonals(label)
             label = torch.concat((label_1d_v_up, label_1d_v_down), dim=0)
 
             # mse_loss = new_model.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
             # mse_loss = mod_branch_cov.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
-            mse_loss = mod_branch_pbulk.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
+            # mse_loss = mod_branch_pbulk.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
+            mse_loss = mod_branch_cov_2d.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
 
             loss = (LAMBDA)*mse_loss #+ (1 - LAMBDA)*adv_loss
             # loss = float(0.5)*mse_loss_up + float(0.5)*mse_loss_down
             # initial_params = {name: param.clone() for name, param in new_model.named_parameters()}
             # initial_params = {name: param.clone() for name, param in mod_branch_cov.named_parameters()}
-            initial_params = {name: param.clone() for name, param in mod_branch_pbulk.named_parameters()}
+            # initial_params = {name: param.clone() for name, param in mod_branch_pbulk.named_parameters()}
+            initial_params = {name: param.clone() for name, param in mod_branch_cov_2d.named_parameters()}
             loss.backward()
-            for name, param in mod_branch_pbulk.named_parameters():
+            for name, param in mod_branch_cov_2d.named_parameters():
                 if param.grad is None:
                     print(f"No gradients for {name}")
 
             optimizer.step()
 
-            for name, param in mod_branch_pbulk.named_parameters():
+            for name, param in mod_branch_cov_2d.named_parameters():
                 if torch.equal(param, initial_params[name]):
                     print(f"Parameter {name} has NOT been updated.")
 
