@@ -553,6 +553,11 @@ class outter_prod(nn.Module):
                 #     binned_signals.append(bin_and_sum(x[i], 100))
                 # co_signal = np.outer(binned_signals, binned_signals)
                 co_signal = np.outer(x.cpu(), x.cpu())
+                a, b = co_signal.shape
+                co_signal = co_signal.reshape(1, a, 1, b)
+                # co_signal = co_signal.repeat(1, 1, b, 1)
+                # co_signal_t = co_signal.permute(0, 1, 3, 2)
+                # co_signal_sym = torch.concat((co_signal, co_signal_t), axis=1)
                 print(f"co_signal.shape: {co_signal.shape}")
                 return torch.tensor(co_signal).cuda()
             else:
