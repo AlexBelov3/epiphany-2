@@ -212,12 +212,12 @@ def main():
                         continue
                     # test_data, test_label, co_signal = torch.Tensor(test_data[0]).cuda(), torch.Tensor(test_label).cuda(), torch.Tensor(co_signal).cuda()
                     # test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
-
+                    test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda() #NEW!!!!
                     with torch.no_grad():
                         # y_hat_new = new_model(test_data, co_signal)
                         # y_hat_L, y_hat_R = extract_diagonals(y_hat_new)
                         #Testing inputting data into new thingy thing
-                        y_hat = mod_branch_cov(test_data)
+                        # y_hat = mod_branch_cov(test_data)
                         y_hat = mod_branch_pbulk(test_data)
                         # print(f"y_hat shape: {y_hat.shape}")
 
