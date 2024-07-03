@@ -1022,7 +1022,7 @@ class branch_cov(nn.Module):
 
 class branch_cov_2d(nn.Module):
     def __init__(self):
-        super(branch_pbulk, self).__init__()
+        super(branch_cov_2d, self).__init__()
 
         pbulk_res = 50
         scatac_res = 500
