@@ -1024,17 +1024,17 @@ class branch_cov_2d(nn.Module):
     def __init__(self):
         super(branch_cov_2d, self).__init__()
         self.cov_extractor_2d = nn.Sequential(
-            nn.Conv2d(in_channels=5, out_channels=64, kernel_size=3, stride=2),
-            nn.BatchNorm2d(64),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=2),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
+            # nn.Conv2d(in_channels=5, out_channels=64, kernel_size=3, stride=2),
+            # nn.BatchNorm2d(64),
+            # # nn.ReLU(),
+            # # nn.MaxPool2d(kernel_size=2),
+            # # nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=2),
+            # # nn.BatchNorm2d(32),
+            # # nn.ReLU(),
+            # # nn.MaxPool2d(kernel_size=2),
+            # # nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
+            # # nn.BatchNorm2d(16),
+            # # nn.ReLU(),
         )
 
         self.cov_extractor = nn.Sequential(
@@ -1114,7 +1114,7 @@ class branch_cov_2d(nn.Module):
         if x.ndimension() == 2:
             x = x.unsqueeze(0)
         print(f"x unsqueezed shape: {x.shape}")
-        x = self.cov_extractor(x)
+        x = self.cov_extractor_2d(x)
         x = torch.flatten(x, 1)
         x_out = self.classifier(x)
 
