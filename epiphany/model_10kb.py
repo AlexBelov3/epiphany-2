@@ -1126,8 +1126,8 @@ class branch_cov_2d(nn.Module):
         #     x = x.view(x.size(0), 1, 80, 2500)
         # except:
         #     x = x.view(x.size(0), 1, 80, 2499)
-        x.unsqueeze(0)
-        print(f"x.shape: {x.shape}")
+        a, b = x.shape
+        x = x.view(1, 1, a, b)
         x = self.cov_extractor(x)
         x = torch.flatten(x, 1)
         x_out = self.classifier(x)
