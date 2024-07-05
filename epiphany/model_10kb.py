@@ -1026,8 +1026,8 @@ class branch_cov_2d(nn.Module):
         super(branch_cov_2d, self).__init__()
 
         self.cov_extractor = nn.Sequential(
-            PrintLayer(),
-            FirstConvLayer(),
+            # PrintLayer(),
+            # FirstConvLayer(),
             nn.Conv2d(
                 in_channels=1, out_channels=16, kernel_size=5, stride=1, padding=2
             ),
