@@ -1025,12 +1025,12 @@ class branch_cov_2d(nn.Module):
 
         self.cov_extractor = nn.Sequential(
             nn.Conv2d(
-                in_channels=5, out_channels=16, kernel_size=5, stride=1,
+                in_channels=5, out_channels=16, kernel_size=6, stride=1,
             ), # padding=2
             # nn.Conv2d(in_channels=37, out_channels=64, kernel_size=3, stride=2)
             nn.BatchNorm2d(16),
             nn.ReLU(),
-            nn.MaxPool1d(kernel_size=2),
+            nn.MaxPool2d(kernel_size=2),
             # nn.Conv1d(
             #     in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
             # ),
