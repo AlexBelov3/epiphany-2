@@ -1037,15 +1037,23 @@ class branch_cov_2d(nn.Module):
 
         self.cov_extractor = nn.Sequential(
             nn.Conv1d(
-                in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
+                in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2, dilation=1
             ),
+            # nn.Conv1d(
+            #     in_channels=5,
+            #     out_channels=16,
+            #     kernel_size=11,
+            #     stride=1,
+            #     dilation=1,
+            #     padding="same",
+            # ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
             # PrintLayer(),
             # FirstConvLayer(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
-                in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
+                in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2, dilation=1
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
@@ -1279,7 +1287,7 @@ class branch_cov_2d(nn.Module):
 
     def forward(self, x):
         x3_2d = self.bulk_summed_2d(x)
-        x2_2d = self.bulk_extractor_2d(x)
+        x2_2d = self.cov_extractor(x)
         # print(f"x shape: {x.shape}")
         # x2_2d = self.cov_extractor(x)
         x4 = torch.cat((x3_2d, x2_2d), 1)
