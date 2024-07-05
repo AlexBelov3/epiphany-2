@@ -1072,9 +1072,9 @@ class branch_cov_2d(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=(1,2)),
             resblock_2d(16),
-            nn.MaxPool2d(kernel_size=2),
+            nn.MaxPool2d(kernel_size=(1,2)),
             resblock_2d(16),
-            nn.MaxPool2d(kernel_size=2),
+            nn.MaxPool2d(kernel_size=(1,2)),
             nn.Conv2d(
                 in_channels=16,
                 out_channels=16,
@@ -1085,7 +1085,7 @@ class branch_cov_2d(nn.Module):
             ),
             nn.BatchNorm2d(16),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
+            nn.MaxPool2d(kernel_size=(1,2)),
             nn.Conv2d(
                 in_channels=16,
                 out_channels=16,
@@ -1096,7 +1096,7 @@ class branch_cov_2d(nn.Module):
             ),
             nn.BatchNorm2d(16),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
+            nn.MaxPool2d(kernel_size=(1,2)),
             nn.Conv2d(
                 in_channels=16,
                 out_channels=1, #16
