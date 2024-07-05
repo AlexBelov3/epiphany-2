@@ -529,7 +529,9 @@ class resblock_2d(nn.Module):
 
     def forward(self, x):
         residual = x
+        print(f"residual shape: {residual.shape}")
         out = self.blocks(x)
+        print(f"out shape: {out.shape}")
         out = out + residual
 
         return out
@@ -1071,24 +1073,24 @@ class branch_cov_2d(nn.Module):
             nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
-            # resblock_2d(16),
+            resblock_2d(16),
             # --------------------------------------------------
-            nn.Conv2d(16, 16, (1, 3), 1, 1),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            nn.Conv2d(16, 16, (1, 3), 1, 1),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
-            # resblock_2d(16),
+            # nn.Conv2d(16, 16, (1, 3), 1, 1),
+            # nn.BatchNorm2d(16),
+            # nn.ReLU(),
+            # nn.Conv2d(16, 16, (1, 3), 1, 1),
+            # nn.BatchNorm2d(16),
+            # nn.ReLU(),
+            # nn.MaxPool2d(kernel_size=2),
+            resblock_2d(16),
             # --------------------------------------------------
-            nn.Conv2d(16, 16, (1, 3), 1, 1),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            nn.Conv2d(16, 16, (1, 3), 1, 1),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            
+            # nn.Conv2d(16, 16, (1, 3), 1, 1),
+            # nn.BatchNorm2d(16),
+            # nn.ReLU(),
+            # nn.Conv2d(16, 16, (1, 3), 1, 1),
+            # nn.BatchNorm2d(16),
+            # nn.ReLU(),
+
             nn.MaxPool2d(kernel_size=2),
             nn.Conv2d(
                 in_channels=16,
