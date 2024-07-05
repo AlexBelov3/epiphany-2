@@ -1024,8 +1024,9 @@ class branch_cov_2d(nn.Module):
     def __init__(self):
         super(branch_cov_2d, self).__init__()
 
-        pbulk_res = 75 #50
+        pbulk_res = 78 #50
         scatac_res = 500
+
 
         # self.bulk_summed_2d = nn.Sequential(
         #     nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), symmetrize_bulk()
