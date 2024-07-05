@@ -519,11 +519,13 @@ class resblock_2d(nn.Module):
     def __init__(self, ni):
         super(resblock_2d, self).__init__()
         self.blocks = nn.Sequential(
-            nn.Conv2d(ni, ni, (1,3), 1, 1),
+            # nn.Conv2d(ni, ni, (1,3), 1, 1),
+            nn.Conv2d(ni, ni, 3, 1, 1),
             # nn.BatchNorm2d((1, ni)),
             nn.BatchNorm2d(ni),
             nn.ReLU(),
-            nn.Conv2d(ni, ni, (1,3), 1, 1),
+            # nn.Conv2d(ni, ni, (1,3), 1, 1),
+            nn.Conv2d(ni, ni, 3, 1, 1),
             # nn.BatchNorm2d((1, ni)),
             nn.BatchNorm2d(ni),
             nn.ReLU(),
