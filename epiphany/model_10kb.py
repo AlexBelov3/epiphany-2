@@ -1112,7 +1112,7 @@ class branch_cov_2d(nn.Module):
 
         self.classifier = nn.Sequential(
             # nn.Linear(in_features=(265), out_features=512), #992
-            nn.Linear(in_features=(186), out_features=200), #312
+            nn.Linear(in_features=(180), out_features=200), #312
         )
 
 
