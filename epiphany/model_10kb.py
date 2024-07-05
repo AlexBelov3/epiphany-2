@@ -894,9 +894,9 @@ class FirstConvLayer(nn.Module):
     def __init__(self):
         super(FirstConvLayer, self).__init__()
         self.conv = nn.Conv2d(
-            in_channels=1, out_channels=16, kernel_size=16, stride=1, padding=2 #kernel_size=5
+            in_channels=1, out_channels=16, kernel_size=5, stride=1, padding=2
         )
-        self.bn = nn.BatchNorm1d(16)
+        self.bn = nn.BatchNorm1d(5)
         self.relu = nn.ReLU()
 
     def forward(self, x):
