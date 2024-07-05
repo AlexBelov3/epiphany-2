@@ -1024,7 +1024,7 @@ class branch_cov_2d(nn.Module):
     def __init__(self):
         super(branch_cov_2d, self).__init__()
 
-        pbulk_res = 100 #50
+        pbulk_res = 75 #50
         scatac_res = 500
 
         # self.bulk_summed_2d = nn.Sequential(
