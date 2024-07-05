@@ -1121,7 +1121,7 @@ class branch_cov_2d(nn.Module):
         #     x = self.cov_extractor(x)
         # except:
         #     x = self.cov_extractor_backup(x)
-        x = x.view(x.size(0), 1, 400, 500)  # Reshape to approximately square
+        x = x.view(x.size(0), 1, 500, 400)  # Reshape to approximately square
         print(f"x.shape: {x.shape}")
         # x = x.unsqueeze(0)
         # print(f"x.shape: {x.shape}")
