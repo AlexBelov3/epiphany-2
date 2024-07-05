@@ -1050,59 +1050,59 @@ class branch_cov_2d(nn.Module):
             nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            # nn.Conv1d(
-            #     in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2, dilation=1
-            # ),
-            # nn.BatchNorm1d(16),
-            # nn.ReLU(),
-            # nn.MaxPool1d(kernel_size=2),
-            # nn.Conv1d(
-            #     in_channels=16,
-            #     out_channels=16,
-            #     kernel_size=3,
-            #     stride=1,
-            #     dilation=1,
-            #     padding=1,
-            # ),
-            # nn.BatchNorm1d(16),
-            # nn.ReLU(),
-            # nn.MaxPool1d(kernel_size=2),
-            # resblock(16),
-            # nn.MaxPool1d(kernel_size=2),
-            # resblock(16),
-            # nn.MaxPool1d(kernel_size=2),
-            # nn.Conv1d(
-            #     in_channels=16,
-            #     out_channels=16,
-            #     kernel_size=3,
-            #     stride=1,
-            #     dilation=1,
-            #     padding=1,
-            # ),
-            # nn.BatchNorm1d(16),
-            # nn.ReLU(),
-            # nn.MaxPool1d(kernel_size=2),
-            # nn.Conv1d(
-            #     in_channels=16,
-            #     out_channels=16,
-            #     kernel_size=3,
-            #     stride=1,
-            #     dilation=1,
-            #     padding=1,
-            # ),
-            # nn.BatchNorm1d(16),
-            # nn.ReLU(),
-            # nn.MaxPool1d(kernel_size=2),
-            # nn.Conv1d(
-            #     in_channels=16,
-            #     out_channels=1,  # 16
-            #     kernel_size=3,
-            #     stride=1,
-            #     dilation=1,
-            #     padding=1,
-            # ),
-            # nn.BatchNorm1d(16), #1
-            # nn.ReLU(),
+            nn.Conv1d(
+                in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2, dilation=1
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            resblock(16),
+            nn.MaxPool1d(kernel_size=2),
+            resblock(16),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
         )
 
         self.bulk_extractor_2d = nn.Sequential(
@@ -1286,8 +1286,9 @@ class branch_cov_2d(nn.Module):
     def forward(self, x):
         x3_2d = self.bulk_summed_2d(x)
         x2_2d = self.cov_extractor(x)
-        # print(f"x shape: {x.shape}")
-        # x2_2d = self.cov_extractor(x)
+        print(f"x shape: {x.shape}")
+        print(f"x3_2d shape: {x3_2d.shape}")
+        print(f"x2_2d shape: {x2_2d.shape}")
         x4 = torch.cat((x3_2d, x2_2d), 1)
         x4 = self.total_extractor_2d(x4)
         x4 = torch.flatten(x4, 1)
