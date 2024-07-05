@@ -515,6 +515,26 @@ class resblock(nn.Module):
         return out
 
 
+class resblock_2d(nn.Module):
+    def __init__(self, ni):
+        super(resblock_2d, self).__init__()
+        self.blocks = nn.Sequential(
+            nn.Conv2d(ni, ni, 3, 1, 1),
+            nn.BatchNorm2d(ni),
+            nn.ReLU(),
+            nn.Conv2d(ni, ni, 3, 1, 1),
+            nn.BatchNorm2d(ni),
+            nn.ReLU(),
+        )
+
+    def forward(self, x):
+        residual = x
+        out = self.blocks(x)
+        out = out + residual
+
+        return out
+
+
 class symmetrize_bulk(nn.Module):
     def __init__(self):
         super(symmetrize_bulk, self).__init__()
@@ -896,7 +916,7 @@ class FirstConvLayer(nn.Module):
         self.conv = nn.Conv2d(
             in_channels=1, out_channels=16, kernel_size=5, stride=1, padding=2
         )
-        self.bn = nn.BatchNorm2d(5)
+        self.bn = nn.BatchNorm2d(16)
         self.relu = nn.ReLU()
 
     def forward(self, x):
@@ -1026,67 +1046,67 @@ class branch_cov_2d(nn.Module):
         super(branch_cov_2d, self).__init__()
 
         self.cov_extractor = nn.Sequential(
-            PrintLayer(),
-            FirstConvLayer(),
-            # nn.Conv2d(
-            #     in_channels=1, out_channels=16, kernel_size=5, stride=1, padding=2
-            # ),
-            # nn.BatchNorm2d(16),
-            # nn.ReLU(),
-            # nn.MaxPool2d(kernel_size=2), #1d??
-            # nn.Conv2d(
-            #     in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
-            # ),
-            # nn.BatchNorm1d(5),
-            # nn.ReLU(),
-            # nn.MaxPool1d(kernel_size=2),
-            # nn.Conv2d(
-            #     in_channels=16,
-            #     out_channels=16,
-            #     kernel_size=3,
-            #     stride=1,
-            #     dilation=1,
-            #     padding=1,
-            # ),
-            # nn.BatchNorm1d(5),
-            # nn.ReLU(),
-            # nn.MaxPool1d(kernel_size=2),
-            # resblock(5),
-            # nn.MaxPool1d(kernel_size=2),
-            # resblock(5),
-            # nn.MaxPool1d(kernel_size=2),
-            # nn.Conv2d(
-            #     in_channels=16,
-            #     out_channels=16,
-            #     kernel_size=3,
-            #     stride=1,
-            #     dilation=1,
-            #     padding=1,
-            # ),
-            # nn.BatchNorm1d(5),
-            # nn.ReLU(),
-            # nn.MaxPool2d(kernel_size=2),
-            # nn.Conv1d(
-            #     in_channels=16,
-            #     out_channels=16,
-            #     kernel_size=3,
-            #     stride=1,
-            #     dilation=1,
-            #     padding=1,
-            # ),
-            # nn.BatchNorm1d(5),
-            # nn.ReLU(),
-            # nn.MaxPool2d(kernel_size=2),
-            # nn.Conv1d(
-            #     in_channels=16,
-            #     out_channels=1, #16
-            #     kernel_size=3,
-            #     stride=1,
-            #     dilation=1,
-            #     padding=1,
-            # ),
-            # # nn.BatchNorm1d(16), #1
-            # nn.ReLU(),
+            # PrintLayer(),
+            # FirstConvLayer(),
+            nn.Conv2d(
+                in_channels=1, out_channels=16, kernel_size=5, stride=1, padding=2
+            ),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Conv2d(
+                in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
+            ),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Conv2d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            resblock_2d(16),
+            nn.MaxPool2d(kernel_size=2),
+            resblock_2d(16),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Conv2d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Conv2d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Conv2d(
+                in_channels=16,
+                out_channels=1, #16
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            # nn.BatchNorm2d(16), #1
+            nn.ReLU(),
         )
 
 
