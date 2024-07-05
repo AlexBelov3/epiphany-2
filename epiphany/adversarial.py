@@ -94,7 +94,7 @@ def main():
     # mod_branch_cov = nn.DataParallel(branch_cov(), device_ids=[0])
     mod_branch_cov = branch_cov().cuda()
     mod_branch_cov_2d = branch_cov_2d().cuda()
-    mod_branch_pbulk = branch_pbulk().cuda()
+    # mod_branch_pbulk = branch_pbulk().cuda()
     # new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0]).cuda()
 
     # new_model = trunk(branch_outerprod(), Net()).cuda()
@@ -121,7 +121,7 @@ def main():
         # restore_latest(model, LOG_PATH, ext='.pt_model')
         # restore_latest(new_model, LOG_PATH, ext='.pt_new_model')
         # restore_latest(mod_branch_cov, LOG_PATH, ext='.pt_mod_branch_cov')
-        restore_latest(mod_branch_pbulk, LOG_PATH, ext='.pt_mod_branch_pbulk')
+        # restore_latest(mod_branch_pbulk, LOG_PATH, ext='.pt_mod_branch_pbulk')
         restore_latest(mod_branch_cov_2d, LOG_PATH, ext='.pt_mod_branch_cov_2d')
     else:
         os.makedirs(LOG_PATH)
@@ -207,42 +207,26 @@ def main():
         # model.eval()
         # new_model.eval()
         # mod_branch_cov.eval()
-        mod_branch_pbulk.eval()
+        # mod_branch_pbulk.eval()
         mod_branch_cov_2d.eval()
 
         if epoch % 1 == 0:
             i = 0
             for (test_data, test_label, co_signal) in tqdm(test_loader):
                 if i < 400:
-                    # Don't plot empty images
                     if np.linalg.norm(test_label) < 1e-8:
                         continue
                     # test_data, test_label, co_signal = torch.Tensor(test_data[0]).cuda(), torch.Tensor(test_label).cuda(), torch.Tensor(co_signal).cuda()
                     # test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
                     test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda() #NEW!!!!
                     with torch.no_grad():
-                        # y_hat_new = new_model(test_data, co_signal)
-                        # y_hat_L, y_hat_R = extract_diagonals(y_hat_new)
-                        #Testing inputting data into new thingy thing
-                        # y_hat = mod_branch_cov(test_data)
-                        # y_hat = mod_branch_pbulk(test_data)
-                        # test_data = test_data.squeeze()
                         y_hat = mod_branch_cov_2d(test_data)
-                        # print(f"y_hat shape: {y_hat.shape}")
 
-                        # y_hat_L_list.append(y_hat_L)
-                        # y_hat_R_list.append(y_hat_R)
                         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                         y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
-                        # y_hat_list.append(y_hat)
 
                         test_label_L, test_label_R = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
                         test_label = torch.concat((test_label_L, test_label_R), dim=0)
-                        # print(f"test_label shape: {test_label.shape}")
-                        # loss = model.loss(y_hat, test_label, seq_length=TEST_SEQ_LENGTH)
-                        # loss = new_model.loss(torch.concat((y_hat_L,  y_hat_R), dim=0), test_label)
-                        # loss = mod_branch_cov.loss(y_hat, test_label)
-                        # loss = mod_branch_pbulk.loss(y_hat, test_label)
                         loss = mod_branch_cov_2d.loss(y_hat, test_label)
                         test_loss.append(loss)
                 else:
@@ -279,7 +263,7 @@ def main():
         mod_branch_cov_2d.train()
         disc.train()
         for batch_idx, (data, label, co_signal) in enumerate(train_loader):
-            print(len(data))
+            print(data.shape)
             if (np.linalg.norm(data)) < 1e-8:# or len(data)!=40000:
                 continue
 
