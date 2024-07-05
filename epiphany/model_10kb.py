@@ -1114,10 +1114,10 @@ class branch_cov_2d(nn.Module):
             nn.ReLU(),
         )
 
-        # self.classifier = nn.Sequential(
-        #     nn.Linear(in_features=(400), out_features=512), #nn.Linear(in_features=(1936), out_features=512),
-        # )
-        self.classifier2 = nn.Sequential(nn.Linear(in_features=(400), out_features=200)) #(nn.Linear(in_features=(512), out_features=200))
+        self.classifier = nn.Sequential(
+            nn.Linear(in_features=(1296), out_features=512), #nn.Linear(in_features=(1936), out_features=512),
+        )
+        self.classifier2 = nn.Sequential(nn.Linear(in_features=(512), out_features=200)) #(nn.Linear(in_features=(512), out_features=200))
 
     def forward(self, x):
         x3_2d = self.bulk_summed_2d(x)
@@ -1130,6 +1130,7 @@ class branch_cov_2d(nn.Module):
         x4 = torch.cat((x3_2d, x2_2d), 1)
         x4 = self.total_extractor_2d(x4)
         x4 = torch.flatten(x4, 1)
+        x4 = self.classifier(x4)
         x4 = self.classifier2(x4)
         return x4
 
