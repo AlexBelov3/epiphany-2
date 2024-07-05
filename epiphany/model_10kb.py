@@ -522,9 +522,9 @@ class resblock_2d(nn.Module):
             nn.Conv2d(ni, ni, 3, 1, 1),
             nn.BatchNorm2d(ni),
             nn.ReLU(),
-            nn.Conv2d(ni, ni, 3, 1, 1),
-            nn.BatchNorm2d(ni),
-            nn.ReLU(),
+            # nn.Conv2d(ni, ni, 3, 1, 1),
+            # nn.BatchNorm2d(ni),
+            # nn.ReLU(),
         )
 
     def forward(self, x):
