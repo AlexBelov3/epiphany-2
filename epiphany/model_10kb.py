@@ -519,12 +519,12 @@ class resblock_2d(nn.Module):
     def __init__(self, ni):
         super(resblock_2d, self).__init__()
         self.blocks = nn.Sequential(
-            # nn.Conv2d(ni, ni, (1,3), 1, 1),
-            # nn.BatchNorm2d(ni),
-            # nn.ReLU(),
-            # nn.Conv2d(ni, ni, (1,3), 1, 1),
-            # nn.BatchNorm2d(ni),
-            # nn.ReLU(),
+            nn.Conv2d(ni, ni, (1,3), 1, 1),
+            nn.BatchNorm2d(ni),
+            nn.ReLU(),
+            nn.Conv2d(ni, ni, (1,3), 1, 1),
+            nn.BatchNorm2d(ni),
+            nn.ReLU(),
         )
 
     def forward(self, x):
@@ -532,7 +532,9 @@ class resblock_2d(nn.Module):
         print(f"residual shape: {residual.shape}")
         out = self.blocks(x)
         print(f"out shape: {out.shape}")
+        out, residual = out.squeeze(), residual.squeeze()
         out = out + residual
+        out = out.unsqueeze(0)
 
         return out
 
