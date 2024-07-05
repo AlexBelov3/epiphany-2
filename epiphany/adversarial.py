@@ -265,7 +265,7 @@ def main():
         # save(model, os.path.join(LOG_PATH, '%03d.pt_model' % epoch), num_to_keep=1)
         # save(new_model, os.path.join(LOG_PATH, '%03d.pt_new_model' % epoch), num_to_keep=1)
         # save(mod_branch_cov, os.path.join(LOG_PATH, '%03d.pt_mod_branch_cov' % epoch), num_to_keep=1)
-        save(mod_branch_pbulk, os.path.join(LOG_PATH, '%03d.pt_mod_branch_pbulk' % epoch), num_to_keep=1)
+        # save(mod_branch_pbulk, os.path.join(LOG_PATH, '%03d.pt_mod_branch_pbulk' % epoch), num_to_keep=1)
         save(mod_branch_cov_2d, os.path.join(LOG_PATH, '%03d.pt_mod_branch_cov_2d' % epoch), num_to_keep=1)
 
         with open(test_log, 'a+') as f:
@@ -279,7 +279,8 @@ def main():
         mod_branch_cov_2d.train()
         disc.train()
         for batch_idx, (data, label, co_signal) in enumerate(train_loader):
-            if (np.linalg.norm(data)) < 1e-8 or len(data)!=40000:
+            print(len(data))
+            if (np.linalg.norm(data)) < 1e-8:# or len(data)!=40000:
                 continue
 
             hidden = None
