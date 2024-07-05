@@ -263,8 +263,7 @@ def main():
         mod_branch_cov_2d.train()
         disc.train()
         for batch_idx, (data, label, co_signal) in enumerate(train_loader):
-            print(data.shape)
-            if (np.linalg.norm(data)) < 1e-8:# or len(data)!=40000:
+            if (np.linalg.norm(data)) < 1e-8 or data.shape[2]!=40000:
                 continue
 
             hidden = None
