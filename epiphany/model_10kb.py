@@ -893,8 +893,10 @@ class PrintLayer(nn.Module):
 class FirstConvLayer(nn.Module):
     def __init__(self):
         super(FirstConvLayer, self).__init__()
-        self.conv = nn.Conv1d(in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2)
-        self.bn = nn.BatchNorm1d(16)
+        self.conv = nn.Conv2d(
+            in_channels=1, out_channels=16, kernel_size=5, stride=1, padding=2
+        )
+        self.bn = nn.BatchNorm2d(16)
         self.relu = nn.ReLU()
 
     def forward(self, x):
@@ -1024,9 +1026,11 @@ class branch_cov_2d(nn.Module):
         super(branch_cov_2d, self).__init__()
 
         self.cov_extractor = nn.Sequential(
+            PrintLayer(),
+            FirstConvLayer(),
             nn.Conv2d(
-                in_channels=1, out_channels=16, kernel_size=5, stride=1,
-            ), # padding=2
+                in_channels=1, out_channels=16, kernel_size=5, stride=1, padding=2
+            ),
             # nn.Conv2d(in_channels=37, out_channels=64, kernel_size=3, stride=2)
             nn.BatchNorm2d(16),
             nn.ReLU(),
