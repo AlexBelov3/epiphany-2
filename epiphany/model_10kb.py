@@ -522,9 +522,9 @@ class resblock_2d(nn.Module):
             nn.Conv2d(ni, ni, 3, 1, 1),
             nn.BatchNorm2d(ni),
             nn.ReLU(),
-            # nn.Conv2d(ni, ni, 3, 1, 1),
-            # nn.BatchNorm2d(ni),
-            # nn.ReLU(),
+            nn.Conv2d(ni, ni, 3, 1, 1),
+            nn.BatchNorm2d(ni),
+            nn.ReLU(),
         )
 
     def forward(self, x):
@@ -1132,8 +1132,8 @@ class branch_cov_2d(nn.Module):
 
 
         self.classifier = nn.Sequential(
-            # nn.Linear(in_features=(265), out_features=512), #992
-            nn.Linear(in_features=(180), out_features=200), #312
+            nn.Linear(in_features=1875, out_features=512),
+            nn.Linear(in_features=512, out_features=200),
         )
 
 
