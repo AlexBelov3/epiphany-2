@@ -520,10 +520,12 @@ class resblock_2d(nn.Module):
         super(resblock_2d, self).__init__()
         self.blocks = nn.Sequential(
             nn.Conv2d(ni, ni, (1,3), 1, 1),
-            nn.BatchNorm2d((1, ni)),
+            # nn.BatchNorm2d((1, ni)),
+            nn.BatchNorm2d(ni),
             nn.ReLU(),
             nn.Conv2d(ni, ni, (1,3), 1, 1),
-            nn.BatchNorm2d((1, ni)),
+            # nn.BatchNorm2d((1, ni)),
+            nn.BatchNorm2d(ni),
             nn.ReLU(),
         )
 
@@ -1070,11 +1072,11 @@ class branch_cov_2d(nn.Module):
             ),
             nn.BatchNorm2d(16),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=(1,2)),
+            nn.MaxPool2d(kernel_size=2),
             resblock_2d(16),
-            nn.MaxPool2d(kernel_size=(1,2)),
+            nn.MaxPool2d(kernel_size=2),
             resblock_2d(16),
-            nn.MaxPool2d(kernel_size=(1,2)),
+            nn.MaxPool2d(kernel_size=2),
             nn.Conv2d(
                 in_channels=16,
                 out_channels=16,
