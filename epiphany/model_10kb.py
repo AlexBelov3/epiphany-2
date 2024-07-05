@@ -1112,7 +1112,7 @@ class branch_cov_2d(nn.Module):
 
         self.classifier = nn.Sequential(
             # nn.Linear(in_features=(265), out_features=512), #992
-            nn.Linear(in_features=(312), out_features=200),
+            nn.Linear(in_features=(186), out_features=200), #312
         )
 
 
@@ -1121,7 +1121,7 @@ class branch_cov_2d(nn.Module):
         #     x = self.cov_extractor(x)
         # except:
         #     x = self.cov_extractor_backup(x)
-        x = x.view(x.size(0), 1, 100, 2000)  # Reshape to approximately square
+        x = x.view(x.size(0), 1, 400, 500)  # Reshape to approximately square
         print(f"x.shape: {x.shape}")
         # x = x.unsqueeze(0)
         # print(f"x.shape: {x.shape}")
