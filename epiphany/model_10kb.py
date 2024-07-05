@@ -1103,6 +1103,7 @@ class branch_cov_2d(nn.Module):
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
+            symmetrize_bulk()
         )
 
         self.bulk_extractor_2d = nn.Sequential(
