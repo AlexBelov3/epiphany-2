@@ -533,6 +533,8 @@ class resblock_2d(nn.Module):
         out = self.blocks(x)
         print(f"out shape: {out.shape}")
         out, residual = out.squeeze(), residual.squeeze()
+        print(f"residual shape: {residual.shape}")
+        print(f"out shape: {out.shape}")
         out = out + residual
         out = out.unsqueeze(0)
 
