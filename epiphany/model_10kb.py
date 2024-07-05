@@ -1037,7 +1037,7 @@ class branch_cov_2d(nn.Module):
 
         self.cov_extractor = nn.Sequential(
             nn.Conv1d(
-                in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2, dilation=1
+                in_channels=5, out_channels=16, kernel_size=5, stride=1, padding="same", dilation=1 #padding=2
             ),
             # nn.Conv1d(
             #     in_channels=5,
@@ -1051,7 +1051,7 @@ class branch_cov_2d(nn.Module):
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
-                in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2, dilation=1
+                in_channels=16, out_channels=16, kernel_size=5, stride=1, padding="same", dilation=1
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
@@ -1062,7 +1062,7 @@ class branch_cov_2d(nn.Module):
                 kernel_size=3,
                 stride=1,
                 dilation=1,
-                padding=1,
+                padding="same", #1
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
@@ -1077,7 +1077,7 @@ class branch_cov_2d(nn.Module):
                 kernel_size=3,
                 stride=1,
                 dilation=1,
-                padding=1,
+                padding="same", #1
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
@@ -1088,7 +1088,7 @@ class branch_cov_2d(nn.Module):
                 kernel_size=3,
                 stride=1,
                 dilation=1,
-                padding=1,
+                padding="same", #1
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
@@ -1099,7 +1099,7 @@ class branch_cov_2d(nn.Module):
                 kernel_size=3,
                 stride=1,
                 dilation=1,
-                padding=1,
+                padding="same", #1
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
