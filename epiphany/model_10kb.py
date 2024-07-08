@@ -118,11 +118,11 @@ class Net(nn.Module):
         self.input_channels = input_channels
         self.window_size = window_size
 
-        self.conv1 = ConvBlock(in_channels=self.input_channels, out_channels=70, kernel_width=17, stride=1, pool_size=0) #pool_size=4
+        self.conv1 = ConvBlock(in_channels=self.input_channels, out_channels=70, kernel_width=17, stride=1, pool_size=4) #pool_size=4
         self.do1 = nn.Dropout(p=.1)
-        self.conv2 = ConvBlock(in_channels=70, out_channels=90, kernel_width=7, stride=1, pool_size=0) #pool_size=4
+        self.conv2 = ConvBlock(in_channels=70, out_channels=90, kernel_width=7, stride=1, pool_size=4) #pool_size=4
         self.do2 = nn.Dropout(p=.1)
-        self.conv3 = ConvBlock(in_channels=90, out_channels=70, kernel_width=5, stride=1, pool_size=0) #pool_size=4
+        self.conv3 = ConvBlock(in_channels=90, out_channels=70, kernel_width=5, stride=1, pool_size=4) #pool_size=4
         self.do3 = nn.Dropout(p=.1)
         self.conv4 = ConvBlock(in_channels=70, out_channels=50, kernel_width=5, stride=1)
         self.do4 = nn.Dropout(p=.1)
