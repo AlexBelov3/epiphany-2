@@ -93,8 +93,8 @@ def main():
     # mod_branch_pbulk = nn.DataParallel(branch_pbulk(), device_ids=[0])
     # mod_branch_cov = nn.DataParallel(branch_cov(), device_ids=[0])
     # mod_branch_cov = branch_cov().cuda()
-    mod_branch_cov_2d = branch_cov_2d().cuda()
-    mod_branch_cov_2d = Net().cuda()
+    # mod_branch_cov_2d = branch_cov_2d().cuda()
+    # mod_branch_cov_2d = Net().cuda()
     # mod_branch_pbulk = branch_pbulk().cuda()
     # new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0]).cuda()
 
