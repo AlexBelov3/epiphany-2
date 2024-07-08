@@ -294,6 +294,8 @@ class Net2(nn.Module):
         x = self.do7(x)
         x = self.conv8(x)
         x = self.do8(x)
+        x = self.conv9(x)
+        x = self.do9(x)
         print(f"x output shape: {x.shape}")
         x = x.squeeze()
         # # print(f"x output shape: {x.shape}")
