@@ -168,7 +168,7 @@ class Net(nn.Module):
         x = self.pool(x)
         x = self.do5(x)
         # print(f"x conv output shape: {x.shape}")
-        # x = x.view(1, seq_length, x.shape[1] * x.shape[2])
+        x = x.view(1, seq_length, x.shape[1] * x.shape[2])
         res1, hidden_state = self.rnn1(x, None)
         res2, hidden_state = self.rnn2(res1, None)
         res2 = res2 + res1
@@ -186,6 +186,7 @@ class Net(nn.Module):
         # x = self.do7(x)
         # x = self.conv8(x)
         # x = self.do8(x)
+
         x_R, x_L = extract_diagonals(x)
         x = torch.concat(x_R, x_L)
         return x#, hidden_state
