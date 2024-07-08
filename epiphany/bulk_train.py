@@ -6,7 +6,7 @@ import os
 args = ['a', 'b', 'c', 'd', 'e', 'f']
 
 # Duration to let each process run (in seconds)
-duration = 30 # 10* 60  # 10 minutes
+duration = 2 * 60 * 60  # 2 hours
 
 for arg in args:
     # Define the output file name
