@@ -138,8 +138,8 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(900, 100)
         self.act2 = nn.ReLU()
         # #ADDED:
-        # # self.fc3 = nn.Linear(100, 1)
-        # # self.act3 = nn.ReLU()
+        # self.fc3 = nn.Linear(100, 1)
+        # self.act3 = nn.ReLU()
 
     def forward(self, x, hidden_state=None, seq_length=200):
         print(f"input shape: {x.shape}")
@@ -170,8 +170,8 @@ class Net(nn.Module):
         x = self.act(x)
         x = self.fc2(x)
         # ADDED LINES:
-        # x = self.act2(x)
-        # x = self.fc3(x)
+        x = self.act2(x)
+        x = self.fc3(x)
         return x, hidden_state
 
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
