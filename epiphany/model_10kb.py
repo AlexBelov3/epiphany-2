@@ -116,7 +116,7 @@ class Net(nn.Module):
 
         super(Net, self).__init__()
         self.input_channels = input_channels
-        self.window_size = window_size
+        self.window_size = window_size*2
 
         self.conv1 = ConvBlock(in_channels=self.input_channels, out_channels=70, kernel_width=17, stride=1, pool_size=4) #pool_size=4
         self.do1 = nn.Dropout(p=.1)
@@ -155,7 +155,7 @@ class Net(nn.Module):
         x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
         # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (1, x.shape[1], 1))
         # x = x.unsqueeze(0)
-        print(f"x input shape: {x.shape}")
+        # print(f"x input shape: {x.shape}")
         x = self.conv1(x)
         x = self.do1(x)
         x = self.conv2(x)
