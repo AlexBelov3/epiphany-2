@@ -486,7 +486,7 @@ class trunk(nn.Module):
             x2 = x2.squeeze()
         # with torch.no_grad():
         #     x2 = self.branch_pbulk(x2)
-        x = self.out(torch.cat((x, x2), 1)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
+        x = self.out(torch.cat((x, x2), 0)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
         return x
 
     def loss(self, prediction, label, seq_length = 200, reduction='mean', lam=1):
