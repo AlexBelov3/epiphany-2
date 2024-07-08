@@ -140,13 +140,13 @@ class Net(nn.Module):
         self.pool = nn.AdaptiveMaxPool1d(200 // 20) #900 // 20
         self.do5 = nn.Dropout(p=.1)
 
-        # self.rnn1 = nn.LSTM(input_size=900, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
-        # self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
-        # self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
-        # self.fc = nn.Linear(2400, 900)
-        # self.act = nn.ReLU()
-        # self.fc2 = nn.Linear(900, 100)
-        # self.act2 = nn.ReLU()
+        self.rnn1 = nn.LSTM(input_size=900, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.fc = nn.Linear(2400, 900)
+        self.act = nn.ReLU()
+        self.fc2 = nn.Linear(900, 100)
+        self.act2 = nn.ReLU()
         # #ADDED:
         # # self.fc3 = nn.Linear(100, 1)
         # # self.act3 = nn.ReLU()
@@ -154,7 +154,7 @@ class Net(nn.Module):
     def forward(self, x, hidden_state=None, seq_length=200):
 
         assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
-        x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
+        # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
 
         x = self.conv1(x)
         x = self.do1(x)
