@@ -475,12 +475,12 @@ class trunk(nn.Module):
             # nn.Linear(in_features=(512), out_features=100),
         )
 
-    def forward(self, x, x2):
+    def forward(self, x):
         x = self.branch_cov(x)
         # x = self.Net(x)[0]
         print(f"x shape: {x.shape}")
-        x2 = self.branch_pbulk(x2)
-        print(f"x2 shape: {x2.shape}")
+        x2 = self.branch_pbulk(x)
+        print(f"x2 shape: {x.shape}")
         # with torch.no_grad():
         #     x2 = self.branch_pbulk(x2)
         x = self.out(torch.cat((x, torch.t(x2)), 1)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
