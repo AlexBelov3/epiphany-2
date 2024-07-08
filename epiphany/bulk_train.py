@@ -13,7 +13,7 @@ for arg in args:
     output_file = f"{arg}_output.txt"
 
     # Start the process
-    process = subprocess.Popen(['python3', 'adversarial.py', arg], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    process = subprocess.Popen(['python3', 'adversarial.py', arg, '--wandb'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     # Let the process run for the specified duration
     time.sleep(duration)
