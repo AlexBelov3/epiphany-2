@@ -116,7 +116,7 @@ class Net(nn.Module):
 
         super(Net, self).__init__()
         self.input_channels = input_channels
-        self.window_size = window_size*2
+        self.window_size = window_size
 
         self.conv1 = ConvBlock(in_channels=self.input_channels, out_channels=70, kernel_width=17, stride=1, pool_size=4) #pool_size=4
         self.do1 = nn.Dropout(p=.1)
