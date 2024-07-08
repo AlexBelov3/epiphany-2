@@ -172,7 +172,7 @@ class Net(nn.Module):
         # ADDED LINES:
         x = self.act2(x)
         x = self.fc3(x)
-        return x, hidden_state
+        return x#, hidden_state
 
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
         l1_loss = 0
