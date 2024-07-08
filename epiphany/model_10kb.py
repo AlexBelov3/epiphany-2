@@ -138,7 +138,7 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(900, 100)
         self.act2 = nn.ReLU()
         # #ADDED:
-        self.fc3 = nn.Linear(100, 1)
+        self.fc3 = nn.Linear(100, 10)
         self.act3 = nn.ReLU()
 
     def forward(self, x, hidden_state=None, seq_length=200):
@@ -172,6 +172,7 @@ class Net(nn.Module):
         # ADDED LINES:
         x = self.act2(x)
         x = self.fc3(x)
+        x = x.reshape((1, 200))
         return x#, hidden_state
 
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
