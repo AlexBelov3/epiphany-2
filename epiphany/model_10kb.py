@@ -155,9 +155,8 @@ class Net(nn.Module):
         # print(f"input shape: {x.shape}")
         x = x.squeeze()
         assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
-        # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
-        # print(f"x shape: {x.shape}")
-        x = x.unsqueeze(0)
+        x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
+        # x = x.unsqueeze(0)
 
         x = self.conv1(x)
         x = self.do1(x)
@@ -172,13 +171,13 @@ class Net(nn.Module):
         x = self.do5(x)
 
         x = x.view(1, seq_length, x.shape[1] * x.shape[2])
-        # res1, hidden_state = self.rnn1(x, None)
-        # res2, hidden_state = self.rnn2(res1, None)
-        # res2 = res2 + res1
-        # res3, hidden_state = self.rnn3(res2, None)
-        # x = self.fc(res2 + res3)
-        # x = self.act(x)
-        # x = self.fc2(x)
+        res1, hidden_state = self.rnn1(x, None)
+        res2, hidden_state = self.rnn2(res1, None)
+        res2 = res2 + res1
+        res3, hidden_state = self.rnn3(res2, None)
+        x = self.fc(res2 + res3)
+        x = self.act(x)
+        x = self.fc2(x)
         # ADDED LINES:
         # x = self.act2(x)
         # x = self.fc3(x)
