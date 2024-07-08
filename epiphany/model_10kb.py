@@ -152,7 +152,7 @@ class Net(nn.Module):
     def forward(self, x, hidden_state=None, seq_length=200):
         x = x.squeeze()
         assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
-        x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (1, x.shape[1], 1))
+        x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1)) #stride = 1?
         # x = x.unsqueeze(0)
         # print(f"x input shape: {x.shape}")
         x = self.conv1(x)
@@ -240,25 +240,25 @@ class Net2(nn.Module):
         self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
         self.fc = nn.Linear(2400, 900)
         self.act = nn.ReLU()
-        self.fc2 = nn.Linear(900, 100) #200
-        self.act2 = nn.ReLU()
-        # # #ADDED:
-        self.fc3 = nn.Linear(100, 1)
-        self.act3 = nn.ReLU()
-        # self.conv6 = ConvBlock(in_channels=20, out_channels=15, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
-        # self.do6 = nn.Dropout(p=.1)
-        # self.conv7 = ConvBlock(in_channels=15, out_channels=10, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
-        # self.do7 = nn.Dropout(p=.1)
-        # self.conv7 = ConvBlock(in_channels=10, out_channels=5, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
-        # self.do7 = nn.Dropout(p=.1)
-        # self.conv8 = ConvBlock(in_channels=5, out_channels=1, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
-        # self.do8 = nn.Dropout(p=.1)
+        # self.fc2 = nn.Linear(900, 100) #200
+        # self.act2 = nn.ReLU()
+        # # # #ADDED:
+        # self.fc3 = nn.Linear(100, 1)
+        # self.act3 = nn.ReLU()
+        self.conv6 = ConvBlock(in_channels=20, out_channels=15, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        self.do6 = nn.Dropout(p=.1)
+        self.conv7 = ConvBlock(in_channels=15, out_channels=10, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        self.do7 = nn.Dropout(p=.1)
+        self.conv7 = ConvBlock(in_channels=10, out_channels=5, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        self.do7 = nn.Dropout(p=.1)
+        self.conv8 = ConvBlock(in_channels=5, out_channels=1, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        self.do8 = nn.Dropout(p=.1)
 
     def forward(self, x, hidden_state=None, seq_length=200):
         x = x.squeeze()
         assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
         print(f"input_channels: {self.input_channels}")
-        # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (1, x.shape[1], 1))
+        x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
         x = x.unsqueeze(0)
         print(f"x input shape: {x.shape}")
         x = self.conv1(x)
