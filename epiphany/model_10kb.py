@@ -478,14 +478,14 @@ class trunk(nn.Module):
     def forward(self, x):
         x_copy = x.clone()
         x = self.branch_cov(x)
-        # print(x.shape)
+        print(f"x shape: {x.shape}")
         # x = self.Net(x)[0]
         x2 = self.branch_pbulk(x_copy)
-        # print(x2.shape)
+        print(f"x2 shape: {x2.shape}")
         # with torch.no_grad():
         #     x2 = self.branch_pbulk(x2)
         x = self.out(torch.cat((x, x2), 1)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
-        print(f"x shape: {x.shape}")
+        print(f"output shape: {x.shape}")
         return x
 
     def loss(self, prediction, label, seq_length = 200, reduction='mean', lam=1):
