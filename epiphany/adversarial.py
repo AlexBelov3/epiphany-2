@@ -135,7 +135,7 @@ def main():
         model = trunk(Net(1, 5, int(args.window_size)).cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'h':
         # modified epiphany (without .as_strided())
-        modle_name = "epiphany2"
+        model_name = "epiphany2"
         model = Net2(1, 5, int(args.window_size)).cuda()
     else:
         model_name = "DEFAULT"
