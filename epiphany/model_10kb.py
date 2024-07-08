@@ -471,20 +471,20 @@ class trunk(nn.Module):
 
         self.out = nn.Sequential(
             # nn.Linear(in_features=(916), out_features=512), #replace 116 with 512 * 2
-            nn.Linear(in_features=(264), out_features=100),
+            nn.Linear(in_features=(400), out_features=100),
             # nn.Linear(in_features=(512), out_features=100),
         )
 
     def forward(self, x):
         x_copy = x.clone()
         x = self.branch_cov(x)
-        print(x.shape)
+        # print(x.shape)
         # x = self.Net(x)[0]
         x2 = self.branch_pbulk(x_copy)
-        print(x2.shape)
+        # print(x2.shape)
         # with torch.no_grad():
         #     x2 = self.branch_pbulk(x2)
-        x = self.out(torch.cat((x, x2), 0)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
+        x = self.out(torch.cat((x, x2), 1)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
 
         return x
 
