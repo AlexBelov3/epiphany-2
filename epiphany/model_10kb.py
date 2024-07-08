@@ -144,8 +144,8 @@ class Net(nn.Module):
     def forward(self, x, hidden_state=None, seq_length=200):
         x = x.squeeze()
         assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
-        x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
-
+        # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
+        x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (1, x.shape[1], 1))
         x = self.conv1(x)
         x = self.do1(x)
         x = self.conv2(x)
@@ -1167,9 +1167,9 @@ class branch_cov_2d(nn.Module):
         # Combine losses with lambda
         total_loss = lam * l2_loss + (1 - lam) * l1_loss
         return total_loss
-class branch_modified_pubulk(nn.Module):
+class branch_modified_pbulk(nn.Module):
     def __init__(self):
-        super(branch_cov_2d, self).__init__()
+        super(branch_modified_pbulk, self).__init__()
 
         pbulk_res = 78 #50
         scatac_res = 500
