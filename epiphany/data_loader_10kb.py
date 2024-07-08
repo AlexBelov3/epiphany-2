@@ -17,8 +17,8 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
     def __init__(self, seq_length=200, window_size=14000, chroms=['chr22'], mode='train', save_dir='/data/leslie/belova1//Epiphany_dataset', zero_pad=True):
 
         save_path_X = os.path.join(save_dir, 'GM12878_X.h5')
-        save_path_y = os.path.join(save_dir, 'new_GM12878_y.pickle')
-        # save_path_y = os.path.join(save_dir, 'GM12878_y.pickle')
+        # save_path_y = os.path.join(save_dir, 'new_GM12878_y.pickle')
+        save_path_y = os.path.join(save_dir, 'GM12878_y.pickle')
 
         self.seq_length = seq_length
         self.chroms = chroms
