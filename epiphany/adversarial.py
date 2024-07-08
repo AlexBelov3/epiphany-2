@@ -125,6 +125,10 @@ def main():
         # epiphany architecture (which is similar to chromafold left arm with the outer product replaced by bi-LSTM)
         model_name = "epiphany"
         model = Net(1, 5, int(args.window_size)).cuda()
+    elif args.model == 'f':
+        # modified chromafold left arm with branch_cov structure replicated in the 1d layers
+        model_name = "branch_modified_pbulk"
+        model = branch_modified_pbulk().cuda()
     else:
         model_name = "DEFAULT"
         model = Net(1, 5, int(args.window_size)).cuda()

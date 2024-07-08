@@ -463,11 +463,11 @@ class branch_outerprod(nn.Module):
 
 
 class trunk(nn.Module):
-    def __init__(self, branch_pbulk, Net):
+    def __init__(self, branch_pbulk, branch_cov):
         super(trunk, self).__init__()
 
         self.branch_pbulk = branch_pbulk
-        self.Net = Net
+        self.branch_cov = branch_cov
 
         self.out = nn.Sequential(
             # nn.Linear(in_features=(916), out_features=512), #replace 116 with 512 * 2
@@ -476,7 +476,7 @@ class trunk(nn.Module):
         )
 
     def forward(self, x, x2):
-        x = self.Net(x)[0].squeeze()
+        x = self.branch_cov(x)
         # x = self.Net(x)[0]
         print(f"x shape: {x.shape}")
         x2 = self.branch_pbulk(x2)
