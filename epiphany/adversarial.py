@@ -120,7 +120,7 @@ def main():
     elif args.model == 'd':
         # chromafold architecture
         model_name = "chromafold"
-        model = nn.DataParallel(trunk(branch_pbulk().cuda(), branch_cov().cuda()), device_ids=[0]).cuda()
+        model = trunk(branch_pbulk().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'e':
         # epiphany architecture (which is similar to chromafold left arm with the outer product replaced by bi-LSTM)
         model_name = "epiphany"
