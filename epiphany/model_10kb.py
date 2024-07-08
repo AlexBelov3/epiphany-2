@@ -138,8 +138,8 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(900, 100)
         self.act2 = nn.ReLU()
         # #ADDED:
-        # self.fc3 = nn.Linear(100, 1)
-        # self.act3 = nn.ReLU()
+        self.fc3 = nn.Linear(100, 1)
+        self.act3 = nn.ReLU()
 
     def forward(self, x, hidden_state=None, seq_length=200):
         print(f"input shape: {x.shape}")
