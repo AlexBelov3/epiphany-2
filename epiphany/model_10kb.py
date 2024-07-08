@@ -480,9 +480,9 @@ class trunk(nn.Module):
         x = self.left(x)
         # x = self.Net(x)[0]
         x2 = self.right(x_copy)
-        if x.ndimension() == 3:
+        if x.ndimension() == 2:
             x = x.squeeze()
-        if x2.ndimension() == 3:
+        if x2.ndimension() == 2:
             x2 = x2.squeeze()
         # with torch.no_grad():
         #     x2 = self.branch_pbulk(x2)
