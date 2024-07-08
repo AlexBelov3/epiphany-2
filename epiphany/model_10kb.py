@@ -166,19 +166,19 @@ class Net(nn.Module):
         x = self.conv5(x)
         x = self.pool(x)
         x = self.do5(x)
-        print(f"x conv output shape: {x.shape}")
+        # print(f"x conv output shape: {x.shape}")
         x = x.view(1, seq_length, x.shape[1] * x.shape[2])
         res1, hidden_state = self.rnn1(x, None)
         res2, hidden_state = self.rnn2(res1, None)
         res2 = res2 + res1
         res3, hidden_state = self.rnn3(res2, None)
-        print(f"x LSTM output shape: {res2.shape}")
+        # print(f"x LSTM output shape: {res2.shape}")
         x = self.fc(res2 + res3)
         x = self.act(x)
         x = self.fc2(x)
         # ADDED LINES:
-        x = self.act2(x)
-        x = self.fc3(x)
+        # x = self.act2(x)
+        # x = self.fc3(x)
         # x = self.conv6(x)
         # x = self.do6(x)
         # x = self.conv7(x)
@@ -188,9 +188,9 @@ class Net(nn.Module):
         # print(f"x output shape: {x.shape}")
         # x = x.squeeze()
         # # print(f"x output shape: {x.shape}")
-        # x_R, x_L = extract_diagonals(x)
-        # x = torch.cat((x_R, x_L), 0)
-        # x = x.unsqueeze(0)
+        x_R, x_L = extract_diagonals(x)
+        x = torch.cat((x_R, x_L), 0)
+        x = x.unsqueeze(0)
         return x#, hidden_state
 
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
@@ -478,12 +478,9 @@ class trunk(nn.Module):
     def forward(self, x):
         x_copy = x.clone()
         x = self.left(x)
-        # x = self.Net(x)[0]
         x2 = self.right(x_copy)
         x = x.reshape(1, 200)
         x2 = x2.reshape(1, 200)
-        # with torch.no_grad():
-        #     x2 = self.branch_pbulk(x2)
         x = self.out(torch.cat((x, x2), 1)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
         return x
 
