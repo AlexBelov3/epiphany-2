@@ -147,7 +147,7 @@ class Net(nn.Module):
         # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
         # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (1, x.shape[1], 1))
         x = x.unsqueeze(0)
-        # print(f"x.shape: {x.shape}")
+        print(f"x input shape: {x.shape}")
         x = self.conv1(x)
         x = self.do1(x)
         x = self.conv2(x)
@@ -159,12 +159,13 @@ class Net(nn.Module):
         x = self.conv5(x)
         x = self.pool(x)
         x = self.do5(x)
-
+        print(f"x conv output shape: {x.shape}")
         # x = x.view(1, seq_length, x.shape[1] * x.shape[2])
         res1, hidden_state = self.rnn1(x, None)
         res2, hidden_state = self.rnn2(res1, None)
         res2 = res2 + res1
         res3, hidden_state = self.rnn3(res2, None)
+
         x = self.fc(res2 + res3)
         x = self.act(x)
         x = self.fc2(x)
