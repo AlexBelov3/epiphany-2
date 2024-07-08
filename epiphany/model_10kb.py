@@ -279,7 +279,7 @@ class Net2(nn.Module):
         x = self.conv7(x)
         x = self.pool(x)
         x = self.do7(x)
-        
+
         print(f"x conv output shape: {x.shape}")
         # x = x.view(1, seq_length, x.shape[1] * x.shape[2])
         res1, hidden_state = self.rnn1(x, None)
