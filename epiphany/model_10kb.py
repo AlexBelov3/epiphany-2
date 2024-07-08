@@ -257,10 +257,10 @@ class Net2(nn.Module):
     def forward(self, x, hidden_state=None, seq_length=200):
         x = x.squeeze()
         assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
-        print(f"input_channels: {input_channels}")
+        print(f"input_channels: {self.input_channels}")
         x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (1, x.shape[1], 1))
         # x = x.unsqueeze(0)
-        # print(f"x input shape: {x.shape}")
+        print(f"x input shape: {x.shape}")
         x = self.conv1(x)
         x = self.do1(x)
         x = self.conv2(x)
@@ -297,8 +297,8 @@ class Net2(nn.Module):
         x_R, x_L = extract_diagonals(x)
         x = torch.cat((x_R, x_L), 0)
         x = x.unsqueeze(0)
-        return x#, hidden_state
-    
+        return x
+
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
         l1_loss = 0
         if isinstance(prediction, np.ndarray):
