@@ -480,11 +480,11 @@ class trunk(nn.Module):
         x = self.left(x)
         # x = self.Net(x)[0]
         x2 = self.right(x_copy)
-        x = x.reshape(200)
-        x = x2.reshape(200)
+        x = x.reshape(1, 200)
+        x2 = x2.reshape(1, 200)
         # with torch.no_grad():
         #     x2 = self.branch_pbulk(x2)
-        x = self.out(torch.cat((x, x2), 0)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
+        x = self.out(torch.cat((x, x2), 1)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
         return x
 
     def loss(self, prediction, label, seq_length = 200, reduction='mean', lam=1):
