@@ -258,8 +258,8 @@ class Net2(nn.Module):
         x = x.squeeze()
         assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
         print(f"input_channels: {self.input_channels}")
-        x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (1, x.shape[1], 1))
-        # x = x.unsqueeze(0)
+        # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (1, x.shape[1], 1))
+        x = x.unsqueeze(0)
         print(f"x input shape: {x.shape}")
         x = self.conv1(x)
         x = self.do1(x)
