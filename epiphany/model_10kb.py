@@ -257,6 +257,7 @@ class Net2(nn.Module):
     def forward(self, x, hidden_state=None, seq_length=200):
         x = x.squeeze()
         assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
+        print(f"input_channels: {input_channels}")
         x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (1, x.shape[1], 1))
         # x = x.unsqueeze(0)
         # print(f"x input shape: {x.shape}")
@@ -297,7 +298,29 @@ class Net2(nn.Module):
         x = torch.cat((x_R, x_L), 0)
         x = x.unsqueeze(0)
         return x#, hidden_state
+    
+    def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
+        l1_loss = 0
+        if isinstance(prediction, np.ndarray):
+            prediction = torch.tensor(prediction)
+        if isinstance(label, np.ndarray):
+            label = torch.tensor(label)
 
+        if prediction.ndim != 1 or label.ndim != 1:
+            prediction = prediction.view(-1)
+            label = label.view(-1)
+
+        if prediction.size() != label.size():
+            raise ValueError(
+                f"Shape mismatch: prediction size {prediction.size()} does not match label size {label.size()}")
+
+        # Compute L1 and L2 losses
+        # l1_loss = F.l1_loss(prediction, label, reduction=reduction)
+        l2_loss = F.mse_loss(prediction, label, reduction=reduction)
+
+        # Combine losses with lambda
+        total_loss = lam * l2_loss + (1 - lam) * l1_loss
+        return total_loss
 # class Net(nn.Module):
 #     def __init__(self, num_layers=1, input_channels=5, window_size=14000):
 #         super(Net, self).__init__()
