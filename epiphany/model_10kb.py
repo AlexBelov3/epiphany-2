@@ -187,8 +187,8 @@ class Net(nn.Module):
         # x = self.conv8(x)
         # x = self.do8(x)
         # print(f"x output shape: {x.shape}")
-        x.squeeze()
-        print(f"x output shape: {x.shape}")
+        x = x.squeeze()
+        # print(f"x output shape: {x.shape}")
         x_R, x_L = extract_diagonals(x)
         x = torch.concat(x_R, x_L)
         return x#, hidden_state
