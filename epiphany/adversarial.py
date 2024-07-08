@@ -129,6 +129,10 @@ def main():
         # modified chromafold left arm with branch_cov structure replicated in the 1d layers
         model_name = "branch_modified_pbulk"
         model = branch_modified_pbulk().cuda()
+    elif args.model == 'g':
+        # left arm: epiphany; right arm: cov1d
+        model_name = "alex_model"
+        model = trunk(Net(1, 5, int(args.window_size)).cuda(), branch_cov().cuda()).cuda()
     else:
         model_name = "DEFAULT"
         model = Net(1, 5, int(args.window_size)).cuda()
