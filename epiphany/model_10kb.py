@@ -246,13 +246,13 @@ class Net2(nn.Module):
         # # # #ADDED:
         # self.fc3 = nn.Linear(100, 1)
         # self.act3 = nn.ReLU()
-        self.conv6 = ConvBlock(in_channels=20, out_channels=15, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        self.conv6 = ConvBlock(in_channels=20, out_channels=15, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
         self.do6 = nn.Dropout(p=.1)
-        self.conv7 = ConvBlock(in_channels=15, out_channels=10, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        self.conv7 = ConvBlock(in_channels=15, out_channels=10, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
         self.do7 = nn.Dropout(p=.1)
-        self.conv7 = ConvBlock(in_channels=10, out_channels=5, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        self.conv7 = ConvBlock(in_channels=10, out_channels=5, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
         self.do7 = nn.Dropout(p=.1)
-        self.conv8 = ConvBlock(in_channels=5, out_channels=1, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        self.conv8 = ConvBlock(in_channels=5, out_channels=1, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
         self.do8 = nn.Dropout(p=.1)
 
         self.fc2 = nn.Linear(2400, 900)
