@@ -478,8 +478,10 @@ class trunk(nn.Module):
     def forward(self, x):
         x_copy = x.clone()
         x = self.branch_cov(x)
+        print(x.shape)
         # x = self.Net(x)[0]
         x2 = self.branch_pbulk(x_copy)
+        print(x2.shape)
         # with torch.no_grad():
         #     x2 = self.branch_pbulk(x2)
         x = self.out(torch.cat((x, torch.t(x2)), 1)) # x = self.out(torch.cat((x, torch.t(x2)), 1))
