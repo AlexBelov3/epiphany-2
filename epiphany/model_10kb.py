@@ -155,7 +155,7 @@ class Net(nn.Module):
         x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
         # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (1, x.shape[1], 1))
         # x = x.unsqueeze(0)
-        # print(f"x input shape: {x.shape}")
+        print(f"x input shape: {x.shape}")
         x = self.conv1(x)
         x = self.do1(x)
         x = self.conv2(x)
