@@ -138,8 +138,8 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(900, 100) #200
         self.act2 = nn.ReLU()
         # # #ADDED:
-        self.fc3 = nn.Linear(100, 1)
-        self.act3 = nn.ReLU()
+        # self.fc3 = nn.Linear(100, 1)
+        # self.act3 = nn.ReLU()
         # self.conv6 = ConvBlock(in_channels=20, out_channels=15, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
         # self.do6 = nn.Dropout(p=.1)
         # self.conv7 = ConvBlock(in_channels=15, out_channels=10, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
@@ -216,7 +216,87 @@ class Net(nn.Module):
         total_loss = lam * l2_loss + (1 - lam) * l1_loss
         return total_loss
 
+class Net2(nn.Module):
+    def __init__(self, num_layers=1, input_channels=5, window_size=14000):
 
+        super(Net2, self).__init__()
+        self.input_channels = input_channels
+        self.window_size = window_size
+
+        self.conv1 = ConvBlock(in_channels=self.input_channels, out_channels=70, kernel_width=17, stride=1, pool_size=4) #pool_size=4
+        self.do1 = nn.Dropout(p=.1)
+        self.conv2 = ConvBlock(in_channels=70, out_channels=90, kernel_width=7, stride=1, pool_size=4) #pool_size=4
+        self.do2 = nn.Dropout(p=.1)
+        self.conv3 = ConvBlock(in_channels=90, out_channels=70, kernel_width=5, stride=1, pool_size=4) #pool_size=4
+        self.do3 = nn.Dropout(p=.1)
+        self.conv4 = ConvBlock(in_channels=70, out_channels=50, kernel_width=5, stride=1)
+        self.do4 = nn.Dropout(p=.1)
+        self.conv5 = ConvBlock(in_channels=50, out_channels=20, kernel_width=5, stride=1)
+        self.pool = nn.AdaptiveMaxPool1d(900 // 20)
+        self.do5 = nn.Dropout(p=.1)
+
+        self.rnn1 = nn.LSTM(input_size=900, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.fc = nn.Linear(2400, 900)
+        self.act = nn.ReLU()
+        self.fc2 = nn.Linear(900, 100) #200
+        self.act2 = nn.ReLU()
+        # # #ADDED:
+        self.fc3 = nn.Linear(100, 1)
+        self.act3 = nn.ReLU()
+        # self.conv6 = ConvBlock(in_channels=20, out_channels=15, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        # self.do6 = nn.Dropout(p=.1)
+        # self.conv7 = ConvBlock(in_channels=15, out_channels=10, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        # self.do7 = nn.Dropout(p=.1)
+        # self.conv7 = ConvBlock(in_channels=10, out_channels=5, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        # self.do7 = nn.Dropout(p=.1)
+        # self.conv8 = ConvBlock(in_channels=5, out_channels=1, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        # self.do8 = nn.Dropout(p=.1)
+
+    def forward(self, x, hidden_state=None, seq_length=200):
+        x = x.squeeze()
+        assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
+        x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (1, x.shape[1], 1))
+        # x = x.unsqueeze(0)
+        # print(f"x input shape: {x.shape}")
+        x = self.conv1(x)
+        x = self.do1(x)
+        x = self.conv2(x)
+        x = self.do2(x)
+        x = self.conv3(x)
+        x = self.do3(x)
+        x = self.conv4(x)
+        x = self.do4(x)
+        x = self.conv5(x)
+        x = self.pool(x)
+        x = self.do5(x)
+        print(f"x conv output shape: {x.shape}")
+        x = x.view(1, seq_length, x.shape[1] * x.shape[2])
+        res1, hidden_state = self.rnn1(x, None)
+        res2, hidden_state = self.rnn2(res1, None)
+        res2 = res2 + res1
+        res3, hidden_state = self.rnn3(res2, None)
+        print(f"x LSTM output shape: {res2.shape}")
+        x = self.fc(res2 + res3)
+        x = self.act(x)
+        x = self.fc2(x)
+        # ADDED LINES:
+        # x = self.act2(x)
+        # x = self.fc3(x)
+        # x = self.conv6(x)
+        # x = self.do6(x)
+        # x = self.conv7(x)
+        # x = self.do7(x)
+        # x = self.conv8(x)
+        # x = self.do8(x)
+        # print(f"x output shape: {x.shape}")
+        x = x.squeeze()
+        # # print(f"x output shape: {x.shape}")
+        x_R, x_L = extract_diagonals(x)
+        x = torch.cat((x_R, x_L), 0)
+        x = x.unsqueeze(0)
+        return x#, hidden_state
 
 # class Net(nn.Module):
 #     def __init__(self, num_layers=1, input_channels=5, window_size=14000):
