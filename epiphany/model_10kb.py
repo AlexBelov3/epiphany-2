@@ -141,21 +141,21 @@ class Net(nn.Module):
         # # #ADDED:
         # self.fc3 = nn.Linear(100, 10)
         # self.act3 = nn.ReLU()
-        self.conv6 = ConvBlock(in_channels=20, out_channels=15, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
-        self.do6 = nn.Dropout(p=.1)
-        self.conv7 = ConvBlock(in_channels=15, out_channels=10, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
-        self.do7 = nn.Dropout(p=.1)
-        self.conv7 = ConvBlock(in_channels=10, out_channels=5, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
-        self.do7 = nn.Dropout(p=.1)
-        self.conv8 = ConvBlock(in_channels=5, out_channels=1, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
-        self.do8 = nn.Dropout(p=.1)
+        # self.conv6 = ConvBlock(in_channels=20, out_channels=15, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        # self.do6 = nn.Dropout(p=.1)
+        # self.conv7 = ConvBlock(in_channels=15, out_channels=10, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        # self.do7 = nn.Dropout(p=.1)
+        # self.conv7 = ConvBlock(in_channels=10, out_channels=5, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        # self.do7 = nn.Dropout(p=.1)
+        # self.conv8 = ConvBlock(in_channels=5, out_channels=1, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
+        # self.do8 = nn.Dropout(p=.1)
 
     def forward(self, x, hidden_state=None, seq_length=200):
         x = x.squeeze()
         assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
-        # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
+        x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
         # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (1, x.shape[1], 1))
-        x = x.unsqueeze(0)
+        # x = x.unsqueeze(0)
         # print(f"x input shape: {x.shape}")
         x = self.conv1(x)
         x = self.do1(x)
@@ -181,12 +181,14 @@ class Net(nn.Module):
         # ADDED LINES:
         # x = self.act2(x)
         # x = self.fc3(x)
-        x = self.conv6(x)
-        x = self.do6(x)
-        x = self.conv7(x)
-        x = self.do7(x)
-        x = self.conv8(x)
-        x = self.do8(x)
+        # x = self.conv6(x)
+        # x = self.do6(x)
+        # x = self.conv7(x)
+        # x = self.do7(x)
+        # x = self.conv8(x)
+        # x = self.do8(x)
+        x_R, x_L = extract_diagonals(x)
+        x = torch.concat(x_R, x_L)
         return x#, hidden_state
 
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
