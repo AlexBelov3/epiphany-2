@@ -138,8 +138,8 @@ class Net(nn.Module):
         self.fc2 = nn.Linear(900, 100) #200
         self.act2 = nn.ReLU()
         # # #ADDED:
-        # self.fc3 = nn.Linear(100, 10)
-        # self.act3 = nn.ReLU()
+        self.fc3 = nn.Linear(100, 1)
+        self.act3 = nn.ReLU()
         # self.conv6 = ConvBlock(in_channels=20, out_channels=15, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
         # self.do6 = nn.Dropout(p=.1)
         # self.conv7 = ConvBlock(in_channels=15, out_channels=10, kernel_width=5, stride=1, pool_size=0)  # pool_size=4
@@ -177,20 +177,14 @@ class Net(nn.Module):
         x = self.act(x)
         x = self.fc2(x)
         # ADDED LINES:
-        # x = self.act2(x)
-        # x = self.fc3(x)
-        # x = self.conv6(x)
-        # x = self.do6(x)
-        # x = self.conv7(x)
-        # x = self.do7(x)
-        # x = self.conv8(x)
-        # x = self.do8(x)
+        x = self.act2(x)
+        x = self.fc3(x)
         # print(f"x output shape: {x.shape}")
-        x = x.squeeze()
-        # print(f"x output shape: {x.shape}")
-        x_R, x_L = extract_diagonals(x)
-        x = torch.cat((x_R, x_L), 0)
-        x = x.unsqueeze(0)
+        # x = x.squeeze()
+        # # print(f"x output shape: {x.shape}")
+        # x_R, x_L = extract_diagonals(x)
+        # x = torch.cat((x_R, x_L), 0)
+        # x = x.unsqueeze(0)
         return x#, hidden_state
 
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
