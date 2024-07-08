@@ -135,7 +135,7 @@ class Net(nn.Module):
         self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
         self.fc = nn.Linear(2400, 900)
         self.act = nn.ReLU()
-        self.fc2 = nn.Linear(900, 200)
+        self.fc2 = nn.Linear(900, 100) #200
         self.act2 = nn.ReLU()
         # # #ADDED:
         # self.fc3 = nn.Linear(100, 10)
@@ -186,7 +186,7 @@ class Net(nn.Module):
         # x = self.do7(x)
         # x = self.conv8(x)
         # x = self.do8(x)
-        print(f"x output shape: {x.shape}")
+        # print(f"x output shape: {x.shape}")
         x_R, x_L = extract_diagonals(x)
         x = torch.concat(x_R, x_L)
         return x#, hidden_state
