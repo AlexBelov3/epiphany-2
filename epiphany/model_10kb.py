@@ -190,7 +190,7 @@ class Net(nn.Module):
         x = x.squeeze()
         # print(f"x output shape: {x.shape}")
         x_R, x_L = extract_diagonals(x)
-        x = torch.concat(x_R, x_L)
+        x = torch.cat((x_R, x_L), 0)
         return x#, hidden_state
 
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
