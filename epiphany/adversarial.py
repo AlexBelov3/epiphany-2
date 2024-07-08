@@ -84,8 +84,6 @@ def main():
     TEST_SEQ_LENGTH = 200
 
     torch.cuda.set_device(int(args.gpu))
-
-
     torch.manual_seed(0)
     # model = Net(1, 5, int(args.window_size)).cuda()
     # TESTING:
@@ -107,7 +105,6 @@ def main():
 
     # mod_branch_cov = nn.DataParallel(branch_cov(), device_ids=[0])
     # model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0])
-    model_name = "DEFAULT"
     if args.model == 'a':
         # chromafold left arm with outer product and conv2d
         model_name = "branch_pbulk"
