@@ -250,10 +250,10 @@ class Net2(nn.Module):
         self.do6 = nn.Dropout(p=.1)
         self.conv7 = ConvBlock(in_channels=15, out_channels=10, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
         self.do7 = nn.Dropout(p=.1)
-        self.conv7 = ConvBlock(in_channels=10, out_channels=5, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
-        self.do7 = nn.Dropout(p=.1)
-        self.conv8 = ConvBlock(in_channels=5, out_channels=1, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
+        self.conv8 = ConvBlock(in_channels=10, out_channels=5, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
         self.do8 = nn.Dropout(p=.1)
+        self.conv9 = ConvBlock(in_channels=5, out_channels=1, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
+        self.do9 = nn.Dropout(p=.1)
 
         self.fc2 = nn.Linear(2400, 900)
 
@@ -292,9 +292,9 @@ class Net2(nn.Module):
         x = self.do6(x)
         x = self.conv7(x)
         x = self.do7(x)
-        # x = self.conv8(x)
-        # x = self.do8(x)
-        # print(f"x output shape: {x.shape}")
+        x = self.conv8(x)
+        x = self.do8(x)
+        print(f"x output shape: {x.shape}")
         x = x.squeeze()
         # # print(f"x output shape: {x.shape}")
         x_R, x_L = extract_diagonals(x)
