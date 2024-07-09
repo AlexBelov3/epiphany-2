@@ -754,7 +754,7 @@ class branch_outter_prod_small(nn.Module):
         x4 = self.total_extractor_2d(x3_2d)
         x4 = torch.flatten(x4, 1)
         x4 = self.classifier2(x4)
-        print(f"x4 shape: {x4.shape}")
+        # print(f"x4 shape: {x4.shape}")
         return x4
 #
 # class branch_outter_prod_big(nn.Module):
