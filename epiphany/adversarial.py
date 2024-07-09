@@ -29,7 +29,7 @@ def main():
     parser.add_argument("--m", help="additional comments", default="")
     parser.add_argument("--high_res", action='store_true', help="Use if predicting 5kb resolution Hi-C (10kb is used by default)")
     parser.add_argument('--wandb', action='store_true', help='Toggle wandb')
-    parser.add_argument('model', choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'])
+    parser.add_argument('model', choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'])
 
     args = parser.parse_args()
 
@@ -135,6 +135,10 @@ def main():
         # modified epiphany (without .as_strided())
         model_name = "epiphany2"
         model = Net2(1, 5, int(args.window_size)).cuda()
+    elif args.model == 'i':
+        # conv1d right arm ad outer_prod right arm
+        model_name = "epiphany_2"
+        model = trunk(branch_outter_prod().cuda(), branch_cov().cuda()).cuda()
     else:
         model_name = "DEFAULT"
         model = Net(1, 5, int(args.window_size)).cuda()
