@@ -138,11 +138,11 @@ def main():
     elif args.model == 'i':
         # conv1d right arm ad outer_prod right arm
         model_name = "epiphany_2"
-        model = trunk(branch_outter_prod().cuda(), branch_cov().cuda()).cuda()
+        model = trunk(branch_outter_prod_small().cuda(), branch_cov().cuda()).cuda()
     else:
         model_name = "DEFAULT"
         model = Net(1, 5, int(args.window_size)).cuda()
-    print(f"BEGINNING TRAINING: {model_name}")
+    print(f"Beginning training {model_name}")
     if args.wandb:
         import wandb
         wandb.init(project=model_name,)
