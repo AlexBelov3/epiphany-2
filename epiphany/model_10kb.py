@@ -741,42 +741,8 @@ class branch_outter_prod_small(nn.Module):
             nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
             nn.BatchNorm2d(16),
             nn.ReLU(),
-        )
-
-        # self.classifier = nn.Sequential(
-        #     nn.Linear(in_features=(400), out_features=512), #nn.Linear(in_features=(1936), out_features=512),
-        # )
-        # self.classifier2 = nn.Sequential(
-        #     nn.Linear(in_features=(400), out_features=200))  # (nn.Linear(in_features=(512), out_features=200))
-
-    def forward(self, x2):
-        x3_2d = self.bulk_summed_2d(x2)
-        x4 = self.total_extractor_2d(x3_2d)
-        x4 = torch.flatten(x4, 1)
-        # x4 = self.classifier2(x4)
-        print(f"x4 shape: {x4.shape}")
-        return x4
-
-class branch_outter_prod_big(nn.Module):
-    def __init__(self):
-        super(branch_outter_prod_big, self).__init__()
-        pbulk_res = 50
-
-        self.bulk_summed_2d = nn.Sequential(
-            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outter_prod_big()
-        )
-
-        self.total_extractor_2d = nn.Sequential(
-            nn.Conv2d(in_channels=37, out_channels=64, kernel_size=3, stride=2),
-            # nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
-            nn.BatchNorm2d(64),
-            nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=2),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
+            nn.Conv2d(in_channels=32, out_channels=16, kernel_size=2, stride=2),
             nn.BatchNorm2d(16),
             nn.ReLU(),
         )
@@ -794,6 +760,44 @@ class branch_outter_prod_big(nn.Module):
         # x4 = self.classifier2(x4)
         print(f"x4 shape: {x4.shape}")
         return x4
+#
+# class branch_outter_prod_big(nn.Module):
+#     def __init__(self):
+#         super(branch_outter_prod_big, self).__init__()
+#         pbulk_res = 50
+#
+#         self.bulk_summed_2d = nn.Sequential(
+#             nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outter_prod_big()
+#         )
+#
+#         self.total_extractor_2d = nn.Sequential(
+#             nn.Conv2d(in_channels=37, out_channels=64, kernel_size=3, stride=2),
+#             # nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
+#             nn.BatchNorm2d(64),
+#             nn.ReLU(),
+#             nn.MaxPool2d(kernel_size=2),
+#             nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=2),
+#             nn.BatchNorm2d(32),
+#             nn.ReLU(),
+#             nn.MaxPool2d(kernel_size=2),
+#             nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
+#             nn.BatchNorm2d(16),
+#             nn.ReLU(),
+#         )
+#
+#         # self.classifier = nn.Sequential(
+#         #     nn.Linear(in_features=(400), out_features=512), #nn.Linear(in_features=(1936), out_features=512),
+#         # )
+#         # self.classifier2 = nn.Sequential(
+#         #     nn.Linear(in_features=(400), out_features=200))  # (nn.Linear(in_features=(512), out_features=200))
+#
+#     def forward(self, x2):
+#         x3_2d = self.bulk_summed_2d(x2)
+#         x4 = self.total_extractor_2d(x3_2d)
+#         x4 = torch.flatten(x4, 1)
+#         # x4 = self.classifier2(x4)
+#         print(f"x4 shape: {x4.shape}")
+#         return x4
 
 class branch_pbulk(nn.Module):
     def __init__(self):
