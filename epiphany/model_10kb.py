@@ -724,16 +724,12 @@ class branch_outter_prod_small(nn.Module):
         super(branch_outter_prod_small, self).__init__()
         pbulk_res = 50
 
-        # self.bulk_summed_2d = nn.Sequential(
-        #     nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), symmetrize_bulk()
-        # )
-
         self.bulk_summed_2d = nn.Sequential(
             nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outter_prod()
         )
 
         self.total_extractor_2d = nn.Sequential(
-            nn.Conv2d(in_channels=37, out_channels=64, kernel_size=3, stride=2),
+            nn.Conv2d(in_channels=5, out_channels=64, kernel_size=3, stride=2),
             # nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
@@ -765,10 +761,6 @@ class branch_outter_prod_big(nn.Module):
     def __init__(self):
         super(branch_outter_prod_big, self).__init__()
         pbulk_res = 50
-
-        # self.bulk_summed_2d = nn.Sequential(
-        #     nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), symmetrize_bulk()
-        # )
 
         self.bulk_summed_2d = nn.Sequential(
             nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outter_prod_big()
