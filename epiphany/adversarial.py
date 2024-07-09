@@ -133,7 +133,7 @@ def main():
         model = trunk(Net(1, 5, int(args.window_size)).cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'h':
         # modified epiphany (without .as_strided())
-        model_name = "epiphany2"
+        model_name = "epiphany1.1"
         model = Net2(1, 5, int(args.window_size)).cuda()
     elif args.model == 'i':
         # conv1d right arm ad outer_prod right arm
@@ -175,12 +175,12 @@ def main():
 
 
     # GM12878 Standard
-    #test_chroms = ['chr3', 'chr11', 'chr17']
+    test_chroms = ['chr3', 'chr11', 'chr17']
     # match test chroms with chromafold!!
-    test_chroms = ['chr17']
+    # test_chroms = ['chr17']
     #train_chroms = ['chr1', 'chr2', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22']
-    train_chroms = ['chr19', 'chr20', 'chr21', 'chr22']
-    # train_chroms = ['chr22']
+    # train_chroms = ['chr19', 'chr20', 'chr21', 'chr22']
+    train_chroms = ['chr22']
 
     train_set = Chip2HiCDataset(seq_length=TRAIN_SEQ_LENGTH, window_size=int(args.window_size), chroms=train_chroms, mode='train')
     test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=test_chroms, mode='test')
