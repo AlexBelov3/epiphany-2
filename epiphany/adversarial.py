@@ -215,6 +215,7 @@ def main():
                     test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda() #NEW!!!!
                     with torch.no_grad():
                         print(f"input data shape: {test_data.shape}")
+                        print(f"test label shape: {test_label.shape}")
                         y_hat = model(test_data)
 
                         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))

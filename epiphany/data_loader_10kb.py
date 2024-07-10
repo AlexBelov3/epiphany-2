@@ -72,8 +72,10 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         idx = int(index - ([0] + np.cumsum(self.sizes).tolist())[chrom_idx])
         # start = idx*self.seq_length + self.buf
         start = idx + self.buf
+        print(f"start: {start}")
         # end = np.minimum(idx*self.seq_length + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
         end = np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
+        print(f"end: {end}")
         contact_data = []
 
         for t in range(idx + self.buf, np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1):
