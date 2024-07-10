@@ -297,7 +297,7 @@ class Net2(nn.Module):
                             bidirectional=True)
         self.fc = nn.Linear(1200, 900)
         # self.act = nn.ReLU()
-        self.fc2 = nn.Linear(343, 200) #900
+        self.fc2 = nn.Linear(900, 200) #900
         # self.act2 = nn.ReLU()
 
     def forward(self, x, hidden_state=None, seq_length=200):
