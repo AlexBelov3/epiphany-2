@@ -284,20 +284,20 @@ class Net2(nn.Module):
             # nn.BatchNorm1d(16), #1
             nn.ReLU(),
         )
-        self.rnn1 = nn.LSTM(input_size=343, hidden_size=1200, num_layers=num_layers, batch_first=True, #no res blocks: in=1375
-                            bidirectional=True)
-        self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
-                            bidirectional=True)
-        self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
-                            bidirectional=True)
+        # self.rnn1 = nn.LSTM(input_size=343, hidden_size=1200, num_layers=num_layers, batch_first=True, #no res blocks: in=1375
+        #                     bidirectional=True)
+        # self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
+        #                     bidirectional=True)
+        # self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
+        #                     bidirectional=True)
         # self.rnn1 = nn.LSTM(input_size=343, hidden_size=600, num_layers=num_layers, batch_first=True, bidirectional=True)
         # self.rnn2 = nn.LSTM(input_size=1200, hidden_size=600, num_layers=num_layers, batch_first=True,
         #                     bidirectional=True)
         # self.rnn3 = nn.LSTM(input_size=1200, hidden_size=600, num_layers=num_layers, batch_first=True,
         #                     bidirectional=True)
-        self.fc = nn.Linear(2400, 900)
+        # self.fc = nn.Linear(2400, 900)
         # self.act = nn.ReLU()
-        self.fc2 = nn.Linear(900, 200)
+        self.fc2 = nn.Linear(343, 200) #900
         # self.act2 = nn.ReLU()
 
     def forward(self, x, hidden_state=None, seq_length=200):
@@ -309,14 +309,14 @@ class Net2(nn.Module):
         x = self.cov_extractor(x)
         x = torch.flatten(x, 1)
         # x = x.view(1, seq_length, x.shape[1] * x.shape[2])
-        res1, hidden_state = self.rnn1(x, None)
-        res2, hidden_state = self.rnn2(res1, None)
+        # res1, hidden_state = self.rnn1(x, None)
+        # res2, hidden_state = self.rnn2(res1, None)
         # res2 = res2 + res1
-        res3, hidden_state = self.rnn3(res2, None)
-        x = self.fc(res3) #res2 + res3
-        # x = self.act(x)
+        # res3, hidden_state = self.rnn3(res2, None)
+        # x = self.fc(res3) #res2 + res3
+        # # x = self.act(x)
         x = self.fc2(x)
-        # x = self.act2(x)
+        # # x = self.act2(x)
         return x
 
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
