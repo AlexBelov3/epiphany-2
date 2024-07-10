@@ -314,9 +314,9 @@ class Net2(nn.Module):
         res2 = res2 + res1
         res3, hidden_state = self.rnn3(res2, None)
         x = self.fc(res2 + res3)
-        x = self.act(x)
+        # x = self.act(x)
         x = self.fc2(x)
-        x = self.act2(x)
+        # x = self.act2(x)
         return x
 
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
