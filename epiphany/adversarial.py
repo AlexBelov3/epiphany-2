@@ -57,11 +57,7 @@ def main():
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
 
-    if args.model == 'a':
-        # chromafold left arm with outer product and conv2d
-        model_name = "branch_pbulk"
-        model = branch_pbulk().cuda()
-    elif args.model == 'b':
+    if args.model == 'b':
         # chromafold right arm with only conv1d
         model_name = "branch_cov"
         model = branch_cov().cuda()
@@ -69,22 +65,6 @@ def main():
         # chromafold conv1d all --> conv2d
         model_name = "branch_cov_2d"
         model = branch_cov_2d().cuda()
-    elif args.model == 'd':
-        # chromafold architecture
-        model_name = "chromafold"
-        model = trunk(branch_pbulk().cuda(), branch_cov().cuda()).cuda()
-    elif args.model == 'e':
-        # epiphany architecture (which is similar to chromafold left arm with the outer product replaced by bi-LSTM)
-        model_name = "epiphany"
-        model = Net(1, 5, int(args.window_size)).cuda()
-    elif args.model == 'f':
-        # modified chromafold left arm with branch_cov structure replicated in the 1d layers
-        model_name = "branch_modified_pbulk"
-        model = branch_modified_pbulk().cuda()
-    elif args.model == 'g':
-        # left arm: epiphany; right arm: cov1d
-        model_name = "alex_model"
-        model = trunk(Net(1, 5, int(args.window_size)).cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'h':
         # modified epiphany (without .as_strided())
         model_name = "epiphany1.1"
