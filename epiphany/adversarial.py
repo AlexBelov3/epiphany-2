@@ -43,33 +43,6 @@ def main():
     '''
 
 
-    # import numpy as np
-    # import time
-    # t0 = time.time()
-    # X_chr = np.arange(1, 34000)  # 6
-    #
-    # MAX_LEN = 1  # 25
-    # co_signals = np.outer(X_chr, X_chr)
-    # print("-" * 40)
-    #
-    # # print(co_signals)
-    # n = len(X_chr)
-    # L = MAX_LEN + co_signals.shape[1]
-    # new_matrix = np.zeros((2 * n - 1, L))
-    #
-    # for i in range(-n, n):
-    #     diagonal = np.diagonal(co_signals, offset=i)
-    #     new_matrix[n - 1 + i][abs(i):len(diagonal) + abs(i)] = diagonal
-    # # print(new_matrix)
-    #
-    # # ADD NEW PRODUCTS
-    # for index in range(1, MAX_LEN + 1):
-    #     new_X_chr = np.arange(index + 1, index + len(X_chr) + 1)
-    #     new_prod = [new_X_chr[-1]] * new_X_chr
-    #     new_matrix[:, len(X_chr) + index - 1][:len(new_prod)] = new_prod
-    #     new_matrix[:, len(X_chr) + index - 1][len(new_prod) - 1:] = new_prod[::-1]  # (reversed)
-    # # print(new_matrix)
-    # print(time.time() - t0)
 
 
     print("Run: " + args.m)
@@ -83,26 +56,7 @@ def main():
 
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
-    # model = Net(1, 5, int(args.window_size)).cuda()
-    # TESTING:
-    # Define Model
-    # mod_branch_pbulk = nn.DataParallel(branch_pbulk(), device_ids=[0])
-    # mod_branch_cov = nn.DataParallel(branch_cov(), device_ids=[0])
-    # mod_branch_cov = branch_cov().cuda()
-    # mod_branch_cov_2d = branch_cov_2d().cuda()
-    # mod_branch_cov_2d = Net().cuda()
-    # mod_branch_pbulk = branch_pbulk().cuda()
-    # new_model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0]).cuda()
 
-    # new_model = trunk(branch_outerprod(), Net()).cuda()
-
-    # Define Model
-    # mod_branch_pbulk = nn.DataParallel(branch_outerprod(), device_ids=[0])
-    # PATH_branch_pbulk = args.bulk_checkpoint
-    # mod_branch_pbulk.load_state_dict(torch.load(PATH_branch_pbulk), strict=True)
-
-    # mod_branch_cov = nn.DataParallel(branch_cov(), device_ids=[0])
-    # model = nn.DataParallel(trunk(mod_branch_pbulk, mod_branch_cov), device_ids=[0])
     if args.model == 'a':
         # chromafold left arm with outer product and conv2d
         model_name = "branch_pbulk"
@@ -212,7 +166,7 @@ def main():
     y_up_list = []
     y_down_list = []
     labels = []
-    for i, (test_data, test_label, co_signal) in enumerate(test_loader):
+    for i, (test_data, test_label) in enumerate(test_loader):
         test_label = test_label.squeeze()
         y, y_rev = extract_diagonals(test_label)
         y_up_list.append(y)
@@ -254,12 +208,10 @@ def main():
 
         if epoch % 1 == 0:
             i = 0
-            for (test_data, test_label, co_signal) in tqdm(test_loader):
+            for (test_data, test_label) in tqdm(test_loader):
                 if i < 400:
                     if np.linalg.norm(test_label) < 1e-8:
                         continue
-                    # test_data, test_label, co_signal = torch.Tensor(test_data[0]).cuda(), torch.Tensor(test_label).cuda(), torch.Tensor(co_signal).cuda()
-                    # test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
                     test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda() #NEW!!!!
                     with torch.no_grad():
                         print(f"input data shape: {test_data.shape}")
@@ -300,7 +252,7 @@ def main():
 
         model.train()
         disc.train()
-        for batch_idx, (data, label, co_signal) in enumerate(train_loader):
+        for batch_idx, (data, label) in enumerate(train_loader):
             if (np.linalg.norm(data)) < 1e-8 or data.shape[2]!=int(args.window_size)+20000:
                 continue
 
