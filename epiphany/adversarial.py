@@ -262,6 +262,7 @@ def main():
                     # test_data, test_label = torch.Tensor(test_data[0]), torch.Tensor(test_label)
                     test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda() #NEW!!!!
                     with torch.no_grad():
+                        print(f"input data shape: {test_data.shape}")
                         y_hat = model(test_data)
 
                         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
@@ -297,12 +298,7 @@ def main():
         with open(test_log, 'a+') as f:
             f.write(str(np.mean(test_loss_cpu)) + "\n")
 
-        losses = []
         model.train()
-        # new_model.train()
-        # mod_branch_cov.train()
-        # mod_branch_pbulk.train()
-        # mod_branch_cov_2d.train()
         disc.train()
         for batch_idx, (data, label, co_signal) in enumerate(train_loader):
             if (np.linalg.norm(data)) < 1e-8 or data.shape[2]!=int(args.window_size)+20000:
@@ -310,33 +306,17 @@ def main():
 
             hidden = None
             label = torch.tensor(np.squeeze(label), requires_grad=True).cuda()
-            # data = data[0].cuda()
             data = data.cuda()
             optimizer.zero_grad()
-
-            # output, hidden = model(data,seq_length=TRAIN_SEQ_LENGTH)
-            # output = new_model(data, torch.tensor(co_signal, requires_grad=True).cuda())
-            # output = torch.squeeze(output)
-            # output_L, output_R = extract_diagonals(output.squeeze())
-            # output = torch.concat((output_L, output_R), dim=0)
-
-            # output = mod_branch_cov(data)
-            # output = mod_branch_pbulk(data)
             output = model(data)
 
             label_1d_v_up, label_1d_v_down = extract_diagonals(label)
             label = torch.concat((label_1d_v_up, label_1d_v_down), dim=0)
 
-            # mse_loss = new_model.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
-            # mse_loss = mod_branch_cov.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
-            # mse_loss = mod_branch_pbulk.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
             mse_loss = model.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
 
             loss = (LAMBDA)*mse_loss #+ (1 - LAMBDA)*adv_loss
-            # loss = float(0.5)*mse_loss_up + float(0.5)*mse_loss_down
-            # initial_params = {name: param.clone() for name, param in new_model.named_parameters()}
-            # initial_params = {name: param.clone() for name, param in mod_branch_cov.named_parameters()}
-            # initial_params = {name: param.clone() for name, param in mod_branch_pbulk.named_parameters()}
+
             initial_params = {name: param.clone() for name, param in model.named_parameters()}
             loss.backward()
             for name, param in model.named_parameters():
@@ -349,26 +329,9 @@ def main():
                 if torch.equal(param, initial_params[name]):
                     print(f"Parameter {name} has NOT been updated.")
 
-            # # Train discriminator
-            # disc_optimizer.zero_grad()
-            #
-            # true_pred = disc(label.view(1,1,label.shape[0], label.shape[1]))
-            # fake_pred = disc(output.detach().view(1,1,output.shape[0], output.shape[1]))
-            # disc_preds = torch.cat((true_pred, fake_pred), dim=0)
-            # #disc_loss = disc.loss(disc_preds, torch.Tensor([1, 0]).view(2, 1)).cuda())
-            # disc_loss = disc.loss(disc_preds, torch.Tensor([1, 0]).view(2,1))
-            # disc_loss.backward()
-            #
-            # disc_preds_train.append(torch.sigmoid(true_pred).item())
-            # disc_preds_train.append(torch.sigmoid(fake_pred).item())
-            # disc_optimizer.step()
-
 
             if args.wandb:
                 wandb.log({'mse_loss': mse_loss.item()})
-                # wandb.log({'adv_loss': adv_loss.item()})
-                wandb.log({'L_G': loss.item()})
-                # wandb.log({'L_D': disc_loss.item()})
 
             if batch_idx % log_interval == 0:
 
