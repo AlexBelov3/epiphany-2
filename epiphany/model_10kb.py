@@ -247,10 +247,10 @@ class Net2(nn.Module):
             nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            # resblock(16),
-            # nn.MaxPool1d(kernel_size=2),
-            # resblock(16),
-            # nn.MaxPool1d(kernel_size=2),
+            resblock(16),
+            nn.MaxPool1d(kernel_size=2),
+            resblock(16),
+            nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
                 in_channels=16,
                 out_channels=16,
@@ -284,7 +284,7 @@ class Net2(nn.Module):
             # nn.BatchNorm1d(16), #1
             nn.ReLU(),
         )
-        self.rnn1 = nn.LSTM(input_size=1375, hidden_size=1200, num_layers=num_layers, batch_first=True, #no res blocks: in=1375
+        self.rnn1 = nn.LSTM(input_size=343, hidden_size=1200, num_layers=num_layers, batch_first=True, #no res blocks: in=1375
                             bidirectional=True)
         self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
                             bidirectional=True)
@@ -296,9 +296,9 @@ class Net2(nn.Module):
         # self.rnn3 = nn.LSTM(input_size=1200, hidden_size=600, num_layers=num_layers, batch_first=True,
         #                     bidirectional=True)
         self.fc = nn.Linear(2400, 900)
-        self.act = nn.ReLU()
+        # self.act = nn.ReLU()
         self.fc2 = nn.Linear(900, 200)
-        self.act2 = nn.ReLU()
+        # self.act2 = nn.ReLU()
 
     def forward(self, x, hidden_state=None, seq_length=200):
         x = x.squeeze()
