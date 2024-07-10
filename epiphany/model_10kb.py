@@ -317,7 +317,7 @@ class Net2(nn.Module):
         # print(f"res3 output: {x.shape}")
         x = self.fc(res2 + res3) #res2 + res3
         # # x = self.act(x)
-        # x = self.fc2(x)
+        x = self.fc2(x)
         # # x = self.act2(x)
         return x
 
