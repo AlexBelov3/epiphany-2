@@ -81,13 +81,10 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             contact_data.append(contact_vec)
 
         X_chr = self.inputs[chr][:self.num_channels, 100*start-(self.window_size//2):100*end+(self.window_size//2)].astype('float32') #100
-        if start == 100:
-            print(f"X_chr shape: {np.shape(X_chr)}")
-            print(f"self.inputs[{chr}][:{self.num_channels}, {100*start-(self.window_size//2)}:{100*end+(self.window_size//2)}]")
+
         y_chr = np.array(contact_data)
 
         if self.zero_pad and y_chr.shape[0] < self.seq_length:
-            print("self.zero_pad and y_chr.shape[0] < self.seq_length")
             try:
                 pad_y = np.zeros((self.seq_length - y_chr.shape[0], y_chr.shape[1]))
                 y_chr = np.concatenate((y_chr, pad_y), axis=0)
