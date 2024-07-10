@@ -284,20 +284,20 @@ class Net2(nn.Module):
             # nn.BatchNorm1d(16), #1
             nn.ReLU(),
         )
-        # self.rnn1 = nn.LSTM(input_size=343, hidden_size=1200, num_layers=num_layers, batch_first=True, #no res blocks: in=1375
-        #                     bidirectional=True)
-        # self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
-        #                     bidirectional=True)
-        # self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
-        #                     bidirectional=True)
-        self.rnn1 = nn.LSTM(input_size=343, hidden_size=300, num_layers=num_layers, batch_first=True, bidirectional=True)
-        self.rnn2 = nn.LSTM(input_size=600, hidden_size=300, num_layers=num_layers, batch_first=True,
+        self.rnn1 = nn.LSTM(input_size=687, hidden_size=1200, num_layers=num_layers, batch_first=True, #no res blocks: in=1375
                             bidirectional=True)
-        self.rnn3 = nn.LSTM(input_size=600, hidden_size=300, num_layers=num_layers, batch_first=True,
+        self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
                             bidirectional=True)
-        self.fc = nn.Linear(600, 200)
+        self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
+                            bidirectional=True)
+        # self.rnn1 = nn.LSTM(input_size=343, hidden_size=300, num_layers=num_layers, batch_first=True, bidirectional=True)
+        # self.rnn2 = nn.LSTM(input_size=600, hidden_size=300, num_layers=num_layers, batch_first=True,
+        #                     bidirectional=True)
+        # self.rnn3 = nn.LSTM(input_size=600, hidden_size=300, num_layers=num_layers, batch_first=True,
+        #                     bidirectional=True)
+        self.fc = nn.Linear(1200, 900)
         # self.act = nn.ReLU()
-        # self.fc2 = nn.Linear(900, 200) #900
+        self.fc2 = nn.Linear(900, 200) #900
         # self.act2 = nn.ReLU()
 
     def forward(self, x, hidden_state=None, seq_length=200):
