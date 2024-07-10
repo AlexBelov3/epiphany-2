@@ -57,19 +57,23 @@ def main():
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
 
-    if args.model == 'b':
+    if args.model == 'a':
         # chromafold right arm with only conv1d
         model_name = "branch_cov"
         model = branch_cov().cuda()
-    elif args.model == 'c':
+    elif args.model == 'b':
         # chromafold conv1d all --> conv2d
         model_name = "branch_cov_2d"
         model = branch_cov_2d().cuda()
-    elif args.model == 'h':
+    elif args.model == 'c':
         # modified epiphany (without .as_strided())
         model_name = "epiphany1.1"
         model = Net2(1, 5, int(args.window_size)).cuda()
-    elif args.model == 'i':
+    elif args.model == 'd':
+        # conv1d right arm ad outer_prod right arm
+        model_name = "epiphany_2"
+        model = trunk(branch_outter_prod_small().cuda(), branch_cov().cuda()).cuda()
+    elif args.model == 'e':
         # conv1d right arm ad outer_prod right arm
         model_name = "epiphany_2"
         model = trunk(branch_outter_prod_small().cuda(), branch_cov().cuda()).cuda()
@@ -112,9 +116,9 @@ def main():
     test_chroms = ['chr3', 'chr11', 'chr17']
     # match test chroms with chromafold!!
     # test_chroms = ['chr17']
-    #train_chroms = ['chr1', 'chr2', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22']
+    train_chroms = ['chr1', 'chr2', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22']
     # train_chroms = ['chr19', 'chr20', 'chr21', 'chr22']
-    train_chroms = ['chr22']
+    # train_chroms = ['chr22']
 
     train_set = Chip2HiCDataset(seq_length=TRAIN_SEQ_LENGTH, window_size=int(args.window_size), chroms=train_chroms, mode='train')
     test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=test_chroms, mode='test')
