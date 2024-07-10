@@ -223,46 +223,103 @@ class Net2(nn.Module):
         self.input_channels = input_channels
         self.window_size = window_size
 
-        self.conv1 = ConvBlock(in_channels=self.input_channels, out_channels=70, kernel_width=17, stride=1, pool_size=4) #pool_size=4
-        self.do1 = nn.Dropout(p=.1)
-        self.conv2 = ConvBlock(in_channels=70, out_channels=90, kernel_width=7, stride=1, pool_size=4) #pool_size=4
-        self.do2 = nn.Dropout(p=.1)
-        self.conv3 = ConvBlock(in_channels=90, out_channels=70, kernel_width=5, stride=1, pool_size=4) #pool_size=4
-        self.do3 = nn.Dropout(p=.1)
-        self.conv4 = ConvBlock(in_channels=70, out_channels=50, kernel_width=5, stride=1)
-        self.do4 = nn.Dropout(p=.1)
-        self.conv5 = ConvBlock(in_channels=50, out_channels=20, kernel_width=5, stride=1)
-        self.pool = nn.AdaptiveMaxPool1d(900)
-        self.do5 = nn.Dropout(p=.1)
+        self.cov_extractor = nn.Sequential(
+            nn.Conv1d(
+                in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            # PrintLayer(),
+            # FirstConvLayer(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            resblock(16),
+            nn.MaxPool1d(kernel_size=2),
+            resblock(16),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=1,  # 16
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding=1,
+            ),
+            # nn.BatchNorm1d(16), #1
+            nn.ReLU(),
+        )
 
-        self.rnn1 = nn.LSTM(input_size=900, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
-        self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
-        self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.rnn1 = nn.LSTM(input_size=243, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
+                            bidirectional=True)
+        self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
+                            bidirectional=True)
         self.fc = nn.Linear(2400, 900)
         self.act = nn.ReLU()
+
+
+        # self.rnn1 = nn.LSTM(input_size=900, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        # self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        # self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        # self.fc = nn.Linear(2400, 900)
+        # self.act = nn.ReLU()
 
         # self.fc2 = nn.Linear(900, 100) #200
         # self.act2 = nn.ReLU()
         # # # #ADDED:
         # self.fc3 = nn.Linear(100, 1)
         # self.act3 = nn.ReLU()
-        self.conv6 = ConvBlock(in_channels=20, out_channels=15, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
-        self.do6 = nn.Dropout(p=.1)
-        self.conv7 = ConvBlock(in_channels=15, out_channels=10, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
-        self.do7 = nn.Dropout(p=.1)
-        self.conv8 = ConvBlock(in_channels=10, out_channels=5, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
-        self.do8 = nn.Dropout(p=.1)
-        self.conv9 = ConvBlock(in_channels=5, out_channels=1, kernel_width=5, stride=1, pool_size=4)  # pool_size=4
-        self.do9 = nn.Dropout(p=.1)
 
         self.fc2 = nn.Linear(2400, 900)
 
     def forward(self, x, hidden_state=None, seq_length=200):
-        x = x.squeeze()
+        # x = x.squeeze()
         assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
         print(f"input_channels: {self.input_channels}")
         # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
         x = x.unsqueeze(0)
+        if x.ndimension() == 2:
+            x = x.unsqueeze(0)
+        x = self.cov_extractor(x)
+        x = torch.flatten(x, 1)
         print(f"x input shape: {x.shape}")
         x = self.conv1(x)
         x = self.do1(x)
@@ -289,21 +346,7 @@ class Net2(nn.Module):
         print(f"x LSTM output shape: {res2.shape}")
         x = self.fc(res2 + res3)
         x = self.act(x)
-        # x = self.fc2(x)
-        # ADDED LINES:
-        # x = self.act2(x)
-        # x = self.fc3(x)
-
-        # x = self.conv8(x)
-        # x = self.do8(x)
-        # x = self.conv9(x)
-        # x = self.do9(x)
         print(f"x output shape: {x.shape}")
-        x = x.squeeze()
-        # # print(f"x output shape: {x.shape}")
-        x_R, x_L = extract_diagonals(x)
-        x = torch.cat((x_R, x_L), 0)
-        x = x.unsqueeze(0)
         return x
 
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
@@ -1020,131 +1063,6 @@ class branch_pbulk(nn.Module):
         # Combine losses with lambda
         total_loss = lam * l2_loss + (1 - lam) * l1_loss
         return total_loss
-
-
-
-# class branch_cov(nn.Module):
-#     def __init__(self):
-#         super(branch_cov, self).__init__()
-#
-#         self.cov_extractor = nn.Sequential(
-#             nn.Conv1d(
-#                 in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
-#             ),
-#             # nn.BatchNorm1d(34000),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(
-#                 in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
-#             ),
-#             # nn.BatchNorm1d(34000),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(
-#                 in_channels=16,
-#                 out_channels=8, #16
-#                 kernel_size=3,
-#                 stride=1,
-#                 dilation=1,
-#                 padding=1,
-#             ),
-#             # nn.BatchNorm1d(34000),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             # resblock(34000),
-#             nn.MaxPool1d(kernel_size=2),
-#             # resblock(34000),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(
-#                 in_channels=8, #16
-#                 out_channels=4, # 16
-#                 kernel_size=3,
-#                 stride=1,
-#                 dilation=1,
-#                 padding=1,
-#             ),
-#             # nn.BatchNorm1d(34000),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(
-#                 in_channels=4, #16
-#                 out_channels=2, #16
-#                 kernel_size=3,
-#                 stride=1,
-#                 dilation=1,
-#                 padding=1,
-#             ),
-#             # nn.BatchNorm1d(34000),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(
-#                 in_channels=2, #16
-#                 out_channels=1, #16
-#                 kernel_size=3,
-#                 stride=1,
-#                 dilation=1,
-#                 padding=1,
-#             ),
-#             # nn.BatchNorm1d(34000),
-#             nn.ReLU(),
-#         )
-#
-#         self.classifier = nn.Sequential(
-#             # nn.Linear(in_features=(265), out_features=512), #992
-#             nn.Linear(in_features=(265), out_features=200),
-#         )
-#
-#     def forward(self, x):
-#         x = self.cov_extractor(x)
-#         x = torch.flatten(x, 1)
-#         x_out = self.classifier(x)
-#
-#         return x_out
-#
-#     def loss(self, prediction, label, seq_length = 200, reduction='mean', lam=1):
-#         l1_loss = 0
-#         if isinstance(prediction, np.ndarray):
-#             prediction = torch.tensor(prediction)
-#         if isinstance(label, np.ndarray):
-#             label = torch.tensor(label)
-#
-#         if prediction.ndim != 1 or label.ndim != 1:
-#             prediction = prediction.view(-1)
-#             label = label.view(-1)
-#
-#         if prediction.size() != label.size():
-#             raise ValueError(
-#                 f"Shape mismatch: prediction size {prediction.size()} does not match label size {label.size()}")
-#
-#         # Compute L1 and L2 losses
-#         # l1_loss = F.l1_loss(prediction, label, reduction=reduction)
-#         l2_loss = F.mse_loss(prediction, label, reduction=reduction)
-#
-#         # Combine losses with lambda
-#         total_loss = lam * l2_loss + (1 - lam) * l1_loss
-#         return total_loss
-class PrintLayer(nn.Module):
-    def forward(self, x):
-        print(f"Input shape to the first Conv layer: {x.shape}")
-        return x
-
-class FirstConvLayer(nn.Module):
-    def __init__(self):
-        super(FirstConvLayer, self).__init__()
-        self.conv = nn.Conv2d(
-            in_channels=1, out_channels=16, kernel_size=5, stride=1, padding=2
-        )
-        self.bn = nn.BatchNorm2d(16)
-        self.relu = nn.ReLU()
-
-    def forward(self, x):
-        x = self.conv(x)
-        print(f"Output shape of the first Conv layer: {x.shape}")
-        x = self.bn(x)
-        x = self.relu(x)
-        return x
-
-
 
 
 class branch_cov(nn.Module):
