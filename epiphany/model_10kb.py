@@ -295,7 +295,7 @@ class Net2(nn.Module):
         #                     bidirectional=True)
         # self.rnn3 = nn.LSTM(input_size=600, hidden_size=300, num_layers=num_layers, batch_first=True,
         #                     bidirectional=True)
-        self.fc = nn.Linear(1200, 900)
+        self.fc = nn.Linear(2400, 900)
         # self.act = nn.ReLU()
         self.fc2 = nn.Linear(900, 200) #900
         # self.act2 = nn.ReLU()
