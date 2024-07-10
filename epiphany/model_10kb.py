@@ -290,12 +290,12 @@ class Net2(nn.Module):
         #                     bidirectional=True)
         # self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
         #                     bidirectional=True)
-        # self.rnn1 = nn.LSTM(input_size=343, hidden_size=600, num_layers=num_layers, batch_first=True, bidirectional=True)
-        # self.rnn2 = nn.LSTM(input_size=1200, hidden_size=600, num_layers=num_layers, batch_first=True,
-        #                     bidirectional=True)
-        # self.rnn3 = nn.LSTM(input_size=1200, hidden_size=600, num_layers=num_layers, batch_first=True,
-        #                     bidirectional=True)
-        # self.fc = nn.Linear(2400, 900)
+        self.rnn1 = nn.LSTM(input_size=343, hidden_size=600, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.rnn2 = nn.LSTM(input_size=1200, hidden_size=600, num_layers=num_layers, batch_first=True,
+                            bidirectional=True)
+        self.rnn3 = nn.LSTM(input_size=1200, hidden_size=600, num_layers=num_layers, batch_first=True,
+                            bidirectional=True)
+        self.fc = nn.Linear(2400, 900)
         # self.act = nn.ReLU()
         self.fc2 = nn.Linear(343, 200) #900
         # self.act2 = nn.ReLU()
