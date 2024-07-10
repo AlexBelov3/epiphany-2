@@ -229,8 +229,6 @@ class Net2(nn.Module):
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
-            # PrintLayer(),
-            # FirstConvLayer(),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
                 in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
@@ -249,10 +247,10 @@ class Net2(nn.Module):
             nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            resblock(16),
-            nn.MaxPool1d(kernel_size=2),
-            resblock(16),
-            nn.MaxPool1d(kernel_size=2),
+            # resblock(16),
+            # nn.MaxPool1d(kernel_size=2),
+            # resblock(16),
+            # nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
                 in_channels=16,
                 out_channels=16,
