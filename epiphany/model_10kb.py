@@ -176,18 +176,9 @@ class Net(nn.Module):
         x = self.fc(res2 + res3)
         x = self.act(x)
         x = self.fc2(x)
-        # ADDED LINES:
         # x = self.act2(x)
-        # x = self.fc3(x)
-        # x = self.conv6(x)
-        # x = self.do6(x)
-        # x = self.conv7(x)
-        # x = self.do7(x)
-        # x = self.conv8(x)
-        # x = self.do8(x)
-        # print(f"x output shape: {x.shape}")
         x = x.squeeze()
-        # # print(f"x output shape: {x.shape}")
+        print(f"x output shape: {x.shape}")
         x_R, x_L = extract_diagonals(x)
         x = torch.cat((x_R, x_L), 0)
         x = x.unsqueeze(0)
@@ -294,21 +285,8 @@ class Net2(nn.Module):
                             bidirectional=True)
         self.fc = nn.Linear(2400, 900)
         self.act = nn.ReLU()
-
-
-        # self.rnn1 = nn.LSTM(input_size=900, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
-        # self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
-        # self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
-        # self.fc = nn.Linear(2400, 900)
-        # self.act = nn.ReLU()
-
-        # self.fc2 = nn.Linear(900, 100) #200
-        # self.act2 = nn.ReLU()
-        # # # #ADDED:
-        # self.fc3 = nn.Linear(100, 1)
-        # self.act3 = nn.ReLU()
-
-        self.fc2 = nn.Linear(2400, 900)
+        self.fc2 = nn.Linear(900, 200)
+        self.act2 = nn.ReLU()
 
     def forward(self, x, hidden_state=None, seq_length=200):
         x = x.squeeze()
@@ -330,6 +308,8 @@ class Net2(nn.Module):
         print(f"x LSTM output shape: {res2.shape}")
         x = self.fc(res2 + res3)
         x = self.act(x)
+        x = self.fc2(x)
+        x = self.act2(x)
         print(f"x output shape: {x.shape}")
         return x
 
