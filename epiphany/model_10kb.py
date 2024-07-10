@@ -281,7 +281,7 @@ class Net2(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            nn.BatchNorm1d(16), #1
+            # nn.BatchNorm1d(16), #1
             nn.ReLU(),
         )
         self.rnn1 = nn.LSTM(input_size=1375, hidden_size=1200, num_layers=num_layers, batch_first=True,
