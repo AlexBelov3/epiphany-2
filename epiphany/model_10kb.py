@@ -176,9 +176,18 @@ class Net(nn.Module):
         x = self.fc(res2 + res3)
         x = self.act(x)
         x = self.fc2(x)
+        # ADDED LINES:
         # x = self.act2(x)
+        # x = self.fc3(x)
+        # x = self.conv6(x)
+        # x = self.do6(x)
+        # x = self.conv7(x)
+        # x = self.do7(x)
+        # x = self.conv8(x)
+        # x = self.do8(x)
+        # print(f"x output shape: {x.shape}")
         x = x.squeeze()
-        print(f"x output shape: {x.shape}")
+        # # print(f"x output shape: {x.shape}")
         x_R, x_L = extract_diagonals(x)
         x = torch.cat((x_R, x_L), 0)
         x = x.unsqueeze(0)
@@ -291,26 +300,20 @@ class Net2(nn.Module):
     def forward(self, x, hidden_state=None, seq_length=200):
         x = x.squeeze()
         assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
-        print(f"input_channels: {self.input_channels}")
-        # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
         x = x.unsqueeze(0)
         if x.ndimension() == 2:
             x = x.unsqueeze(0)
-        print(f"x input shape: {x.shape}")
         x = self.cov_extractor(x)
         x = torch.flatten(x, 1)
-        print(f"x conv output shape: {x.shape}")
         # x = x.view(1, seq_length, x.shape[1] * x.shape[2])
         res1, hidden_state = self.rnn1(x, None)
         res2, hidden_state = self.rnn2(res1, None)
         res2 = res2 + res1
         res3, hidden_state = self.rnn3(res2, None)
-        print(f"x LSTM output shape: {res2.shape}")
         x = self.fc(res2 + res3)
         x = self.act(x)
         x = self.fc2(x)
-        x = self.act2(x)
-        print(f"x output shape: {x.shape}")
+        # x = self.act2(x)
         return x
 
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
