@@ -301,13 +301,11 @@ class Net2(nn.Module):
         # self.act2 = nn.ReLU()
 
     def forward(self, x, hidden_state=None, seq_length=200):
-        x = x.squeeze()
-        assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
-        x = x.unsqueeze(0)
-        if x.ndimension() == 2:
-            x = x.unsqueeze(0)
+        # x = x.squeeze()
+        # assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
+        # x = x.unsqueeze(0)
         x = self.cov_extractor(x)
-        x = torch.flatten(x, 1)
+        # x = torch.flatten(x, 1) # DO I NEED THIS?
         # x = x.view(1, seq_length, x.shape[1] * x.shape[2])
         res1, hidden_state = self.rnn1(x, None)
         res2, hidden_state = self.rnn2(res1, None)
