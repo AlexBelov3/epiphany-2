@@ -287,7 +287,7 @@ class Net2(nn.Module):
             nn.ReLU(),
         )
 
-        self.rnn1 = nn.LSTM(input_size=243, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.rnn1 = nn.LSTM(input_size=343, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
         self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
                             bidirectional=True)
         self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
