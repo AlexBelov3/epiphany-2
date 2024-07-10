@@ -22,7 +22,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
 
         self.seq_length = seq_length
         self.chroms = chroms
-        self.buf = 100
+        self.buf = 200 #100
         self.window_size = window_size
         self.num_channels = 5
         self.inputs = {}
@@ -81,8 +81,9 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             contact_data.append(contact_vec)
 
         X_chr = self.inputs[chr][:self.num_channels, 100*start-(self.window_size//2):100*end+(self.window_size//2)].astype('float32') #100
-        print(f"X_chr shape: {np.shape(X_chr)}")
-        print(f"self.inputs[{chr}][:{self.num_channels}, {100*start-(self.window_size//2)}:{100*end+(self.window_size//2)}]")
+        if start == 100:
+            print(f"X_chr shape: {np.shape(X_chr)}")
+            print(f"self.inputs[{chr}][:{self.num_channels}, {100*start-(self.window_size//2)}:{100*end+(self.window_size//2)}]")
         y_chr = np.array(contact_data)
 
         if self.zero_pad and y_chr.shape[0] < self.seq_length:
