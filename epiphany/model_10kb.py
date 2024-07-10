@@ -311,7 +311,7 @@ class Net2(nn.Module):
         self.fc2 = nn.Linear(2400, 900)
 
     def forward(self, x, hidden_state=None, seq_length=200):
-        # x = x.squeeze()
+        x = x.squeeze()
         assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
         print(f"input_channels: {self.input_channels}")
         # x = torch.as_strided(x, (seq_length, self.input_channels, self.window_size), (100, x.shape[1], 1))
