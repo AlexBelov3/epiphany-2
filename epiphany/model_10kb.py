@@ -304,13 +304,17 @@ class Net2(nn.Module):
         # x = x.squeeze()
         # assert x.shape[0] == self.input_channels, f"Expected {self.input_channels} input channels, but got {x.shape[0]}"
         # x = x.unsqueeze(0)
+        print(f"x input: {x.shape}")
         x = self.cov_extractor(x)
+        print(f"x conv output: {x.shape}")
         x = torch.flatten(x, 1) # DO I NEED THIS?\
+        print(f"x conv output flattened?: {x.shape}")
         # x = x.view(1, seq_length, x.shape[1] * x.shape[2])
         res1, hidden_state = self.rnn1(x, None)
         res2, hidden_state = self.rnn2(res1, None)
         res2 = res2 + res1
         res3, hidden_state = self.rnn3(res2, None)
+        print(f"res3 output: {x.shape}")
         x = self.fc(res2 + res3) #res2 + res3
         # # x = self.act(x)
         x = self.fc2(x)
