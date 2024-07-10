@@ -79,11 +79,10 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         for t in range(idx + self.buf, np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1):
             contact_vec = data_preparation(t,self.labels[chr],self.inputs[chr], distance=100)
             contact_data.append(contact_vec)
-        if start == 301:
-            print(f"contact_data: {np.shape(contact_data)}")
-            print(f"{range(idx + self.buf, np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1)}")
-        X_chr = self.inputs[chr][:self.num_channels, 100*start-(self.window_size//2):100*end+(self.window_size//2)].astype('float32') #100
 
+        X_chr = self.inputs[chr][:self.num_channels, 100*start-(self.window_size//2):100*end+(self.window_size//2)].astype('float32') #100
+        print(f"X_chr shape: {np.shape(X_chr)}")
+        print(f"self.inputs[{chr}][:{self.num_channels}, {100*start-(self.window_size//2)}:{100*end+(self.window_size//2)}]")
         y_chr = np.array(contact_data)
 
         if self.zero_pad and y_chr.shape[0] < self.seq_length:
