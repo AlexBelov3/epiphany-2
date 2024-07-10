@@ -286,13 +286,18 @@ class Net2(nn.Module):
             # nn.BatchNorm1d(16), #1
             nn.ReLU(),
         )
-
-        self.rnn1 = nn.LSTM(input_size=343, hidden_size=1200, num_layers=num_layers, batch_first=True, bidirectional=True)
-        self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
+        # self.rnn1 = nn.LSTM(input_size=343, hidden_size=1200, num_layers=num_layers, batch_first=True,
+        #                     bidirectional=True)
+        # self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
+        #                     bidirectional=True)
+        # self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
+        #                     bidirectional=True)
+        self.rnn1 = nn.LSTM(input_size=343, hidden_size=600, num_layers=num_layers, batch_first=True, bidirectional=True)
+        self.rnn2 = nn.LSTM(input_size=1200, hidden_size=600, num_layers=num_layers, batch_first=True,
                             bidirectional=True)
-        self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
+        self.rnn3 = nn.LSTM(input_size=1200, hidden_size=600, num_layers=num_layers, batch_first=True,
                             bidirectional=True)
-        self.fc = nn.Linear(2400, 900)
+        self.fc = nn.Linear(1200, 900)
         self.act = nn.ReLU()
         self.fc2 = nn.Linear(900, 200)
         self.act2 = nn.ReLU()
@@ -313,7 +318,7 @@ class Net2(nn.Module):
         x = self.fc(res2 + res3)
         x = self.act(x)
         x = self.fc2(x)
-        # x = self.act2(x)
+        x = self.act2(x)
         return x
 
     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
