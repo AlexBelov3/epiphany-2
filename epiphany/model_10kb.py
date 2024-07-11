@@ -1268,7 +1268,7 @@ class branch_cov_2d(nn.Module):
         # print(f"input shape: {x.shape}")
         x = self.cov_extractor(x)
         # print(f"x shape: {x.shape}")
-        x = torch.flatten(x, 1)
+        # x = torch.flatten(x, 1)
         x_out = self.classifier(x)
 
         return x_out
