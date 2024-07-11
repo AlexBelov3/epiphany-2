@@ -723,13 +723,11 @@ class outer_prod_big(nn.Module):
         else:
             if len(x.shape) == 3:
                 x = x.squeeze()
-                print(f"x shape: {x.shape}")
-                binned_signals = x.flatten(0)
-                print(f"signals shape: {binned_signals.shape}")
-                binned_signals = np.outer(binned_signals, binned_signals)
-                co_signal = torch.tensor(binned_signals)
+                binned_signals = x.flatten(0).cpu()
+                co_signal = torch.tensor(np.outer(binned_signals, binned_signals))
                 a, b, c = co_signal.shape
                 co_signal = co_signal.reshape(1, a, b, c)
+                print(f"co_signal shape: {co_signal.shape}")
                 return torch.tensor(co_signal).cuda()
             else:
                 return None
