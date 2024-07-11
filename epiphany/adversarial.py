@@ -42,9 +42,6 @@ def main():
         from model_10kb import *
     '''
 
-
-
-
     print("Run: " + args.m)
 
     LEARNING_RATE = float(args.lr)
@@ -93,19 +90,9 @@ def main():
     disc = Disc()#.cuda()
     if args.wandb:
         wandb.watch(model, log='all')
-        # # wandb.watch(new_model, log='all')
-        # # wandb.watch(mod_branch_cov, log='all')
-        # # wandb.watch(mod_branch_pbulk, log='all')
-        # wandb.watch(mod_branch_cov_2d, log='all')
-
-
 
     if os.path.exists(LOG_PATH):
         restore_latest(model, LOG_PATH, ext='.pt_' + model_name)
-        # restore_latest(new_model, LOG_PATH, ext='.pt_new_model')
-        # restore_latest(mod_branch_cov, LOG_PATH, ext='.pt_mod_branch_cov')
-        # restore_latest(mod_branch_pbulk, LOG_PATH, ext='.pt_mod_branch_pbulk')
-        # restore_latest(mod_branch_cov_2d, LOG_PATH, ext='.pt_mod_branch_cov_2d')
     else:
         os.makedirs(LOG_PATH)
 
@@ -120,8 +107,8 @@ def main():
     test_chroms = ['chr3', 'chr11', 'chr17']
     # match test chroms with chromafold!!
     # test_chroms = ['chr17']
-    # train_chroms = ['chr1', 'chr2', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22']
-    train_chroms = ['chr19', 'chr20', 'chr21', 'chr22']
+    train_chroms = ['chr1', 'chr2', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22']
+    # train_chroms = ['chr19', 'chr20', 'chr21', 'chr22']
     # train_chroms = ['chr22']
 
     train_set = Chip2HiCDataset(seq_length=TRAIN_SEQ_LENGTH, window_size=int(args.window_size), chroms=train_chroms, mode='train')
@@ -136,15 +123,6 @@ def main():
     hidden = None
     log_interval = 50
     parameters = list(model.parameters())
-    # for param in list(new_model.parameters()):
-    #     param.requires_grad = True
-    # for name, param in new_model.named_parameters():
-    #     print(f"Parameter: {name}, Requires Grad: {param.requires_grad}")
-    # parameters = list(new_model.parameters())
-    # parameters = list(mod_branch_cov.parameters())
-    # parameters = list(mod_branch_pbulk.parameters())
-    # parameters = list(mod_branch_cov_2d.parameters())
-
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
     min_loss = -10
@@ -167,11 +145,6 @@ def main():
         im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400))
         wandb.log({"Validation Examples": im})
 
-    # fig, ax = plt.subplots()
-    # ax.imshow(im, cmap='RdYlBu_r', vmin=0)
-    # plt.savefig('2d_array_visualization_V_test.png')
-    # print("Plot saved as '2d_array_visualization_V_test.png'")
-
     #scaler = torch.cuda.amp.GracddScaler()
     for epoch in range(int(args.e)):
         disc_preds_train = []
@@ -189,10 +162,6 @@ def main():
         y_hat_L_list = []
         y_hat_R_list = []
         model.eval()
-        # new_model.eval()
-        # mod_branch_cov.eval()
-        # mod_branch_pbulk.eval()
-        # mod_branch_cov_2d.eval()
 
         if epoch % 1 == 0:
             i = 0
@@ -228,10 +197,6 @@ def main():
 
         if np.mean(test_loss_cpu) > min_loss:
             min_loss = np.mean(test_loss_cpu)
-        # save(model, os.path.join(LOG_PATH, '%03d.pt_model' % epoch), num_to_keep=1)
-        # save(new_model, os.path.join(LOG_PATH, '%03d.pt_new_model' % epoch), num_to_keep=1)
-        # save(mod_branch_cov, os.path.join(LOG_PATH, '%03d.pt_mod_branch_cov' % epoch), num_to_keep=1)
-        # save(mod_branch_pbulk, os.path.join(LOG_PATH, '%03d.pt_mod_branch_pbulk' % epoch), num_to_keep=1)
         save(model, os.path.join(LOG_PATH, ('%03d.pt_' + model_name) % epoch), num_to_keep=1)
 
         with open(test_log, 'a+') as f:
