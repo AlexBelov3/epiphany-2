@@ -121,8 +121,8 @@ def main():
     # match test chroms with chromafold!!
     # test_chroms = ['chr17']
     # train_chroms = ['chr1', 'chr2', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22']
-    # train_chroms = ['chr19', 'chr20', 'chr21', 'chr22']
-    train_chroms = ['chr22']
+    train_chroms = ['chr19', 'chr20', 'chr21', 'chr22']
+    # train_chroms = ['chr22']
 
     train_set = Chip2HiCDataset(seq_length=TRAIN_SEQ_LENGTH, window_size=int(args.window_size), chroms=train_chroms, mode='train')
     test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=test_chroms, mode='test')
