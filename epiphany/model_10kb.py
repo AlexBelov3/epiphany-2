@@ -765,8 +765,7 @@ class branch_outer_prod_small(nn.Module):
         x3_2d = self.bulk_summed_2d(x2)
         x4 = self.total_extractor_2d(x3_2d)
         x4 = torch.flatten(x4, 1)
-        x4 = self.classifier2(x4
-
+        x4 = self.classifier2(x4)
         return x4
 #
 class branch_outer_prod_big(nn.Module):
