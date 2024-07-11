@@ -653,7 +653,7 @@ class resblock_2d(nn.Module): # COME BACK TO THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     def __init__(self, ni):
         super(resblock_2d, self).__init__()
         self.blocks = nn.Sequential(
-            nn.Conv2d(ni, ni, 3, 1, 1), #padding:1
+            nn.Conv2d(ni, ni, (1,3), 1, 1), #padding:1
             # nn.Conv2d(
             #     in_channels=16, out_channels=16, kernel_size=(1, 5), stride=1, padding=2
             # ),
