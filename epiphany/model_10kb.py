@@ -726,6 +726,7 @@ class outer_prod_big(nn.Module):
                 binned_signals = []
                 for i in range(np.shape(x)[0]):
                     binned_signals.append(x[i].cpu())
+                print(f"np.shape(binned_signals): {np.shape(binned_signals)}")
                 binned_signals = np.outer(binned_signals, binned_signals)
                 co_signal = torch.tensor(binned_signals)
                 a, b, c = co_signal.shape
