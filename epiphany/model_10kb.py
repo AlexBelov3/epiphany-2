@@ -688,13 +688,10 @@ class resblock_2d(nn.Module): # COME BACK TO THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     def __init__(self, ni):
         super(resblock_2d, self).__init__()
         self.blocks = nn.Sequential(
-            nn.Conv2d(ni, ni, 3, 1, 1), #padding:1
-            # nn.Conv2d(
-            #     in_channels=16, out_channels=16, kernel_size=(1, 5), stride=1, padding=2
-            # ),
+            nn.Conv2d(ni, ni, 5, 1, 1), #kernel_size:3
             nn.BatchNorm2d(ni),
             nn.ReLU(),
-            nn.Conv2d(ni, ni, 3, 1, 1),
+            nn.Conv2d(ni, ni, 5, 1, 1), #kernel_size:3
             nn.BatchNorm2d(ni),
             nn.ReLU(),
         )
@@ -1208,7 +1205,7 @@ class branch_cov_2d(nn.Module):
             nn.Conv2d(
                 in_channels=16,
                 out_channels=16,
-                kernel_size=3,
+                kernel_size=5, #3
                 stride=1,
                 dilation=1,
                 padding=1,
@@ -1222,7 +1219,7 @@ class branch_cov_2d(nn.Module):
             nn.Conv2d(
                 in_channels=16,
                 out_channels=16,
-                kernel_size=3,
+                kernel_size=5, #3
                 stride=1,
                 dilation=1,
                 padding=1,
@@ -1233,7 +1230,7 @@ class branch_cov_2d(nn.Module):
             nn.Conv2d(
                 in_channels=16,
                 out_channels=16,
-                kernel_size=3,
+                kernel_size=5, #3
                 stride=1,
                 dilation=1,
                 padding=1,
@@ -1244,7 +1241,7 @@ class branch_cov_2d(nn.Module):
             nn.Conv2d(
                 in_channels=16,
                 out_channels=1, #16
-                kernel_size=3,
+                kernel_size=5, #3
                 stride=1,
                 dilation=1,
                 padding=1,
