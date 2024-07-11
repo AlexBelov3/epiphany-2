@@ -790,6 +790,10 @@ class branch_outer_prod_big(nn.Module):
             nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
             nn.BatchNorm2d(16),
             nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Conv2d(in_channels=16, out_channels=8, kernel_size=3, stride=2),
+            nn.BatchNorm2d(8),
+            nn.ReLU(),
         )
 
         # self.classifier = nn.Sequential(
