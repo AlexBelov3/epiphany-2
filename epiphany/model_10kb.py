@@ -1229,7 +1229,7 @@ class branch_cov_2d(nn.Module):
             ),
             nn.BatchNorm2d(16),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
+            nn.MaxPool2d(kernel_size=2), #if input_channels=2, this should be (1,2)
             nn.Conv2d(
                 in_channels=16,
                 out_channels=16,
