@@ -629,6 +629,39 @@ class trunk(nn.Module):
         return total_loss
 
 
+
+class add_trunk(nn.Module):
+    def __init__(self, right, left):
+        super(add_trunk, self).__init__()
+        self.right = right
+        self.left = left
+
+    def forward(self, x):
+        x_copy = x.clone()
+        x = self.left(x)
+        x2 = self.right(x_copy)
+        x = x.reshape(1, 200)
+        x2 = x2.reshape(1, 200)
+        return x + x2
+
+    def loss(self, prediction, label, seq_length = 200, reduction='mean', lam=1):
+        l1_loss = 0
+        if isinstance(prediction, np.ndarray):
+            prediction = torch.tensor(prediction)
+        if isinstance(label, np.ndarray):
+            label = torch.tensor(label)
+        if prediction.ndim != 1 or label.ndim != 1:
+            prediction = prediction.view(-1)
+            label = label.view(-1)
+        # Compute L1 and L2 losses
+        # l1_loss = F.l1_loss(prediction, label, reduction=reduction)
+        l2_loss = F.mse_loss(prediction, label, reduction=reduction)
+
+        # Combine losses with lambda
+        total_loss = lam * l2_loss + (1 - lam) * l1_loss
+        return total_loss
+
+
 # ------------------------------------------------------------------------------------------------------------------
 #CHROMAFOLD:
 class resblock(nn.Module):

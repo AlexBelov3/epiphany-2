@@ -77,6 +77,10 @@ def main():
         # conv1d right arm ad outer_prod_big right arm
         model_name = "outer_prod_big"
         model = trunk(branch_outer_prod_big().cuda(), branch_cov().cuda()).cuda()
+    elif args.model == 'f':
+        # use a trunk that adds the two predicitons together? idk
+        model_name = "add_trunk"
+        model = add_trunk(branch_outer_prod_big().cuda(), branch_cov().cuda()).cuda()
     else:
         model_name = "DEFAULT"
         model = Net(1, 5, int(args.window_size)).cuda()
