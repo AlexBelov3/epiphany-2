@@ -653,7 +653,7 @@ class resblock_2d(nn.Module): # COME BACK TO THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     def __init__(self, ni):
         super(resblock_2d, self).__init__()
         self.blocks = nn.Sequential(
-            nn.Conv2d(ni, ni, (3,1), 1, 1), #padding:1
+            nn.Conv2d(ni, ni, 3, 1, 1), #padding:1
             # nn.Conv2d(
             #     in_channels=16, out_channels=16, kernel_size=(1, 5), stride=1, padding=2
             # ),
@@ -1158,8 +1158,6 @@ class branch_cov_2d(nn.Module):
         super(branch_cov_2d, self).__init__()
 
         self.cov_extractor = nn.Sequential(
-            # PrintLayer(),
-            # FirstConvLayer(),
             nn.Conv2d(
                 in_channels=1, out_channels=16, kernel_size=(1,5), stride=1, padding=2
             ),
@@ -1184,28 +1182,12 @@ class branch_cov_2d(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
             resblock_2d(16),
-            # --------------------------------------------------
-            # nn.Conv2d(16, 16, (1, 3), 1, 1),
-            # nn.BatchNorm2d(16),
-            # nn.ReLU(),
-            # nn.Conv2d(16, 16, (1, 3), 1, 1),
-            # nn.BatchNorm2d(16),
-            # nn.ReLU(),
-            # nn.MaxPool2d(kernel_size=2),
             resblock_2d(16),
-            # --------------------------------------------------
-            # nn.Conv2d(16, 16, (1, 3), 1, 1),
-            # nn.BatchNorm2d(16),
-            # nn.ReLU(),
-            # nn.Conv2d(16, 16, (1, 3), 1, 1),
-            # nn.BatchNorm2d(16),
-            # nn.ReLU(),
-
             nn.MaxPool2d(kernel_size=2),
             nn.Conv2d(
                 in_channels=16,
                 out_channels=16,
-                kernel_size=(1,3),
+                kernel_size=3,
                 stride=1,
                 dilation=1,
                 padding=1,
@@ -1216,7 +1198,7 @@ class branch_cov_2d(nn.Module):
             nn.Conv2d(
                 in_channels=16,
                 out_channels=16,
-                kernel_size=(1,3),
+                kernel_size=3,
                 stride=1,
                 dilation=1,
                 padding=1,
@@ -1227,7 +1209,7 @@ class branch_cov_2d(nn.Module):
             nn.Conv2d(
                 in_channels=16,
                 out_channels=1, #16
-                kernel_size=(1,3),
+                kernel_size=3,
                 stride=1,
                 dilation=1,
                 padding=1,
@@ -1241,18 +1223,7 @@ class branch_cov_2d(nn.Module):
             nn.Linear(in_features=1875, out_features=512),
             nn.Linear(in_features=512, out_features=200),
         )
-
-
     def forward(self, x):
-        # try:
-        #     x = self.cov_extractor(x)
-        # except:
-        #     x = self.cov_extractor_backup(x)
-        # x = x.view(x.size(0), 1, 80, 400)
-        # try:
-        #     x = x.view(x.size(0), 1, 80, 2500)
-        # except:
-        #     x = x.view(x.size(0), 1, 80, 2499)
         if x.ndimension() == 2:
             a, b = x.shape
             x = x.view(1, 1, a, b)
