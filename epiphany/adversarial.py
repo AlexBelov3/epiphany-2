@@ -80,7 +80,7 @@ def main():
     elif args.model == 'f':
         # use a trunk that adds the two predicitons together? idk
         model_name = "add_trunk"
-        model = add_trunk(branch_outer_prod_big().cuda(), branch_cov().cuda()).cuda()
+        model = add_trunk(branch_outer_prod_small().cuda(), branch_cov().cuda()).cuda()
     else:
         model_name = "DEFAULT"
         model = Net(1, 5, int(args.window_size)).cuda()
