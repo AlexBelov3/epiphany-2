@@ -703,8 +703,8 @@ class resblock_2d(nn.Module): # COME BACK TO THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         residual = x
         out = self.blocks(x)
         out, residual = out.squeeze(), residual.squeeze()
-        print(f"residual shape: {residual.shape}")
-        print(f"out shape: {out.shape}")
+        # print(f"residual shape: {residual.shape}")
+        # print(f"out shape: {out.shape}")
         out = out + residual
         out = out.unsqueeze(0)
 
@@ -1265,6 +1265,7 @@ class branch_cov_2d(nn.Module):
         elif x.ndimension() == 3:
             a, b, c = x.shape
             x = x.view(1, a, b, c)
+        print(f"x shape: {x.shape}")
         x = self.cov_extractor(x)
         x = torch.flatten(x, 1)
         x_out = self.classifier(x)
