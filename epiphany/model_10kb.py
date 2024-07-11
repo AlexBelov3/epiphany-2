@@ -691,9 +691,9 @@ class symmetrize_bulk(nn.Module):
                 return None
 
 
-class outter_prod(nn.Module):
+class outer_prod(nn.Module):
     def __init__(self):
-        super(outter_prod, self).__init__()
+        super(outer_prod, self).__init__()
 
     def forward(self, x):
         if len(x.shape) == 2:
@@ -712,9 +712,9 @@ class outter_prod(nn.Module):
             else:
                 return None
 
-class outter_prod_big(nn.Module):
+class outer_prod_big(nn.Module):
     def __init__(self):
-        super(outter_prod_big, self).__init__()
+        super(outer_prod_big, self).__init__()
 
     def forward(self, x):
         if len(x.shape) == 2:
@@ -734,13 +734,13 @@ class outter_prod_big(nn.Module):
             else:
                 return None
 
-class branch_outter_prod_small(nn.Module):
+class branch_outer_prod_small(nn.Module):
     def __init__(self):
-        super(branch_outter_prod_small, self).__init__()
+        super(branch_outer_prod_small, self).__init__()
         pbulk_res = 50
 
         self.bulk_summed_2d = nn.Sequential(
-            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outter_prod()
+            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod()
         )
 
         self.total_extractor_2d = nn.Sequential(
@@ -772,13 +772,13 @@ class branch_outter_prod_small(nn.Module):
         # print(f"x4 shape: {x4.shape}")
         return x4
 #
-class branch_outter_prod_big(nn.Module):
+class branch_outer_prod_big(nn.Module):
     def __init__(self):
-        super(branch_outter_prod_big, self).__init__()
+        super(branch_outer_prod_big, self).__init__()
         pbulk_res = 50
 
         self.bulk_summed_2d = nn.Sequential(
-            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outter_prod_big()
+            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod_big()
         )
 
         self.total_extractor_2d = nn.Sequential(
@@ -822,7 +822,7 @@ class branch_pbulk(nn.Module):
         # )
 
         self.bulk_summed_2d = nn.Sequential(
-            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outter_prod()
+            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod()
         )
 
         self.bulk_extractor_2d = nn.Sequential(
@@ -1296,7 +1296,7 @@ class branch_modified_pbulk(nn.Module):
         # )
 
         self.bulk_summed_2d = nn.Sequential(
-            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outter_prod()
+            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod()
         )
 
         self.cov_extractor = nn.Sequential(
