@@ -741,7 +741,7 @@ class branch_outer_prod_small(nn.Module):
         )
 
         self.total_extractor_2d = nn.Sequential(
-            nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, stride=2),
+            nn.Conv2d(in_channels=5, out_channels=64, kernel_size=3, stride=2),
             # nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
@@ -779,7 +779,7 @@ class branch_outer_prod_big(nn.Module):
         )
 
         self.total_extractor_2d = nn.Sequential(
-            nn.Conv2d(in_channels=37, out_channels=64, kernel_size=3, stride=2),
+            nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, stride=2),
             # nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
