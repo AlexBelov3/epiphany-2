@@ -286,10 +286,10 @@ class Net2(nn.Module):
         )
         self.rnn1 = nn.LSTM(input_size=687, hidden_size=1200, num_layers=num_layers, batch_first=True, #no res blocks: in=1375
                             bidirectional=True)
-        self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
-                            bidirectional=True)
-        self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
-                            bidirectional=True)
+        # self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
+        #                     bidirectional=True)
+        # self.rnn3 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=num_layers, batch_first=True,
+        #                     bidirectional=True)
         # self.rnn1 = nn.LSTM(input_size=343, hidden_size=300, num_layers=num_layers, batch_first=True, bidirectional=True)
         # self.rnn2 = nn.LSTM(input_size=600, hidden_size=300, num_layers=num_layers, batch_first=True,
         #                     bidirectional=True)
@@ -311,13 +311,15 @@ class Net2(nn.Module):
         # print(f"x conv output flattened?: {x.shape}")
         # x = x.view(1, seq_length, x.shape[1] * x.shape[2])
         res1, hidden_state = self.rnn1(x, None)
-        res2, hidden_state = self.rnn2(res1, None)
-        res2 = res2 + res1
-        res3, hidden_state = self.rnn3(res2, None)
+        # res2, hidden_state = self.rnn2(res1, None)
+        # res2 = res2 + res1
+        # res3, hidden_state = self.rnn3(res2, None)
         # print(f"res3 output: {x.shape}")
-        x = self.fc(res2 + res3) #res2 + res3
-        # # x = self.act(x)
+        # x = self.fc(res2 + res3) #res2 + res3
+        x = self.fc(res1)
         x = self.fc2(x)
+        # # x = self.act(x)
+        # x = self.fc2(x)
         # # x = self.act2(x)
         return x
 
@@ -1187,7 +1189,7 @@ class branch_cov_2d(nn.Module):
             nn.Conv2d(
                 in_channels=16,
                 out_channels=16,
-                kernel_size=3,
+                kernel_size=(1,3),
                 stride=1,
                 dilation=1,
                 padding=1,
@@ -1198,7 +1200,7 @@ class branch_cov_2d(nn.Module):
             nn.Conv2d(
                 in_channels=16,
                 out_channels=16,
-                kernel_size=3,
+                kernel_size=(1,3),
                 stride=1,
                 dilation=1,
                 padding=1,
@@ -1209,7 +1211,7 @@ class branch_cov_2d(nn.Module):
             nn.Conv2d(
                 in_channels=16,
                 out_channels=1, #16
-                kernel_size=3,
+                kernel_size=(1,3),
                 stride=1,
                 dilation=1,
                 padding=1,
@@ -1258,23 +1260,3 @@ class branch_cov_2d(nn.Module):
         # Combine losses with lambda
         total_loss = lam * l2_loss + (1 - lam) * l1_loss
         return total_loss
-
-# class trunk(nn.Module):
-#     def __init__(self, branch_pbulk, branch_cov):
-#         super(trunk, self).__init__()
-#
-#         self.branch_pbulk = branch_pbulk
-#         self.branch_cov = branch_cov
-#
-#         self.out = nn.Sequential(
-#             nn.Linear(in_features=(512 * 2), out_features=512),
-#             nn.Linear(in_features=(512), out_features=200),
-#         )
-#
-#     def forward(self, x, x2):
-#         x = self.branch_cov(x, x2)
-#         with torch.no_grad():
-#             x2 = self.branch_pbulk(x2)
-#         x = self.out(torch.cat((x, x2), 1))
-#
-#         return x
