@@ -725,7 +725,7 @@ class outer_prod_big(nn.Module):
                 x = x.squeeze()
                 print(f"x shape: {x.shape}")
                 binned_signals = x.flatten(0)
-                print(f"signals shape: {np.shape(np.array(binned_signals))}")
+                print(f"signals shape: {binned_signals.shape}")
                 binned_signals = np.outer(binned_signals, binned_signals)
                 co_signal = torch.tensor(binned_signals)
                 a, b, c = co_signal.shape
