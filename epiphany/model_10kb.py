@@ -727,7 +727,6 @@ class outer_prod_big(nn.Module):
                 co_signal = torch.tensor(np.outer(binned_signals, binned_signals))
                 a, b = co_signal.shape
                 co_signal = co_signal.reshape(1, a, b)
-                print(f"co_signal shape: {co_signal.shape}")
                 return torch.tensor(co_signal).cuda()
             else:
                 return None
@@ -742,7 +741,7 @@ class branch_outer_prod_small(nn.Module):
         )
 
         self.total_extractor_2d = nn.Sequential(
-            nn.Conv2d(in_channels=5, out_channels=64, kernel_size=3, stride=2),
+            nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, stride=2),
             # nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
