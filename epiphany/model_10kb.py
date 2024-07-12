@@ -580,7 +580,9 @@ class trunk_new_loss(nn.Module):
             label = label.view(-1)
         # Compute L1 and L2 losses
         # l1_loss = F.l1_loss(prediction, label, reduction=reduction)
-        l2_loss = F.gaussian_nll_loss(prediction, label, reduction=reduction)
+        # l2_loss = F.mse_loss(prediction, label, reduction=reduction)
+        variance = torch.full_like(prediction, 0.1)  # Replace 0.1 with your variance values as needed
+        l2_loss = F.gaussian_nll_loss(prediction, label, variance, reduction='mean')
         # Combine losses with lambda
         total_loss = lam * l2_loss + (1 - lam) * l1_loss
         return total_loss
