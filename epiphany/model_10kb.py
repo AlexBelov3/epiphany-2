@@ -846,7 +846,7 @@ class branch_outer_prod_high_res(nn.Module):
         # print(f"binned shape: {x3_2d.shape}")
         x4 = self.total_extractor_2d(x3_2d)
         x4 = torch.flatten(x4, 1)
-        x4 = self.classifier(x4)
+        # x4 = self.classifier(x4)
         x4 = self.classifier2(x4)
         return x4
 class branch_outer_prod_big(nn.Module):
