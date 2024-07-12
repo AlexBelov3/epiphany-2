@@ -688,8 +688,8 @@ class outer_prod_big(nn.Module):
         else:
             if len(x.shape) == 3:
                 x = x.squeeze()
-                binned_signals = x.flatten(0).cpu()
-                co_signal = torch.tensor(np.outer(binned_signals, binned_signals))
+                binned_signals = x.flatten(0)
+                co_signal = torch.outer(binned_signals, binned_signals)
                 a, b = co_signal.shape
                 co_signal = co_signal.reshape(1, 1, a, b)
                 return torch.tensor(co_signal).cuda()
@@ -742,15 +742,15 @@ class branch_outer_prod_learned(nn.Module):
         self.bulk_summed_2d = nn.Sequential(
             # nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod()
             nn.Conv1d(
-                in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
+                in_channels=5, out_channels=5, kernel_size=5, stride=1, padding=2
             ),
-            # nn.BatchNorm1d(16),
-            # nn.ReLU(),
+            nn.BatchNorm1d(5),
+            nn.ReLU(),
             nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod()
         )
 
         self.total_extractor_2d = nn.Sequential(
-            nn.Conv2d(in_channels=16, out_channels=64, kernel_size=3, stride=2),
+            nn.Conv2d(in_channels=5, out_channels=64, kernel_size=3, stride=2),
             # nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
@@ -768,6 +768,7 @@ class branch_outer_prod_learned(nn.Module):
 
     def forward(self, x2):
         x3_2d = self.bulk_summed_2d(x2)
+        x3_2d = outer_prod.forward(self, x3_2d)
         # print(f"binned shape: {x3_2d.shape}")
         x4 = self.total_extractor_2d(x3_2d)
         x4 = torch.flatten(x4, 1)
