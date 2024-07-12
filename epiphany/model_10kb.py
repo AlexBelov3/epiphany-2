@@ -819,6 +819,7 @@ class branch_outer_prod_high_res(nn.Module):
 
         self.total_extractor_2d = nn.Sequential(
             nn.Conv2d(in_channels=5, out_channels=64, kernel_size=3, stride=2),
+            # nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
@@ -828,10 +829,6 @@ class branch_outer_prod_high_res(nn.Module):
             nn.MaxPool2d(kernel_size=2),
             nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
             nn.BatchNorm2d(16),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(in_channels=16, out_channels=8, kernel_size=3, stride=2),
-            nn.BatchNorm2d(8),
             nn.ReLU(),
         )
 
