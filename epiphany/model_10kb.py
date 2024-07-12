@@ -835,11 +835,8 @@ class branch_outer_prod_high_res(nn.Module):
             nn.ReLU(),
         )
 
-        # self.classifier = nn.Sequential(
-        #     nn.Linear(in_features=2704, out_features=512),
-        # )
         self.classifier2 = nn.Sequential(
-            nn.Linear(in_features=392, out_features=200))  # in = 400 for window_size=20,000
+            nn.Linear(in_features=392, out_features=200))
 
     def forward(self, x2):
         x3_2d = self.bulk_summed_2d(x2)
@@ -860,7 +857,6 @@ class branch_outer_prod_big(nn.Module):
 
         self.total_extractor_2d = nn.Sequential(
             nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, stride=2),
-            # nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
