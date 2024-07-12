@@ -93,5 +93,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
 
             pad_X = np.zeros((X_chr.shape[0],self.seq_length*100+self.window_size - X_chr.shape[1])) #100
             X_chr = np.concatenate((X_chr, pad_X), axis=1)
-        return X_chr.astype('float32'), y_chr.astype('float32')
+
+        co_signal = []
+        return X_chr.astype('float32'), y_chr.astype('float32'), co_signal
 
