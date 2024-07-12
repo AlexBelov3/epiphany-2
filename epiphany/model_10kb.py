@@ -818,7 +818,7 @@ class branch_outer_prod_high_res(nn.Module):
         )
 
         self.total_extractor_2d = nn.Sequential(
-            nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, stride=2),
+            nn.Conv2d(in_channels=5, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
@@ -843,7 +843,7 @@ class branch_outer_prod_high_res(nn.Module):
 
     def forward(self, x2):
         x3_2d = self.bulk_summed_2d(x2)
-        print(f"binned shape: {x3_2d.shape}")
+        # print(f"binned shape: {x3_2d.shape}")
         x4 = self.total_extractor_2d(x3_2d)
         x4 = torch.flatten(x4, 1)
         x4 = self.classifier(x4)
