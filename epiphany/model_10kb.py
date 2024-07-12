@@ -812,6 +812,10 @@ class branch_outer_prod_high_res(nn.Module):
     def __init__(self):
         super(branch_outer_prod_high_res, self).__init__()
         pbulk_res = 200
+        # 50 = 220
+        # 100 = 440
+        # 1kb = 4,400
+        # 10kb = 44,000
 
         self.bulk_summed_2d = nn.Sequential(
             nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod()
@@ -829,6 +833,10 @@ class branch_outer_prod_high_res(nn.Module):
             nn.MaxPool2d(kernel_size=2),
             nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
             nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Conv2d(in_channels=16, out_channels=8, kernel_size=3, stride=2),
+            nn.BatchNorm2d(8),
             nn.ReLU(),
         )
 
