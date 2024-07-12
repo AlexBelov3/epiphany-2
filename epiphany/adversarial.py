@@ -81,6 +81,9 @@ def main():
     elif args.model == 'g':
         model_name = "high_res_prod"
         model = trunk(branch_outer_prod_high_res().cuda(), branch_cov().cuda()).cuda()
+    elif args.model == 'h':
+        model_name = "trunk_new_loss"
+        model = trunk_new_loss(branch_outer_prod_small().cuda(), branch_cov().cuda()).cuda()
     else:
         model_name = "DEFAULT"
         model = Net(1, 5, int(args.window_size)).cuda()
