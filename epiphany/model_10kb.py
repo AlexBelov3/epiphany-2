@@ -744,7 +744,8 @@ class outer_prod(nn.Module):
                 x = x.squeeze()
                 binned_signals = []
                 for i in range(np.shape(x)[0]):
-                    binned_signals.append(np.outer(x[i].cpu(),x[i].cpu()))
+                    # binned_signals.append(np.outer(x[i].cpu(),x[i].cpu()))
+                    binned_signals.append(torch.outer(x[i], x[i]))
                 co_signal = torch.tensor(binned_signals)
                 a, b, c = co_signal.shape
                 co_signal = co_signal.reshape(1, a, b, c)
@@ -833,14 +834,14 @@ class branch_outer_prod_high_res(nn.Module):
         )
 
         self.classifier = nn.Sequential(
-            nn.Linear(in_features=2704, out_features=512), 
+            nn.Linear(in_features=2704, out_features=512),
         )
         self.classifier2 = nn.Sequential(
             nn.Linear(in_features=512, out_features=200))  # in = 400 for window_size=20,000
 
     def forward(self, x2):
         x3_2d = self.bulk_summed_2d(x2)
-        print(f"summed shape: {x3_2d.shape}")
+        print(f"binned shape: {x3_2d.shape}")
         x4 = self.total_extractor_2d(x3_2d)
         x4 = torch.flatten(x4, 1)
         x4 = self.classifier(x4)
