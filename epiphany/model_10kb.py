@@ -832,17 +832,18 @@ class branch_outer_prod_high_res(nn.Module):
             nn.ReLU(),
         )
 
-        # self.classifier = nn.Sequential(
-        #     nn.Linear(in_features=(400), out_features=512), #nn.Linear(in_features=(1936), out_features=512),
-        # )
+        self.classifier = nn.Sequential(
+            nn.Linear(in_features=2704, out_features=512), 
+        )
         self.classifier2 = nn.Sequential(
-            nn.Linear(in_features=392, out_features=200))  # in = 400 for window_size=20,000
+            nn.Linear(in_features=512, out_features=200))  # in = 400 for window_size=20,000
 
     def forward(self, x2):
         x3_2d = self.bulk_summed_2d(x2)
         print(f"summed shape: {x3_2d.shape}")
         x4 = self.total_extractor_2d(x3_2d)
         x4 = torch.flatten(x4, 1)
+        x4 = self.classifier(x4)
         x4 = self.classifier2(x4)
         return x4
 class branch_outer_prod_big(nn.Module):
