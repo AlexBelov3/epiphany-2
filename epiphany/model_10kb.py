@@ -811,7 +811,7 @@ class branch_outer_prod_small(nn.Module):
 class branch_outer_prod_high_res(nn.Module):
     def __init__(self):
         super(branch_outer_prod_high_res, self).__init__()
-        pbulk_res = 200
+        pbulk_res = 250
         # 50 = 220
         # 100 = 440
         # 1kb = 4,400
@@ -823,7 +823,6 @@ class branch_outer_prod_high_res(nn.Module):
 
         self.total_extractor_2d = nn.Sequential(
             nn.Conv2d(in_channels=5, out_channels=64, kernel_size=3, stride=2),
-            # nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
