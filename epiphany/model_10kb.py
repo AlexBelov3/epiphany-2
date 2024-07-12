@@ -811,7 +811,7 @@ class branch_outer_prod_small(nn.Module):
 class branch_outer_prod_high_res(nn.Module):
     def __init__(self):
         super(branch_outer_prod_high_res, self).__init__()
-        pbulk_res = 250
+        pbulk_res = 100
         # 50 = 220
         # 100 = 440
         # 1kb = 4,400
