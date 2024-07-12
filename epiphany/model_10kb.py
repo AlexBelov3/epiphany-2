@@ -768,7 +768,7 @@ class branch_outer_prod_learned(nn.Module):
 
     def forward(self, x2):
         x3_2d = self.bulk_summed_2d(x2)
-        print(f"binned shape: {x3_2d.shape}")
+        # print(f"binned shape: {x3_2d.shape}")
         x4 = self.total_extractor_2d(x3_2d)
         x4 = torch.flatten(x4, 1)
         x4 = self.classifier2(x4)
