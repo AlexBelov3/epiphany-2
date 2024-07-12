@@ -746,7 +746,7 @@ class branch_outer_prod_learned(nn.Module):
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
-            nn.MaxPool1d(kernel_size=np.int64(1e04 / pbulk_res))#, outer_prod()
+            nn.MaxPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod()
         )
 
         self.total_extractor_2d = nn.Sequential(
