@@ -744,8 +744,8 @@ class branch_outer_prod_learned(nn.Module):
             nn.Conv1d(
                 in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
             ),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
+            # nn.BatchNorm1d(16),
+            # nn.ReLU(),
             nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod()
         )
 
