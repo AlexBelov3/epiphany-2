@@ -580,7 +580,7 @@ class trunk_new_loss(nn.Module):
             label = label.view(-1)
         # Compute L1 and L2 losses
         # l1_loss = F.l1_loss(prediction, label, reduction=reduction)
-        l2_loss = F.smooth_l1_loss(prediction, label, reduction=reduction)
+        l2_loss = F.gaussian_nll_loss(prediction, label, reduction=reduction)
         # Combine losses with lambda
         total_loss = lam * l2_loss + (1 - lam) * l1_loss
         return total_loss
