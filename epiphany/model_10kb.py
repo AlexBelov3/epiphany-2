@@ -744,7 +744,6 @@ class outer_prod(nn.Module):
                 x = x.squeeze()
                 binned_signals = []
                 for i in range(np.shape(x)[0]):
-                    # binned_signals.append(np.outer(x[i].cpu(),x[i].cpu()))
                     binned_signals.append(torch.outer(x[i], x[i]))
                 co_signal = torch.stack(binned_signals, dim=0)
                 a, b, c = co_signal.shape
@@ -812,15 +811,14 @@ class branch_outer_prod_small(nn.Module):
 class branch_outer_prod_high_res(nn.Module):
     def __init__(self):
         super(branch_outer_prod_high_res, self).__init__()
-        pbulk_res = 100
+        pbulk_res = 250
 
         self.bulk_summed_2d = nn.Sequential(
             nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod()
         )
 
         self.total_extractor_2d = nn.Sequential(
-            nn.Conv2d(in_channels=5, out_channels=64, kernel_size=3, stride=2),
-            # nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
+            nn.Conv2d(in_channels=1, out_channels=64, kernel_size=3, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
@@ -831,13 +829,17 @@ class branch_outer_prod_high_res(nn.Module):
             nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
             nn.BatchNorm2d(16),
             nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2),
+            nn.Conv2d(in_channels=16, out_channels=8, kernel_size=3, stride=2),
+            nn.BatchNorm2d(8),
+            nn.ReLU(),
         )
 
-        self.classifier = nn.Sequential(
-            nn.Linear(in_features=2704, out_features=512),
-        )
+        # self.classifier = nn.Sequential(
+        #     nn.Linear(in_features=2704, out_features=512),
+        # )
         self.classifier2 = nn.Sequential(
-            nn.Linear(in_features=512, out_features=200))  # in = 400 for window_size=20,000
+            nn.Linear(in_features=392, out_features=200))  # in = 400 for window_size=20,000
 
     def forward(self, x2):
         x3_2d = self.bulk_summed_2d(x2)
