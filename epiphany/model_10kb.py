@@ -782,6 +782,15 @@ class branch_BiLSTM(nn.Module):
         self.bulk_summed = nn.Sequential(
             nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res))
         )
+        self.conv = nn.Sequential(
+            nn.Conv1d(in_channels=5, out_channels=1, kernel_size=3, stride=1, dilation=1, padding="same"),
+            nn.BatchNorm1d(1),
+            nn.ReLU(),
+            # nn.MaxPool1d(kernel_size=2),
+            # nn.Conv1d(in_channels=5, out_channels=1, kernel_size=3, stride=1, dilation=1, padding="same"),
+            # nn.BatchNorm1d(16),
+            # nn.ReLU()
+        )
         self.rnn1 = nn.LSTM(input_size=220, hidden_size=1200, num_layers=5, batch_first=True,
                             bidirectional=True)
         self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=5, batch_first=True,
@@ -799,6 +808,7 @@ class branch_BiLSTM(nn.Module):
         # x = torch.flatten(x, 1)
         # x = x.view(1, 200, x.shape[1] * x.shape[2])
         print(f"input shape: {x.shape}")
+        x = self.conv(x)
         res1, hidden_state = self.rnn1(x, None)
         res2, hidden_state = self.rnn2(res1, None)
         res2 = res2 + res1
