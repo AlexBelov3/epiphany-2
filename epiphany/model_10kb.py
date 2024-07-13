@@ -828,8 +828,8 @@ class branch_transformer(nn.Module):
         self.bulk_summed = nn.Sequential(
             nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res))
         )
-        self.transformer = nn.Transformer(d_model=440, nhead=8, num_encoder_layers=3, num_decoder_layers=3,
-                                          dim_feedforward=2048, dropout=0.1, activation='relu', batch_first=True)
+        self.transformer = nn.Transformer(d_model=440, nhead=8, num_encoder_layers=4, num_decoder_layers=4,
+                                          dim_feedforward=2048//2, dropout=0.1, activation='relu', batch_first=True)
         self.fc1 = nn.Linear(440 * 5, 512)  # 5 is the sequence length
         self.fc2 = nn.Linear(512, 200)
         # self.fc1 = nn.Linear(2400, 900)
@@ -839,10 +839,11 @@ class branch_transformer(nn.Module):
 
     def forward(self, x2):
         x = self.bulk_summed(x2)
+        print(f"input shape: {x.shape}")
         x = self.transformer(x, x)
+        print(f"transformer output shape: {x.shape}")
         x = x.view(x.size(0), -1)
         x = self.fc1(x)
-        # x = self.act(x)
         x = self.fc2(x)
         return x
 
