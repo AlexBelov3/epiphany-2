@@ -794,9 +794,9 @@ class branch_BiLSTM(nn.Module):
         self.act2 = nn.ReLU()
 
     def forward(self, x2):
-        x3_2d = self.bulk_summed(x2)
+        x = self.bulk_summed(x2)
         # print(f"binned shape: {x3_2d.shape}")
-        x = torch.flatten(x3_2d, 1)
+        # x = torch.flatten(x3_2d, 1)
         x = x.view(1, 200, x.shape[1] * x.shape[2])
         res1, hidden_state = self.rnn1(x, None)
         res2, hidden_state = self.rnn2(res1, None)
@@ -805,7 +805,7 @@ class branch_BiLSTM(nn.Module):
         x = self.fc(res2 + res3)
         x = self.act(x)
         x = self.fc2(x)
-        return x4
+        return x
 
 class branch_outer_prod_high_res(nn.Module):
     def __init__(self):
