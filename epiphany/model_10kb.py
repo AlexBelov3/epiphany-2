@@ -808,13 +808,15 @@ class branch_BiLSTM(nn.Module):
         # x = torch.flatten(x, 1)
         # x = x.view(1, 200, x.shape[1] * x.shape[2])
         # print(f"input shape: {x.shape}")
-        x = self.conv(x)
+        # x = self.conv(x)
         res1, hidden_state = self.rnn1(x, None)
         res2, hidden_state = self.rnn2(res1, None)
         res2 = res2 + res1
         res3, hidden_state = self.rnn3(res2, None)
         # print(f"res3 shape: {res2.shape}")
-        x = self.fc(res2 + res3)
+        x = res2 + res3
+        x = self.conv(x)
+        x = self.fc(x)
         x = self.act(x)
         x = self.fc2(x)
         return x
