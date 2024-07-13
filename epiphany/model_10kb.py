@@ -782,7 +782,7 @@ class branch_BiLSTM(nn.Module):
         self.bulk_summed = nn.Sequential(
             nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res))
         )
-        self.rnn1 = nn.LSTM(input_size=1100, hidden_size=1200, num_layers=5, batch_first=True,
+        self.rnn1 = nn.LSTM(input_size=220, hidden_size=1200, num_layers=5, batch_first=True,
                             bidirectional=True)
         self.rnn2 = nn.LSTM(input_size=2400, hidden_size=1200, num_layers=5, batch_first=True,
                             bidirectional=True)
