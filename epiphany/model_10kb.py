@@ -824,14 +824,14 @@ class branch_BiLSTM(nn.Module):
 class branch_transformer(nn.Module):
     def __init__(self):
         super(branch_transformer, self).__init__()
-        pbulk_res = 50
+        pbulk_res = 100
         self.bulk_summed = nn.Sequential(
             nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res))
         )
-        self.transformer = nn.Transformer(d_model=220, nhead=8, num_encoder_layers=6, num_decoder_layers=6,
+        self.transformer = nn.Transformer(d_model=440, nhead=8, num_encoder_layers=6, num_decoder_layers=6,
                                           dim_feedforward=2048, dropout=0.1, activation='relu',
                                           layer_norm_eps=1e-05, batch_first=True)
-        self.fc1 = nn.Linear(220 * 5, 512)  # 5 is the sequence length
+        self.fc1 = nn.Linear(440 * 5, 512)  # 5 is the sequence length
         self.fc2 = nn.Linear(512, 200)
         # self.fc1 = nn.Linear(2400, 900)
         # self.act = nn.ReLU()
