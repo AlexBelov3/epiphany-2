@@ -30,7 +30,7 @@ def main():
     parser.add_argument("--high_res", action='store_true', help="Use if predicting 5kb resolution Hi-C (10kb is used by default)")
     parser.add_argument('--wandb', action='store_true', help='Toggle wandb')
     parser.add_argument('model', choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'])
-    parser.add_argument('test_chr', choices=['3', '11', '17', 'd', 'e', 'f', 'g', 'h', 'i'])
+    parser.add_argument('test_chr', choices=['3', '11', '17', '2'])
 
     args = parser.parse_args()
 
