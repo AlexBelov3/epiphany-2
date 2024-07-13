@@ -29,7 +29,7 @@ def main():
     parser.add_argument("--m", help="additional comments", default="")
     parser.add_argument("--high_res", action='store_true', help="Use if predicting 5kb resolution Hi-C (10kb is used by default)")
     parser.add_argument('--wandb', action='store_true', help='Toggle wandb')
-    parser.add_argument('model', choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'])
+    parser.add_argument('model', choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j'])
 
     args = parser.parse_args()
 
@@ -87,6 +87,9 @@ def main():
     elif args.model == 'i':
         model_name = "branch_outer_prod_learned"
         model = trunk_new_loss(branch_outer_prod_learned().cuda(), branch_cov().cuda()).cuda()
+    elif args.model == 'j':
+        model_name = "branch_transformer"
+        model = trunk_new_loss(branch_transformer().cuda(), branch_cov().cuda()).cuda()
     else:
         model_name = "DEFAULT"
         model = Net(1, 5, int(args.window_size)).cuda()
