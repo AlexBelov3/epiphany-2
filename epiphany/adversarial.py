@@ -82,7 +82,7 @@ def main():
         model_name = "high_res_prod"
         model = trunk(branch_outer_prod_high_res().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'h':
-        model_name = "branch_BiLSTM"
+        model_name = "branch_LSTM"
         model = trunk(branch_BiLSTM().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'i':
         model_name = "branch_outer_prod_learned"
@@ -116,9 +116,9 @@ def main():
     test_chroms = ['chr3', 'chr11', 'chr17']
     # match test chroms with chromafold!!
     # test_chroms = ['chr17']
-    train_chroms = ['chr1', 'chr2', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22']
+    # train_chroms = ['chr1', 'chr2', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22']
     # train_chroms = ['chr19', 'chr20', 'chr21', 'chr22']
-    # train_chroms = ['chr22']
+    train_chroms = ['chr22']
 
     train_set = Chip2HiCDataset(seq_length=TRAIN_SEQ_LENGTH, window_size=int(args.window_size), chroms=train_chroms, mode='train')
     test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=test_chroms, mode='test')
