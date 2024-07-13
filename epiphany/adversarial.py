@@ -82,8 +82,8 @@ def main():
         model_name = "high_res_prod"
         model = trunk(branch_outer_prod_high_res().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'h':
-        model_name = "trunk_new_loss"
-        model = trunk_new_loss(branch_outer_prod_small().cuda(), branch_cov().cuda()).cuda()
+        model_name = "branch_BiLSTM"
+        model = trunk(branch_BiLSTM().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'i':
         model_name = "branch_outer_prod_learned"
         model = trunk_new_loss(branch_outer_prod_learned().cuda(), branch_cov().cuda()).cuda()
