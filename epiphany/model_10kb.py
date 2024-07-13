@@ -796,8 +796,8 @@ class branch_BiLSTM(nn.Module):
     def forward(self, x2):
         x = self.bulk_summed(x2)
         # print(f"binned shape: {x3_2d.shape}")
-        # x = torch.flatten(x3_2d, 1)
-        x = x.view(1, 200, x.shape[1] * x.shape[2])
+        x = torch.flatten(x, 1)
+        # x = x.view(1, 200, x.shape[1] * x.shape[2])
         res1, hidden_state = self.rnn1(x, None)
         res2, hidden_state = self.rnn2(res1, None)
         res2 = res2 + res1
