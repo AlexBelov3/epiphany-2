@@ -851,6 +851,7 @@ class branch_transformer(nn.Module):
         # x = x.view(x.size(0), -1)
         # x = self.fc1(x)
         # x = self.fc2(x)
+        x = self.global_avg_pool(x)
         x = self.conv1(x)  # (batch_size, 16, d_model)
         x = F.relu(x)
         x = self.conv2(x)  # (batch_size, 32, d_model)
