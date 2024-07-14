@@ -830,7 +830,7 @@ class branch_transformer(nn.Module):
         )
         # self.transformer = nn.Transformer(d_model=440, nhead=8, num_encoder_layers=6, num_decoder_layers=6,
         #                                   dim_feedforward=2048, dropout=0.1, activation='relu', batch_first=True)
-        self.transformer = nn.TransformerEncoder(nn.TransformerEncoderLayer(d_model=440, nhead=8), num_layers=6)
+        self.transformer = nn.TransformerEncoder(nn.TransformerEncoderLayer(d_model=440, nhead=2), num_layers=6)
         self.fc1 = nn.Linear(440 * 5, 900)  # 5 is the sequence length
         self.fc2 = nn.Linear(900, 200)
         # self.fc1 = nn.Linear(2400, 900)
@@ -840,8 +840,8 @@ class branch_transformer(nn.Module):
 
     def forward(self, x2):
         x = self.bulk_summed(x2)
-        # x = self.transformer.encoder(x)#(x, x)
-        # x = self.transformer(x)
+        x = self.transformer.encoder(x)#(x, x)
+        x = self.transformer(x)
         x = x.view(x.size(0), -1)
         x = self.fc1(x)
         x = self.fc2(x)
