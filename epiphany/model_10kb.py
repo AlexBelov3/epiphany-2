@@ -840,7 +840,7 @@ class branch_transformer(nn.Module):
 
     def forward(self, x2):
         x = self.bulk_summed(x2)
-        x = self.transformer.encoder(x)#(x, x)
+        # x = self.transformer.encoder(x)#(x, x)
         x = self.transformer(x)
         x = x.view(x.size(0), -1)
         x = self.fc1(x)
