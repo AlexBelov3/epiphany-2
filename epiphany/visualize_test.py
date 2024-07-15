@@ -151,7 +151,7 @@ def main():
 
                 y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                 y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
-
+                print(f"test_label.shape: {test_label.shape}")
                 test_label_L, test_label_R = extract_diagonals(
                     test_label.squeeze())  # ONLY LOOKING AT THE LEFT VECTOR
                 test_label = torch.concat((test_label_L, test_label_R), dim=0)
