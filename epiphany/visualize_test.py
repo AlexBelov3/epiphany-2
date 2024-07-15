@@ -133,7 +133,7 @@ def main():
     #
     if args.wandb:
         im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=eval_length))
-        wandb.log({"Validation Examples": im})
+        wandb.log({"Evaluation Examples": im})
 
     im = []
     test_loss = []
