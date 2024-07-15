@@ -142,7 +142,7 @@ def main():
     model.eval()
     i = 0
     for (test_data, test_label, co_signal) in tqdm(test_loader):
-        if i > eval_length:
+        if i < eval_length:
             with torch.no_grad():
                 y_hat = model(test_data.cuda())
                 test_label = test_label.cuda()
