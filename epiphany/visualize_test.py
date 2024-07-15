@@ -144,9 +144,9 @@ def main():
     i = 0
     for (test_data, test_label, co_signal) in tqdm(test_loader):
         if i < eval_length:
+            test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
             with torch.no_grad():
                 y_hat = model(test_data)
-                test_label = test_label.cuda()
 
                 y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                 y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
