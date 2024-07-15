@@ -90,6 +90,7 @@ def main():
     else:
         model_name = "DEFAULT"
         model = Net(1, 5, int(args.window_size)).cuda()
+    model_name = model_name + "_EVAL"
     print(f"Beginning testing {model_name}")
     if args.wandb:
         import wandb
