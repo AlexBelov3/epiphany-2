@@ -144,6 +144,8 @@ def main():
     i = 0
     for (test_data, test_label, co_signal) in tqdm(test_loader):
         if i < eval_length:
+            if np.linalg.norm(test_label) < 1e-8:
+                continue
             test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
             with torch.no_grad():
                 y_hat = model(test_data)
@@ -159,8 +161,6 @@ def main():
         else:
             break
         i += 1
-    print(f"y_hat_L_list len:{len(y_hat_L_list)}")
-    print(f"y_hat_R_list len:{len(y_hat_R_list)}")
 
     if args.wandb:
         im.append(
