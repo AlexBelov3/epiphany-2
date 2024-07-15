@@ -106,7 +106,7 @@ def main():
 
     eval_length = 800
     # GM12878 Standard
-    test_chroms = ['chr3', 'chr11', 'chr17', 'chr2']
+    test_chroms = ['chr3', 'chr11', 'chr17', 'chr2', 'chr22']
     # match test chroms with chromafold!!
 
     for chr in test_chroms:
