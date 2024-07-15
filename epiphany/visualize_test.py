@@ -118,8 +118,6 @@ def main():
     test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=test_chroms, mode='test')
     test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
 
-    test_log = os.path.join(LOG_PATH, 'test_log.txt')
-
     y_up_list = []
     y_down_list = []
     labels = []
@@ -142,35 +140,31 @@ def main():
     y_hat_L_list = []
     y_hat_R_list = []
     model.eval()
-
+    i = 0
     for (test_data, test_label, co_signal) in tqdm(test_loader):
-        for i in range(eval_length):
+        if i > eval_length:
             with torch.no_grad():
                 y_hat = model(test_data.cuda())
                 test_label = test_label.cuda()
 
                 y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                 y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
-                # print(f"test_label.shape: {test_label.shape}")
+
                 test_label_L, test_label_R = extract_diagonals(
-                    test_label.squeeze())  # ONLY LOOKING AT THE LEFT VECTOR
+                    test_label.squeeze())
                 test_label_V = torch.concat((test_label_L, test_label_R), dim=0)
                 loss = model.loss(y_hat, test_label_V)
                 test_loss.append(loss)
         else:
             break
+        i += 1
 
     if args.wandb:
         im.append(
             wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
-                                            seq_length=eval_length)))  # TEST_SEQ_LENGTH
-    test_loss_cpu = torch.stack(test_loss).cpu().numpy()
-    if args.wandb:
-        wandb.log({"Validation Examples": im})
-        wandb.log({'val_correlation': np.mean(test_loss_cpu)})
+                                            seq_length=eval_length)))
+        wandb.log({"Evaluation Examples": im})
 
-    with open(test_log, 'a+') as f:
-        f.write(str(np.mean(test_loss_cpu)) + "\n")
 
 if __name__ == '__main__':
     main()
