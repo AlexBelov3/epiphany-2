@@ -96,8 +96,6 @@ def main():
         import wandb
         wandb.init(project=model_name,)
 
-
-    disc = Disc()#.cuda()
     if args.wandb:
         wandb.watch(model, log='all')
 
@@ -146,7 +144,7 @@ def main():
     model.eval()
 
     for (test_data, test_label, co_signal) in tqdm(test_loader):
-        if i < 400:
+        if i < eval_length:
             if np.linalg.norm(test_label) < 1e-8:
                 continue
             test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
@@ -168,7 +166,7 @@ def main():
     if args.wandb:
         im.append(
             wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
-                                            seq_length=400)))  # TEST_SEQ_LENGTH
+                                            seq_length=eval_length)))  # TEST_SEQ_LENGTH
     test_loss_cpu = torch.stack(test_loss).cpu().numpy()
     if args.wandb:
         wandb.log({"Validation Examples": im})
