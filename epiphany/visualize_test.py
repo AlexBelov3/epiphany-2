@@ -145,8 +145,6 @@ def main():
 
     for (test_data, test_label, co_signal) in tqdm(test_loader):
         for i in range(eval_length):
-            if np.linalg.norm(np.array(test_label)) < 1e-8:
-                continue
             test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
             with torch.no_grad():
                 y_hat = model(test_data)
