@@ -144,7 +144,7 @@ def main():
     model.eval()
 
     for (test_data, test_label, co_signal) in tqdm(test_loader):
-        if i < eval_length:
+        for i in range(eval_length):
             if np.linalg.norm(test_label) < 1e-8:
                 continue
             test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
@@ -161,7 +161,6 @@ def main():
                 test_loss.append(loss)
         else:
             break
-        i += 1  # test
 
     if args.wandb:
         im.append(
