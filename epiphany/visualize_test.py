@@ -30,7 +30,6 @@ def main():
     parser.add_argument("--high_res", action='store_true', help="Use if predicting 5kb resolution Hi-C (10kb is used by default)")
     parser.add_argument('--wandb', action='store_true', help='Toggle wandb')
     parser.add_argument('model', choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'])
-    parser.add_argument('test_chr', choices=['3', '11', '17', '2'])
 
     args = parser.parse_args()
 
@@ -116,96 +115,66 @@ def main():
     # GM12878 Standard
     # test_chroms = ['chr3', 'chr11', 'chr17', 'chr2']
     # match test chroms with chromafold!!
-    test_chroms = ['chr'+args.test_chr]
+    test_chroms = ['chr3']
     test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=test_chroms, mode='test')
     test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
 
     test_log = os.path.join(LOG_PATH, 'test_log.txt')
 
-    hidden = None
-    log_interval = 50
-    parameters = list(model.parameters())
-    optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
-    disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
-    min_loss = -10
-
-    t0 = time.time()
-
     y_up_list = []
     y_down_list = []
     labels = []
+    eval_length = 800
     for i, (test_data, test_label, co_signal) in enumerate(test_loader):
         test_label = test_label.squeeze()
         y, y_rev = extract_diagonals(test_label)
         y_up_list.append(y)
         y_down_list.append(y_rev)
         labels.append(test_label[100])
-        if i > 400:
+        if i > eval_length:
             break
     #
     if args.wandb:
-        im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400))
+        im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=eval_length))
         wandb.log({"Validation Examples": im})
 
-    #scaler = torch.cuda.amp.GracddScaler()
-    for epoch in range(int(args.e)):
-        disc_preds_train = []
+    im = []
+    test_loss = []
+    y_hat_L_list = []
+    y_hat_R_list = []
+    model.eval()
 
-        lr = np.maximum(LEARNING_RATE * np.power(0.5, (int(epoch / 16))), 1e-6) # learning rate decay
-        # optimizer = optim.Adam(parameters, lr=lr, weight_decay=0.0005)
-        disc_optimizer = optim.Adam(disc.parameters(), lr=lr, weight_decay=0.0005)
+    for (test_data, test_label, co_signal) in tqdm(test_loader):
+        if i < 400:
+            if np.linalg.norm(test_label) < 1e-8:
+                continue
+            test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
+            with torch.no_grad():
+                y_hat = model(test_data)
 
-        print("="*10 + "Epoch " + str(epoch) + "="*10)
+                y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
+                y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
 
-        im = []
-        test_loss = []
-        preds = []
-        labs = []
-        y_hat_L_list = []
-        y_hat_R_list = []
-        model.eval()
+                test_label_L, test_label_R = extract_diagonals(
+                    test_label.squeeze())  # ONLY LOOKING AT THE LEFT VECTOR
+                test_label = torch.concat((test_label_L, test_label_R), dim=0)
+                loss = model.loss(y_hat, test_label)
+                test_loss.append(loss)
+        else:
+            break
+        i += 1  # test
 
-        if epoch % 1 == 0:
-            i = 0
-            for (test_data, test_label, co_signal) in tqdm(test_loader):
-                if i < 400:
-                    if np.linalg.norm(test_label) < 1e-8:
-                        continue
-                    test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda() #NEW!!!!
-                    with torch.no_grad():
-                        y_hat = model(test_data)
+    if args.wandb:
+        im.append(
+            wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
+                                            seq_length=400)))  # TEST_SEQ_LENGTH
+    test_loss_cpu = torch.stack(test_loss).cpu().numpy()
+    if args.wandb:
+        wandb.log({"Validation Examples": im})
+        wandb.log({'val_correlation': np.mean(test_loss_cpu)})
 
-                        y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
-                        y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
-
-                        test_label_L, test_label_R = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
-                        test_label = torch.concat((test_label_L, test_label_R), dim=0)
-                        loss = model.loss(y_hat, test_label)
-                        test_loss.append(loss)
-                else:
-                    break
-                i += 1 # test
-
-            if args.wandb:
-                im.append(
-                    wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
-                                                    seq_length=400)))  # TEST_SEQ_LENGTH
-        test_loss_cpu = torch.stack(test_loss).cpu().numpy()
-        if args.wandb:
-            wandb.log({"Validation Examples": im})
-            wandb.log({'val_correlation': np.mean(test_loss_cpu)})
-
-        print('Test Loss: ', np.mean(test_loss_cpu), ' Best: ', str(min_loss))
-
-        if np.mean(test_loss_cpu) > min_loss:
-            min_loss = np.mean(test_loss_cpu)
-        save(model, os.path.join(LOG_PATH, ('%03d.pt_' + model_name) % epoch), num_to_keep=1)
-
-        with open(test_log, 'a+') as f:
-            f.write(str(np.mean(test_loss_cpu)) + "\n")
-
-    t1 = time.time()
-    print(t1 - t0)
+    with open(test_log, 'a+') as f:
+        f.write(str(np.mean(test_loss_cpu)) + "\n")
 
 if __name__ == '__main__':
     main()
