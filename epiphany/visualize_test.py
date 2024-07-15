@@ -104,16 +104,15 @@ def main():
     else:
         os.makedirs(LOG_PATH)
 
-    y_up_list = []
-    y_down_list = []
-    labels = []
     eval_length = 800
     # GM12878 Standard
     test_chroms = ['chr3', 'chr11', 'chr17', 'chr2']
     # match test chroms with chromafold!!
-    # test_chroms = ['chr3']
 
     for chr in test_chroms:
+        y_up_list = []
+        y_down_list = []
+        labels = []
         test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=[chr],
                                    mode='test')
         test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
@@ -131,7 +130,6 @@ def main():
         #     wandb.log({chr + " Evaluation Examples": im})
 
         im = []
-        test_loss = []
         y_hat_L_list = []
         y_hat_R_list = []
         model.eval()
@@ -143,14 +141,8 @@ def main():
                 test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
                 with torch.no_grad():
                     y_hat = model(test_data)
-
                     y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
-
-                    test_label_L, test_label_R = extract_diagonals(test_label.squeeze())  # ONLY LOOKING AT THE LEFT VECTOR
-                    test_label = torch.concat((test_label_L, test_label_R), dim=0)
-                    loss = model.loss(y_hat, test_label)
-                    test_loss.append(loss)
             else:
                 break
             i += 1
