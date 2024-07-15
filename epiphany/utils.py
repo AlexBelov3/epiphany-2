@@ -386,15 +386,17 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     return plt.imread(path)
 
 def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200):
-    im = np.zeros((seq_length, 100))
+    im = np.zeros((100, seq_length))
     for i in range(seq_length):
         diag_values_down = y_down_list[i].cpu()
         diag_values_up = y_up_list[i].cpu()
         for j in range(100):
             if i+j < seq_length:
-                im[i + j, 99 - j] = diag_values_up[j]
+                # im[i + j, 99 - j] = diag_values_up[j]
+                im[99 - j, i + j] = diag_values_up[j]
             if i - j >= 0:
-                im[i-j, 99 - j] = diag_values_down[j]
+                # im[i-j, 99 - j] = diag_values_down[j]
+                im[99 - j, i - j] = diag_values_down[j]
     return im
 
 
