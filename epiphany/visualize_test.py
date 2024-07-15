@@ -101,6 +101,7 @@ def main():
 
     if os.path.exists(LOG_PATH):
         restore_latest(model, LOG_PATH, ext='.pt_' + model_name)
+        print("RESTORING MODEL!")
     else:
         os.makedirs(LOG_PATH)
 
@@ -122,14 +123,14 @@ def main():
     y_down_list = []
     labels = []
     eval_length = 800
-    for i, (test_data, test_label, co_signal) in enumerate(test_loader):
-        test_label = test_label.squeeze()
-        y, y_rev = extract_diagonals(test_label)
-        y_up_list.append(y)
-        y_down_list.append(y_rev)
-        labels.append(test_label[100])
-        if i > eval_length:
-            break
+    # for i, (test_data, test_label, co_signal) in enumerate(test_loader):
+    #     test_label = test_label.squeeze()
+    #     y, y_rev = extract_diagonals(test_label)
+    #     y_up_list.append(y)
+    #     y_down_list.append(y_rev)
+    #     labels.append(test_label[100])
+    #     if i > eval_length:
+    #         break
     #
     if args.wandb:
         im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=eval_length))
