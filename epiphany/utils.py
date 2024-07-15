@@ -385,6 +385,13 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
 
     return plt.imread(path)
 
+def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200):
+    im = np.zeros((100, seq_length))
+    for i in range(100):
+        im[99 + i // 2, i] = y_up_list[i]
+        im[99 - i // 2, i] = y_down_list[i]
+    return im
+
 
 def test(test_loader, model, device, seq_length):
     '''

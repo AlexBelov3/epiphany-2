@@ -148,8 +148,11 @@ def main():
             i += 1
 
         if args.wandb:
+            # im.append(
+            #     wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
+            #                                     seq_length=eval_length)))
             im.append(
-                wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
+                wandb.Image(generate_hic(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
                                                 seq_length=eval_length)))
             wandb.log({chr + " Evaluation Examples": im})
 

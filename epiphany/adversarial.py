@@ -11,6 +11,7 @@ import time
 from data_loader_10kb import *
 from model_10kb import *
 from tqdm import tqdm
+import subprocess
 
 print(torch.__version__)
 
@@ -209,7 +210,7 @@ def main():
 
         if np.mean(test_loss_cpu) > min_loss:
             min_loss = np.mean(test_loss_cpu)
-        save(model, os.path.join(LOG_PATH, ('%03d.pt_' + model_name) % epoch), num_to_keep=1)
+        save(model, os.path.join(LOG_PATH, ('%03d.pt_' + model_name) % epoch), num_to_keep=3)
 
         with open(test_log, 'a+') as f:
             f.write(str(np.mean(test_loss_cpu)) + "\n")
