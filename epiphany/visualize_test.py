@@ -114,7 +114,7 @@ def main():
     # test_chroms = ['chr3']
 
     for chr in test_chroms:
-        test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=test_chroms,
+        test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=[chr],
                                    mode='test')
         test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
         for i, (test_data, test_label, co_signal) in enumerate(test_loader):
@@ -159,7 +159,7 @@ def main():
             im.append(
                 wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
                                                 seq_length=eval_length)))
-            wandb.log({"Evaluation Examples": im})
+            wandb.log({chr + " Evaluation Examples": im})
 
 
 if __name__ == '__main__':
