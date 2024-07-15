@@ -146,27 +146,32 @@ def main():
         if i < eval_length:
             if np.linalg.norm(test_label) < 1e-8:
                 continue
-            test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
+            test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
             with torch.no_grad():
                 y_hat = model(test_data)
 
                 y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                 y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
 
-                test_label_L, test_label_R = extract_diagonals(
-                    test_label.squeeze())
-                test_label_V = torch.concat((test_label_L, test_label_R), dim=0)
-                loss = model.loss(y_hat, test_label_V)
+                test_label_L, test_label_R = extract_diagonals(test_label.squeeze())  # ONLY LOOKING AT THE LEFT VECTOR
+                test_label = torch.concat((test_label_L, test_label_R), dim=0)
+                loss = model.loss(y_hat, test_label)
                 test_loss.append(loss)
         else:
             break
         i += 1
 
+    # if args.wandb:
+    #     im.append(
+    #         wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
+    #                                         seq_length=eval_length)))
+    #     wandb.log({"Evaluation Examples": im})
     if args.wandb:
-        im.append(
-            wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
-                                            seq_length=eval_length)))
-        wandb.log({"Evaluation Examples": im})
+            im.append(
+                wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
+                                                seq_length=400)))  # TEST_SEQ_LENGTH
+    if args.wandb:
+        wandb.log({"Validation Examples": im})
 
 
 if __name__ == '__main__':
