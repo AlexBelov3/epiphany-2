@@ -90,18 +90,17 @@ def main():
     else:
         model_name = "DEFAULT"
         model = Net(1, 5, int(args.window_size)).cuda()
-    model_name = model_name + "_EVAL"
+    model_name = model_name
     print(f"Beginning testing {model_name}")
     if args.wandb:
         import wandb
-        wandb.init(project=model_name,)
+        wandb.init(project=(model_name+"_EVAL"),)
 
     if args.wandb:
         wandb.watch(model, log='all')
 
     if os.path.exists(LOG_PATH):
         restore_latest(model, LOG_PATH, ext='.pt_' + model_name)
-        print("RESTORING MODEL!")
     else:
         os.makedirs(LOG_PATH)
 
@@ -161,17 +160,11 @@ def main():
             break
         i += 1
 
-    # if args.wandb:
-    #     im.append(
-    #         wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
-    #                                         seq_length=eval_length)))
-    #     wandb.log({"Evaluation Examples": im})
     if args.wandb:
-            im.append(
-                wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
-                                                seq_length=400)))  # TEST_SEQ_LENGTH
-    if args.wandb:
-        wandb.log({"Validation Examples": im})
+        im.append(
+            wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
+                                            seq_length=eval_length)))
+        wandb.log({"Evaluation Examples": im})
 
 
 if __name__ == '__main__':
