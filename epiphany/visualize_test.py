@@ -145,7 +145,7 @@ def main():
     for (test_data, test_label, co_signal) in tqdm(test_loader):
         if i < eval_length:
             with torch.no_grad():
-                y_hat = model(test_data.cuda())
+                y_hat = model(test_data)
                 test_label = test_label.cuda()
 
                 y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
@@ -159,6 +159,8 @@ def main():
         else:
             break
         i += 1
+    print(f"y_hat_L_list len:{len(y_hat_L_list)}")
+    print(f"y_hat_R_list len:{len(y_hat_R_list)}")
 
     if args.wandb:
         im.append(
