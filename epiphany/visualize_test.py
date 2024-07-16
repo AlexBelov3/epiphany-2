@@ -155,62 +155,62 @@ def main():
             else:
                 break
             i += 1
-        # np.savetxt("hic_real.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length), delimiter="\t", fmt="%.6f")
-        # np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length),
-        #            delimiter="\t", fmt="%.6f")
-        # cwd = os.getcwd()
-        # # Define paths
-        # r_script_name = "insulation.R"
-        # r_script_path = os.path.join(cwd, r_script_name)
-        # real_hic_matrix_path = os.path.join(cwd, "hic_real.tsv")
-        # pred_hic_matrix_path = os.path.join(cwd, "hic_pred.tsv")
-        # real_output_data_path = os.path.join(cwd, "output_data")
-        # pred_output_data_path = os.path.join(cwd, "output_data")
-        # # Full path to Rscript executable
-        # rscript_executable = "./Rscript"
-        # rscript_executable = os.path.join(cwd, rscript_executable)
-        # try:
-        #     subprocess.run([rscript_executable, r_script_path, real_hic_matrix_path, real_output_data_path],
-        #                             capture_output=True, text=True)
-        #     subprocess.run([rscript_executable, r_script_path, pred_hic_matrix_path, pred_output_data_path],
-        #                             capture_output=True, text=True)
-        # except Exception as e:
-        #     print(f"An error occurred while running the R script: {e}")
-        #
-        # # Calculate insulation scores using the output data from the R script
-        # bins_real_path = f"{real_output_data_path}_bins.tsv"
-        # counts_real_path = f"{real_output_data_path}_counts.tsv"
-        # bins_pred_path = f"{pred_output_data_path}_bins.tsv"
-        # counts_pred_path = f"{pred_output_data_path}_counts.tsv"
-        #
-        # if os.path.exists(bins_real_path) and os.path.exists(counts_real_path):
-        #     # Load the bins and counts data
-        #     bins = pd.read_csv(bins_real_path, sep="\t")
-        #     counts = np.loadtxt(counts_real_path, delimiter="\t")
-        #     # Calculate insulation scores
-        #     insulation_scores = calculate_insulation_scores(bins, counts)
-        #     log_insulation_scores = np.log2(insulation_scores + 1e-10)
-        #     # Plot log2 insulation scores
-        #     # if args.wandb:
-        #         # wandb.log({chr + " REAL Insulation Score": wandb.Image(plot_insulation_scores(log_insulation_scores))})
-        # else:
-        #     print("Output data files were not created.")
-        #
-        # if os.path.exists(bins_pred_path) and os.path.exists(counts_pred_path):
-        #     # Load the bins and counts data
-        #     bins = pd.read_csv(bins_pred_path, sep="\t")
-        #     counts = np.loadtxt(counts_pred_path, delimiter="\t")
-        #     # Calculate insulation scores
-        #     insulation_scores = calculate_insulation_scores(bins, counts)
-        #     log_insulation_scores = np.log2(insulation_scores + 1e-10)
-        #     # Plot log2 insulation scores
-        #     # if args.wandb:
-        #         # wandb.log({chr + " PRED Insulation Score": wandb.Image(plot_insulation_scores(log_insulation_scores))})
-        # else:
-        #     print("Output data files were not created.")
+        np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=eval_length), delimiter="\t", fmt="%.6f")
+        np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length),
+                   delimiter="\t", fmt="%.6f")
+        cwd = os.getcwd()
+        # Define paths
+        r_script_name = "insulation.R"
+        r_script_path = os.path.join(cwd, r_script_name)
+        real_hic_matrix_path = os.path.join(cwd, "hic_real.tsv")
+        pred_hic_matrix_path = os.path.join(cwd, "hic_pred.tsv")
+        real_output_data_path = os.path.join(cwd, "output_data")
+        pred_output_data_path = os.path.join(cwd, "output_data")
+        # Full path to Rscript executable
+        rscript_executable = "./Rscript"
+        rscript_executable = os.path.join(cwd, rscript_executable)
+        try:
+            subprocess.run([rscript_executable, r_script_path, real_hic_matrix_path, real_output_data_path],
+                                    capture_output=True, text=True)
+            subprocess.run([rscript_executable, r_script_path, pred_hic_matrix_path, pred_output_data_path],
+                                    capture_output=True, text=True)
+        except Exception as e:
+            print(f"An error occurred while running the R script: {e}")
 
-        if args.wandb:
-            wandb.log({chr + " Test Example:": wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))})
+        # Calculate insulation scores using the output data from the R script
+        bins_real_path = f"{real_output_data_path}_bins.tsv"
+        counts_real_path = f"{real_output_data_path}_counts.tsv"
+        bins_pred_path = f"{pred_output_data_path}_bins.tsv"
+        counts_pred_path = f"{pred_output_data_path}_counts.tsv"
+
+        if os.path.exists(bins_real_path) and os.path.exists(counts_real_path):
+            # Load the bins and counts data
+            bins = pd.read_csv(bins_real_path, sep="\t")
+            counts = np.loadtxt(counts_real_path, delimiter="\t")
+            # Calculate insulation scores
+            insulation_scores = calculate_insulation_scores(bins, counts)
+            log_insulation_scores = np.log2(insulation_scores + 1e-10)
+            # Plot log2 insulation scores
+            # if args.wandb:
+                # wandb.log({chr + " REAL Insulation Score": wandb.Image(plot_insulation_scores(log_insulation_scores))})
+        else:
+            print("Output data files were not created.")
+
+        if os.path.exists(bins_pred_path) and os.path.exists(counts_pred_path):
+            # Load the bins and counts data
+            bins = pd.read_csv(bins_pred_path, sep="\t")
+            counts = np.loadtxt(counts_pred_path, delimiter="\t")
+            # Calculate insulation scores
+            insulation_scores = calculate_insulation_scores(bins, counts)
+            log_insulation_scores = np.log2(insulation_scores + 1e-10)
+            # Plot log2 insulation scores
+            # if args.wandb:
+                # wandb.log({chr + " PRED Insulation Score": wandb.Image(plot_insulation_scores(log_insulation_scores))})
+        else:
+            print("Output data files were not created.")
+
+        # if args.wandb:
+        #     wandb.log({chr + " Test Example:": wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))})
 
 if __name__ == '__main__':
     main()
