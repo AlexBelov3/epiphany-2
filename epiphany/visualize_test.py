@@ -191,9 +191,8 @@ def main():
             insulation_scores = calculate_insulation_scores(bins, counts)
             log_insulation_scores = np.log2(insulation_scores + 1e-10)
             # Plot log2 insulation scores
-            if args.wandb:
-                wandb.log({chr + " REAL Insulation Score": wandb.Image(plot_insulation_scores(log_insulation_scores))})
-                wandb.log({chr + " REAL Evaluation Examples": wandb.Image(generate_hic_hat(y_hat_L_list, y_hat_R_list))})
+            # if args.wandb:
+                # wandb.log({chr + " REAL Insulation Score": wandb.Image(plot_insulation_scores(log_insulation_scores))})
         else:
             print("Output data files were not created.")
 
@@ -205,12 +204,13 @@ def main():
             insulation_scores = calculate_insulation_scores(bins, counts)
             log_insulation_scores = np.log2(insulation_scores + 1e-10)
             # Plot log2 insulation scores
-            if args.wandb:
-                wandb.log({chr + " PRED Insulation Score": wandb.Image(plot_insulation_scores(log_insulation_scores))})
-                wandb.log({chr + " PRED Evaluation Examples": wandb.Image(generate_hic_hat(y_hat_L_list, y_hat_R_list))})
+            # if args.wandb:
+                # wandb.log({chr + " PRED Insulation Score": wandb.Image(plot_insulation_scores(log_insulation_scores))})
         else:
             print("Output data files were not created.")
 
+        if args.wandb:
+            wandb.log({chr + " Test Example:": wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=eval_length))})
 
 if __name__ == '__main__':
     main()
