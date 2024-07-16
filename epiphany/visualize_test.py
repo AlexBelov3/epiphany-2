@@ -138,20 +138,20 @@ def main():
         #     im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=eval_length))
         #     wandb.log({chr + " Evaluation Examples": im})
 
-        # im = []
-        # y_hat_L_list = []
-        # y_hat_R_list = []
-        # model.eval()
-        # i = 0
-        # for (test_data, test_label, co_signal) in tqdm(test_loader):
-        #     if i < eval_length:
-        #         if np.linalg.norm(test_label) < 1e-8:
-        #             continue
-        #         test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
-        #         with torch.no_grad():
-        #             y_hat = model(test_data)
-        #             y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
-        #             y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
+        im = []
+        y_hat_L_list = []
+        y_hat_R_list = []
+        model.eval()
+        i = 0
+        for (test_data, test_label, co_signal) in tqdm(test_loader):
+            if i < eval_length:
+                if np.linalg.norm(test_label) < 1e-8:
+                    continue
+                test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
+                with torch.no_grad():
+                    y_hat = model(test_data)
+                    y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
+                    y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
         #     else:
         #         break
         #     i += 1
@@ -210,7 +210,7 @@ def main():
         #     print("Output data files were not created.")
 
         if args.wandb:
-            wandb.log({chr + " Test Example:": wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=eval_length))})
+            wandb.log({chr + " Test Example:": wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))})
 
 if __name__ == '__main__':
     main()
