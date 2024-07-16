@@ -183,31 +183,25 @@ def main():
         bins_pred_path = f"{pred_output_data_path}_bins.tsv"
         counts_pred_path = f"{pred_output_data_path}_counts.tsv"
 
-        if os.path.exists(bins_real_path) and os.path.exists(counts_real_path):
-            # Load the bins and counts data
-            bins = pd.read_csv(bins_real_path, sep="\t")
-            counts = np.loadtxt(counts_real_path, delimiter="\t")
-            # Calculate insulation scores
-            insulation_scores = calculate_insulation_scores(bins, counts)
-            log_insulation_scores = np.log2(insulation_scores + 1e-10)
-            # Plot log2 insulation scores
-            if args.wandb:
-                wandb.log({chr + " REAL Insulation Score": wandb.Image(plot_insulation_scores(log_insulation_scores))})
+        # Load the bins and counts data
+        bins = pd.read_csv(bins_real_path, sep="\t")
+        counts = np.loadtxt(counts_real_path, delimiter="\t")
+        # Calculate insulation scores
+        insulation_scores = calculate_insulation_scores(bins, counts)
+        real_insulation_scores = np.log2(insulation_scores + 1e-10)
+        # Plot log2 insulation scores
+
+        bins = pd.read_csv(bins_pred_path, sep="\t")
+        counts = np.loadtxt(counts_pred_path, delimiter="\t")
+        # Calculate insulation scores
+        insulation_scores = calculate_insulation_scores(bins, counts)
+        pred_insulation_scores = np.log2(insulation_scores + 1e-10)
+
+        if args.wandb:
+            wandb.log({chr + " REAL Insulation Score": wandb.Image(plot_two_insulation_scores(real_insulation_scores, pred_insulation_scores))})
         else:
             print("Output data files were not created.")
 
-        if os.path.exists(bins_pred_path) and os.path.exists(counts_pred_path):
-            # Load the bins and counts data
-            bins = pd.read_csv(bins_pred_path, sep="\t")
-            counts = np.loadtxt(counts_pred_path, delimiter="\t")
-            # Calculate insulation scores
-            insulation_scores = calculate_insulation_scores(bins, counts)
-            log_insulation_scores = np.log2(insulation_scores + 1e-10)
-            # Plot log2 insulation scores
-            if args.wandb:
-                wandb.log({chr + " PRED Insulation Score": wandb.Image(plot_insulation_scores(log_insulation_scores))})
-        else:
-            print("Output data files were not created.")
 
         # if args.wandb:
         #     wandb.log({chr + " Test Example:": wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))})
