@@ -935,7 +935,7 @@ class branch_outer_prod_big(nn.Module):
         #     nn.Linear(in_features=(400), out_features=512), #nn.Linear(in_features=(1936), out_features=512),
         # )
         self.classifier2 = nn.Sequential(
-            nn.Linear(in_features=(392), out_features=200))  # 392
+            nn.Linear(in_features=(400), out_features=200))  # 392
 
     def forward(self, x2):
         x3_2d = self.bulk_summed_2d(x2)
