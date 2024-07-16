@@ -385,6 +385,22 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
 
     return plt.imread(path)
 
+def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
+    im = np.zeros((100, seq_length))
+    for i in range(seq_length):
+        diag_values_down = np.array(y_down_list[i].cpu())
+        diag_values_up = np.array(y_up_list[i].cpu())
+        for j in range(100):
+            if i+j < seq_length:
+                im[99 - j, i + j] = diag_values_down[j]
+            if i - j >= 0:
+                im[99 - j, i - j] = diag_values_up[j]
+    path = os.path.join(path, 'ex_test.png')
+    fig, ax = plt.subplots()
+    ax.imshow(im, cmap='RdYlBu_r', vmin=0)
+    plt.imsave(path, im, cmap='RdYlBu_r', vmin=0)
+    return plt.imread(path)
+
 def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200):
     im = np.zeros((100, seq_length))
     for i in range(seq_length):
@@ -397,11 +413,7 @@ def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200):
             if i - j >= 0:
                 # im[i-j, 99 - j] = diag_values_down[j]
                 im[99 - j, i - j] = diag_values_down[j]
-    path = os.path.join(path, 'ex_test.png')
-    fig, ax = plt.subplots()
-    ax.imshow(im, cmap='RdYlBu_r', vmin=0)
-    plt.imsave(path, im, cmap='RdYlBu_r', vmin=0)
-    return plt.imread(path)
+    return im
 
 
 def test(test_loader, model, device, seq_length):
