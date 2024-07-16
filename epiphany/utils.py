@@ -441,7 +441,7 @@ def generate_hic_true(labels, y_up_list, y_down_list, path='./', seq_length=200)
     for i in range(seq_length):
         label = labels[i]
         for j in range(100):
-            im[i][j] = 1#label[99-j]
+            im[j][i] = label[99-j]
     return im
 
 
