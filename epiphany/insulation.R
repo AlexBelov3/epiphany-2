@@ -8,10 +8,11 @@ output_data_path <- args[2]
 
 # Load the Hi-C matrix
 hic_matrix <- as.matrix(read.table(hic_matrix_path, header = FALSE, sep = "\t"))
-
+print("Structure of 'hic_matrix':")
+str(hic_matrix)
 # Define chromosome and bin size
 chr <- "chr1"
-bin_size <- 40000  # Adjust based on your actual bin size
+bin_size <- 10000  # Adjust based on your actual bin size
 n_bins <- nrow(hic_matrix)
 
 # Create the bins data frame
