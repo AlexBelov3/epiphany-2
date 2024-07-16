@@ -437,12 +437,16 @@ def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200):
 
 def generate_hic_true(labels, y_up_list, y_down_list, path='./', seq_length=200):
     im = np.zeros((100, seq_length))
-    # label=np.array(label)
     for i in range(seq_length):
         label = labels[i]
         for j in range(100):
             im[j][i] = label[99-j]
-    return im
+        # Save and plot the image
+    path = os.path.join(path, 'ex_test.png')
+    fig, ax = plt.subplots()
+    ax.imshow(im, cmap='RdYlBu_r', vmin=0)
+    plt.imsave(path, im, cmap='RdYlBu_r', vmin=0)
+    return plt.imread(path)
 
 
 def test(test_loader, model, device, seq_length):
