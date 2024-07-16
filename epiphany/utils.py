@@ -435,10 +435,11 @@ def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200):
                 im[99 - j, i - j] = diag_values_down[99-j]
     return im
 
-def generate_hic_true(label, y_up_list, y_down_list, path='./', seq_length=200):
+def generate_hic_true(labels, y_up_list, y_down_list, path='./', seq_length=200):
     im = np.zeros((100, seq_length))
-    label=np.array(label)
+    # label=np.array(label)
     for i in range(seq_length):
+        label = label[i]
         for j in range(100):
             im[i][j] = label[99-j]
     return im
