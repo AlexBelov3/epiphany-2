@@ -402,16 +402,16 @@ def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
             # Diagonal Down (Right)
             if i + j//2 < seq_length:  # Ensure within bounds
                 if im[99 - j, i + j//2] == 0:
-                    im[99 - j, i + j//2] = diag_values_down[j]
+                    im[99 - j, i + j//2] = diag_values_up[j]
                 else:
-                    im[99 - j, i + j//2] = (diag_values_down[j] + im[99 - j, i + j]) / 2
+                    im[99 - j, i + j//2] = (diag_values_up[j] + im[99 - j, i + j]) / 2
 
             # Diagonal Up (Left)
             if i - j//2 >= 0:  # Ensure within bounds
                 if im[99 - j, i - j//2] == 0:
-                    im[99 - j, i - j//2] = diag_values_up[j]
+                    im[99 - j, i - j//2] = diag_values_down[j]
                 else:
-                    im[99 - j, i - j//2] = (diag_values_up[j] + im[99 - j, i - j]) / 2
+                    im[99 - j, i - j//2] = (diag_values_down[j] + im[99 - j, i - j]) / 2
 
     # Save and plot the image
     path = os.path.join(path, 'ex_test.png')
