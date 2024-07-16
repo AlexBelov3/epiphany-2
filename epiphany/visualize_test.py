@@ -152,9 +152,9 @@ def main():
                     y_hat = model(test_data)
                     y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
-        #     else:
-        #         break
-        #     i += 1
+            else:
+                break
+            i += 1
         # np.savetxt("hic_real.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length), delimiter="\t", fmt="%.6f")
         # np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length),
         #            delimiter="\t", fmt="%.6f")
