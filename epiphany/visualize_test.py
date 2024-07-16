@@ -165,7 +165,7 @@ def main():
         output_data_path = os.path.join(cwd, "output_data")
         insulation_scores_path = os.path.join(cwd, "insulation_scores.tsv")
         # Full path to Rscript executable
-        rscript_executable = "Rscript.exe"  # Update with your correct path
+        rscript_executable = "./Rscript.exe"  # Update with your correct path
         # Check if Rscript executable is available
         if not os.path.isfile(rscript_executable):
             raise FileNotFoundError(f"Rscript executable not found at {rscript_executable}")
@@ -197,6 +197,9 @@ def main():
             if args.wandb:
                 im.append(
                     wandb.Image(plot_insulation_scores(log_insulation_scores)))
+                wandb.log({chr + " Insulation Score": im})
+                im.append(
+                    wandb.Image(generate_hic_hat(y_hat_L_list, y_hat_R_list)))
                 wandb.log({chr + " Evaluation Examples": im})
         else:
             print("Output data files were not created.")
