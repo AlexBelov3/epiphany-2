@@ -385,10 +385,25 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
 
     return plt.imread(path)
 
+def generate_image_true(label, path='./', seq_length=200):
+    path = os.path.join(path, 'ex_test.png')
+    label = safe_tensor_to_numpy(label)
+    # Initialize the image arrays
+    im2 = np.zeros((seq_length, seq_length))
+    bands = len(label)
+    label = np.flip(label, axis=0)
+    for j in range(bands - 1):
+        if j > 0:
+            np.fill_diagonal(im2[:, j:], label[bands - 1 - j, j // 2:-j // 2])
+        else:
+            np.fill_diagonal(im2, .5 * label[bands - 1 - j, :])
 
-import numpy as np
-import os
-import matplotlib.pyplot as plt
+    # Plot the results
+    fig, ax = plt.subplots()
+    combined_image = im2 + im2.T
+    ax.imshow(combined_image, cmap='RdYlBu_r', vmin=0)
+    plt.imsave(path, combined_image, cmap='RdYlBu_r', vmin=0)
+    return plt.imread(path)
 
 
 def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
