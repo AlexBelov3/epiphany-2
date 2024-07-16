@@ -439,7 +439,7 @@ def generate_hic_true(labels, y_up_list, y_down_list, path='./', seq_length=200)
     im = np.zeros((100, seq_length))
     # label=np.array(label)
     for i in range(seq_length):
-        label = label[i]
+        label = labels[i]
         for j in range(100):
             im[i][j] = label[99-j]
     return im
