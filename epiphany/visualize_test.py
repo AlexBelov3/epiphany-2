@@ -175,6 +175,7 @@ def main():
         try:
             result = subprocess.run([rscript_executable, r_script_path, hic_matrix_path, output_data_path],
                                     capture_output=True, text=True)
+            print(result)
         except Exception as e:
             print(f"An error occurred while running the R script: {e}")
 
