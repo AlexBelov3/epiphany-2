@@ -165,7 +165,7 @@ def main():
         output_data_path = os.path.join(cwd, "output_data")
         insulation_scores_path = os.path.join(cwd, "insulation_scores.tsv")
         # Full path to Rscript executable
-        rscript_executable = "Rscript.exe"
+        rscript_executable = "./R-4.4.0/bin/Rscript"
         rscript_executable = os.path.join(cwd, rscript_executable)
         # Check if Rscript executable is available
         if not os.path.isfile(rscript_executable):
