@@ -927,7 +927,7 @@ class branch_outer_prod_big(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),
             nn.Conv2d(in_channels=8, out_channels=4, kernel_size=3, stride=2),
-            nn.BatchNorm2d(2),
+            nn.BatchNorm2d(4),
             nn.ReLU(),
         )
 
