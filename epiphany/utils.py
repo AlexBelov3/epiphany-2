@@ -500,10 +500,32 @@ def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
     return plt.imread(path)
 
 
-def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200):
-    im = np.zeros((100, seq_length))
+def plot_two_insulation_scores(real_log_insulation_scores, predicted_log_insulation_scores):
+    # Calculate the maximum and minimum log2 insulation scores and set the y-axis limits
+    max_score = max(np.max(real_log_insulation_scores), np.max(predicted_log_insulation_scores))
+    min_score = min(np.min(real_log_insulation_scores), np.min(predicted_log_insulation_scores))
+    y_max_limit = max_score * 1.1
+    y_min_limit = min_score * 0.9
+    print(f"real_log_insulation_scores SHAPE:{np.shape(real_log_insulation_scores)}")
+    print(f"predicted_log_insulation_scores SHAPE:{np.shape(predicted_log_insulation_scores)}")
 
-    return im
+    # Create a figure
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    # Plot the real and predicted log2 insulation scores
+    ax.plot(real_log_insulation_scores, color='blue')
+    ax.plot(predicted_log_insulation_scores, color='red')
+    ax.set_ylim(y_min_limit, y_max_limit)
+    ax.set_facecolor('white')
+
+    # Set axis labels
+    ax.set_xlabel('Bin Number')
+    ax.set_ylabel('Log2 Insulation Score')
+
+    # Show the plot
+    plt.show()
+
+    return fig
 
 # def generate_hic_true(labels, y_up_list, y_down_list, path='./', seq_length=200):
 #     im = np.zeros((100, seq_length))
