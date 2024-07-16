@@ -11,6 +11,13 @@ import time
 from data_loader_10kb import *
 from model_10kb import *
 from tqdm import tqdm
+import subprocess
+import os
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+
 
 print(torch.__version__)
 
@@ -32,6 +39,7 @@ def main():
     parser.add_argument('model', choices=['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'])
 
     args = parser.parse_args()
+
 
     '''
     if args.high_res:
@@ -147,14 +155,51 @@ def main():
             else:
                 break
             i += 1
+        np.savetxt("hic.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length), delimiter="\t", fmt="%.6f")
 
-        if args.wandb:
-            # im.append(
-            #     wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
-            #                                     seq_length=eval_length)))
-            im.append(
-                wandb.Image(generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length)))
-            wandb.log({chr + " Evaluation Examples": im})
+        cwd = os.getcwd()
+        # Define paths
+        r_script_name = "insulation.R"
+        r_script_path = os.path.join(cwd, r_script_name)
+        hic_matrix_path = os.path.join(cwd, "hic.tsv")
+        output_data_path = os.path.join(cwd, "output_data")
+        insulation_scores_path = os.path.join(cwd, "insulation_scores.tsv")
+        # Full path to Rscript executable
+        rscript_executable = "Rscript.exe"  # Update with your correct path
+        # Check if Rscript executable is available
+        if not os.path.isfile(rscript_executable):
+            raise FileNotFoundError(f"Rscript executable not found at {rscript_executable}")
+
+        # Call the R script using subprocess.run
+        try:
+            result = subprocess.run([rscript_executable, r_script_path, hic_matrix_path, output_data_path],
+                                    capture_output=True, text=True)
+        except Exception as e:
+            print(f"An error occurred while running the R script: {e}")
+
+        # Calculate insulation scores using the output data from the R script
+        bins_path = f"{output_data_path}_bins.tsv"
+        counts_path = f"{output_data_path}_counts.tsv"
+
+        if os.path.exists(bins_path) and os.path.exists(counts_path):
+            # Load the bins and counts data
+            bins = pd.read_csv(bins_path, sep="\t")
+            counts = np.loadtxt(counts_path, delimiter="\t")
+
+            # Calculate insulation scores
+            insulation_scores = calculate_insulation_scores(bins, counts)
+
+            # Save insulation scores to a file
+            insulation_scores_df = pd.DataFrame({"insulation_scores": insulation_scores})
+            insulation_scores_df.to_csv(insulation_scores_path, sep="\t", index=False)
+            log_insulation_scores = np.log2(insulation_scores + 1e-10)
+            # Plot log2 insulation scores
+            if args.wandb:
+                im.append(
+                    wandb.Image(plot_insulation_scores(log_insulation_scores)))
+                wandb.log({chr + " Evaluation Examples": im})
+        else:
+            print("Output data files were not created.")
 
 
 if __name__ == '__main__':

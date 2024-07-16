@@ -385,6 +385,42 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
 
     return plt.imread(path)
 
+
+def plot_insulation_scores(log_insulation_scores):
+    # Calculate the maximum and minimum log2 insulation scores and set the y-axis limits
+    max_score = np.max(log_insulation_scores)
+    min_score = np.min(log_insulation_scores)
+    y_max_limit = max_score * 1.1
+    y_min_limit = min_score * 0.9
+
+    # Plot the log2 insulation scores
+    plt.figure(figsize=(10, 5))
+    plt.plot(log_insulation_scores, color='blue')
+    plt.ylim(y_min_limit, y_max_limit)
+    plt.gca().set_facecolor('white')
+
+    # Set axis labels
+    plt.xlabel('Bin Number')
+    plt.ylabel('Log2 Insulation Score')
+    # Show the plot
+    plt.show()
+    path = os.path.join('./', 'ex_test.png')
+    plt.imsave(path, log_insulation_scores)
+    return plt.imread(path)
+
+
+def calculate_insulation_scores(bins, counts, window_size=5):
+    n_bins = len(bins)
+    insulation_scores = np.zeros(n_bins)
+
+    for i in range(n_bins):
+        start = max(0, i - window_size)
+        end = min(n_bins, i + window_size + 1)
+        insulation_scores[i] = np.sum(counts[start:end, start:end])
+
+    return insulation_scores
+
+
 def generate_hic_true(label, path='./', seq_length=200):
     path = os.path.join(path, 'ex_test.png')
     label = safe_tensor_to_numpy(label)
@@ -428,7 +464,7 @@ def generate_hic_hat(y_up_list, y_down_list, path='./', seq_length=200):
     combined_image = im1 + im1.T
     ax.imshow(combined_image, cmap='RdYlBu_r', vmin=0)
     plt.imsave(path, combined_image, cmap='RdYlBu_r', vmin=0)
-    return plt.imread(path)
+    return combined_image
 
 
 def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
