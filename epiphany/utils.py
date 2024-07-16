@@ -392,7 +392,7 @@ def plot_insulation_scores(log_insulation_scores):
     min_score = np.min(log_insulation_scores)
     y_max_limit = max_score * 1.1
     y_min_limit = min_score * 0.9
-
+    print(f"log_insulation_scores SHAPE:{np.shape(log_insulation_scores)}")
     # Plot the log2 insulation scores
     plt.figure(figsize=(10, 5))
     plt.plot(log_insulation_scores, color='blue')
