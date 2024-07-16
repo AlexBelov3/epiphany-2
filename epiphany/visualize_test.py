@@ -122,7 +122,7 @@ def main():
             y_up_list.append(y)
             y_down_list.append(y_rev)
             labels.append(test_label[100])
-            if i > eval_length:
+            if i >= eval_length:
                 break
 
         # if args.wandb:
