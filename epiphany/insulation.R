@@ -1,4 +1,15 @@
-if (!requireNamespace("TopDom", quietly = TRUE)) {
+# Set locale settings to suppress warning messages
+Sys.setlocale("LC_CTYPE", "C")
+Sys.setlocale("LC_COLLATE", "C")
+Sys.setlocale("LC_TIME", "C")
+Sys.setlocale("LC_MESSAGES", "C")
+Sys.setlocale("LC_MONETARY", "C")
+Sys.setlocale("LC_PAPER", "C")
+Sys.setlocale("LC_MEASUREMENT", "C")
+
+# Set CRAN mirror to avoid the CRAN mirror error
+options(repos = c(CRAN = "https://cran.r-project.org"))
+    if (!requireNamespace("TopDom", quietly = TRUE)) {
   install.packages("TopDom")
 }
 # Load necessary libraries
