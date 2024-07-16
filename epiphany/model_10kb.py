@@ -903,7 +903,7 @@ class branch_outer_prod_high_res(nn.Module):
 class branch_outer_prod_big(nn.Module):
     def __init__(self):
         super(branch_outer_prod_big, self).__init__()
-        pbulk_res = 50
+        pbulk_res = 250
 
         self.bulk_summed_2d = nn.Sequential(
             nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod_big()
