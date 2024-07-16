@@ -164,8 +164,8 @@ def main():
         r_script_path = os.path.join(cwd, r_script_name)
         real_hic_matrix_path = os.path.join(cwd, "hic_real.tsv")
         pred_hic_matrix_path = os.path.join(cwd, "hic_pred.tsv")
-        real_output_data_path = os.path.join(cwd, "output_data")
-        pred_output_data_path = os.path.join(cwd, "output_data")
+        real_output_data_path = os.path.join(cwd, "real_output_data")
+        pred_output_data_path = os.path.join(cwd, "pred_output_data")
         # Full path to Rscript executable
         rscript_executable = "./Rscript"
         rscript_executable = os.path.join(cwd, rscript_executable)
