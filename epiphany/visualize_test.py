@@ -175,7 +175,6 @@ def main():
         try:
             result = subprocess.run([rscript_executable, r_script_path, hic_matrix_path, output_data_path],
                                     capture_output=True, text=True)
-            print(result)
         except Exception as e:
             print(f"An error occurred while running the R script: {e}")
 
@@ -197,12 +196,8 @@ def main():
             log_insulation_scores = np.log2(insulation_scores + 1e-10)
             # Plot log2 insulation scores
             if args.wandb:
-                im.append(
-                    wandb.Image(plot_insulation_scores(log_insulation_scores)))
-                wandb.log({chr + " Insulation Score": im})
-                im.append(
-                    wandb.Image(generate_hic_hat(y_hat_L_list, y_hat_R_list)))
-                wandb.log({chr + " Evaluation Examples": im})
+                wandb.log({chr + " Insulation Score": wandb.Image(plot_insulation_scores(log_insulation_scores))})
+                wandb.log({chr + " Evaluation Examples": wandb.Image(generate_hic_hat(y_hat_L_list, y_hat_R_list))})
         else:
             print("Output data files were not created.")
 
