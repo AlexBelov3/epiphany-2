@@ -385,27 +385,41 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
 
     return plt.imread(path)
 
+
+import numpy as np
+import os
+import matplotlib.pyplot as plt
+
+
 def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
-    im = np.zeros((100, seq_length))
-    for i in range(seq_length):
-        diag_values_down = np.array(y_down_list[i].cpu())
-        diag_values_up = np.array(y_up_list[i].cpu())
-        for j in range(100):
-            if i+j < seq_length:
+    im = np.zeros((100, seq_length))  # Initialize the image with zeros
+
+    for i in range(seq_length):  # Iterate over each position on the x-axis
+        diag_values_down = np.array(y_down_list[i].cpu())  # Get the down segment
+        diag_values_up = np.array(y_up_list[i].cpu())  # Get the up segment
+
+        for j in range(100):  # Iterate over the height
+            # Diagonal Down (Right)
+            if i + j < seq_length:  # Ensure within bounds
                 if im[99 - j, i + j] == 0:
-                    im[99 - j, i + j] = diag_values_up[99-j]
+                    im[99 - j, i + j] = diag_values_down[j]
                 else:
-                    im[99 - j, i + j] = (diag_values_up[99-j] + im[99 - j, i + j])/2
-            if i - j >= 0:
+                    im[99 - j, i + j] = (diag_values_down[j] + im[99 - j, i + j]) / 2
+
+            # Diagonal Up (Left)
+            if i - j >= 0:  # Ensure within bounds
                 if im[99 - j, i - j] == 0:
-                    im[99 - j, i - j] = diag_values_down[99-j]
+                    im[99 - j, i - j] = diag_values_up[j]
                 else:
-                    im[99 - j, i - j] = (diag_values_down[99-j] + im[99 - j, i - j])/2
+                    im[99 - j, i - j] = (diag_values_up[j] + im[99 - j, i - j]) / 2
+
+    # Save and plot the image
     path = os.path.join(path, 'ex_test.png')
     fig, ax = plt.subplots()
     ax.imshow(im, cmap='RdYlBu_r', vmin=0)
     plt.imsave(path, im, cmap='RdYlBu_r', vmin=0)
     return plt.imread(path)
+
 
 def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200):
     im = np.zeros((100, seq_length))
