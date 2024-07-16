@@ -1,3 +1,6 @@
+if (!requireNamespace("TopDom", quietly = TRUE)) {
+  install.packages("TopDom")
+}
 # Load necessary libraries
 library(TopDom)
 
