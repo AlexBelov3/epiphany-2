@@ -385,7 +385,7 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
 
     return plt.imread(path)
 
-def generate_image_true(label, path='./', seq_length=200):
+def generate_hic_true(label, path='./', seq_length=200):
     path = os.path.join(path, 'ex_test.png')
     label = safe_tensor_to_numpy(label)
     # Initialize the image arrays
@@ -401,6 +401,31 @@ def generate_image_true(label, path='./', seq_length=200):
     # Plot the results
     fig, ax = plt.subplots()
     combined_image = im2 + im2.T
+    ax.imshow(combined_image, cmap='RdYlBu_r', vmin=0)
+    plt.imsave(path, combined_image, cmap='RdYlBu_r', vmin=0)
+    return combined_image
+
+def generate_hic_hat(y_up_list, y_down_list, path='./', seq_length=200):
+    path = os.path.join(path, 'ex_test.png')
+    im1 = np.zeros((seq_length, seq_length))
+
+    # Fill the top diagonal with the reconstructed Hi-C from label diagonals
+    for i in range(seq_length):
+        diag_values_down = y_down_list[i].cpu()
+        for j in range(min(100, i)):
+            im1[i, i-j] = diag_values_down[j]
+    im1 = im1.T
+    for i in range(seq_length):
+        diag_values_up = y_up_list[i].cpu()
+        for j in range(min(100, seq_length - i)):
+            if im1[i, i+j] == 0:
+                im1[i, i + j] = diag_values_up[j]
+            else:
+                im1[i, i + j] = np.mean([diag_values_up[j], im1[i, i + j]])
+
+    # Plot the results
+    fig, ax = plt.subplots()
+    combined_image = im1 + im1.T
     ax.imshow(combined_image, cmap='RdYlBu_r', vmin=0)
     plt.imsave(path, combined_image, cmap='RdYlBu_r', vmin=0)
     return plt.imread(path)
@@ -441,18 +466,18 @@ def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200):
 
     return im
 
-def generate_hic_true(labels, y_up_list, y_down_list, path='./', seq_length=200):
-    im = np.zeros((100, seq_length))
-    for i in range(seq_length):
-        label = labels[i]
-        for j in range(100):
-            im[j][i] = label[99-j]
-        # Save and plot the image
-    path = os.path.join(path, 'ex_test.png')
-    fig, ax = plt.subplots()
-    ax.imshow(im, cmap='RdYlBu_r', vmin=0)
-    plt.imsave(path, im, cmap='RdYlBu_r', vmin=0)
-    return plt.imread(path)
+# def generate_hic_true(labels, y_up_list, y_down_list, path='./', seq_length=200):
+#     im = np.zeros((100, seq_length))
+#     for i in range(seq_length):
+#         label = labels[i]
+#         for j in range(100):
+#             im[j][i] = label[99-j]
+#         # Save and plot the image
+#     path = os.path.join(path, 'ex_test.png')
+#     fig, ax = plt.subplots()
+#     ax.imshow(im, cmap='RdYlBu_r', vmin=0)
+#     plt.imsave(path, im, cmap='RdYlBu_r', vmin=0)
+#     return plt.imread(path)
 
 
 def test(test_loader, model, device, seq_length):
