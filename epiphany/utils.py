@@ -392,21 +392,24 @@ def plot_insulation_scores(log_insulation_scores):
     min_score = np.min(log_insulation_scores)
     y_max_limit = max_score * 1.1
     y_min_limit = min_score * 0.9
-    print(f"log_insulation_scores SHAPE:{np.shape(log_insulation_scores)}")
+    # print(f"log_insulation_scores SHAPE:{np.shape(log_insulation_scores)}")
+
+    # Create a figure
+    fig, ax = plt.subplots(figsize=(10, 5))
+
     # Plot the log2 insulation scores
-    plt.figure(figsize=(10, 5))
-    plt.plot(log_insulation_scores, color='blue')
-    plt.ylim(y_min_limit, y_max_limit)
-    plt.gca().set_facecolor('white')
+    ax.plot(log_insulation_scores, color='blue')
+    ax.set_ylim(y_min_limit, y_max_limit)
+    ax.set_facecolor('white')
 
     # Set axis labels
-    plt.xlabel('Bin Number')
-    plt.ylabel('Log2 Insulation Score')
+    ax.set_xlabel('Bin Number')
+    ax.set_ylabel('Log2 Insulation Score')
+
     # Show the plot
     plt.show()
-    path = os.path.join('./', 'ex_test.png')
-    plt.imsave(path, log_insulation_scores)
-    return plt.imread(path)
+
+    return fig
 
 
 def calculate_insulation_scores(bins, counts, window_size=5):
