@@ -26,7 +26,7 @@ print("Structure of 'hic_matrix':")
 str(hic_matrix)
 # Define chromosome and bin size
 chr <- "chr1"
-bin_size <- 10000  # Adjust based on your actual bin size
+bin_size <- 10
 n_bins <- nrow(hic_matrix)
 
 # Create the bins data frame
