@@ -135,11 +135,12 @@ def main():
             labels.append(test_label[100])
             if i == 0:
                 co_sig = model.right.bulk_summed_2d(test_data)
-                a, b, c, d = co_sig.shape
-                co_sig = co_sig.reshape(b, c, d).cpu()
-                for j in range(b):
+                co_sig.squeeze()
+                a, b, c = co_sig.shape
+                for j in range(a):
                     signal = np.array(co_sig[j].cpu())
                     co_signal.append(signal)
+                    print(j)
 
 
         y_hat_L_list = []
