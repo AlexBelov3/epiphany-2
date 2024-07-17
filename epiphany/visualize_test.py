@@ -135,6 +135,8 @@ def main():
             labels.append(test_label[100])
             if i == 0:
                 co_signal = model.right.bulk_summed_2d(test_data)
+                a, b, c, d = co_signal.shape
+                co_signal = np.array(co_signal.reshape(c, d).cpu())
 
 
         y_hat_L_list = []
@@ -157,7 +159,7 @@ def main():
             im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))
             wandb.log({chr + " Evaluation Examples": im})
             im = wandb.Image(
-                plot_cosignal_matrix(np.array(co_signal.cpu())))
+                plot_cosignal_matrix(co_signal))
             wandb.log({"First " + chr + " Co-Signal": im})
         np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=eval_length), delimiter="\t", fmt="%.6f")
         np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length),
