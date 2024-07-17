@@ -505,7 +505,9 @@ def plot_cosignal_matrix(matrix, title='Co-Signal Matrix'):
     # print(np.shape(matrix))
     # Plot the matrix using a heatmap
     cax = ax.imshow(matrix, aspect='auto', cmap='RdYlBu_r', interpolation='none')
-
+    print(f"matrix type: {type(matrix)}")
+    print(f"matrix shape: {np.shape(matrix)}")
+    print(f"matrix first value: {matrix[0][0]}")
     # Add a colorbar
     cbar = fig.colorbar(cax, ax=ax)
     cbar.set_label('Signal Intensity')
