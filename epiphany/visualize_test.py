@@ -143,6 +143,7 @@ def main():
                         co_signal.append(signal)
                 else:
                     a, b, c, d = co_sig.shape
+                    co_sig = co_sig.reshape(b, c, d)
                     for j in range(b):
                         signal = np.array(co_sig[j].cpu())
                         co_signal.append(signal)
