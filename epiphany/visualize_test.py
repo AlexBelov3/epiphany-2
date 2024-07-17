@@ -133,11 +133,6 @@ def main():
             y_down_list.append(y_rev)
             labels.append(test_label[100])
 
-
-        # if args.wandb:
-        #     im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=eval_length))
-        #     wandb.log({chr + " Evaluation Examples": im})
-
         im = []
         y_hat_L_list = []
         y_hat_R_list = []
@@ -155,6 +150,9 @@ def main():
             else:
                 break
             i += 1
+        if args.wandb:
+            im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))
+            wandb.log({chr + " Evaluation Examples": im})
         np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=eval_length), delimiter="\t", fmt="%.6f")
         np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length),
                    delimiter="\t", fmt="%.6f")
@@ -198,13 +196,6 @@ def main():
         pred_insulation_scores = np.log2(insulation_scores + 1e-10)
 
         if args.wandb:
-            wandb.log({chr + " REAL Insulation Score": wandb.Image(plot_two_insulation_scores(real_insulation_scores, pred_insulation_scores))})
-        else:
-            print("Output data files were not created.")
-
-
-        # if args.wandb:
-        #     wandb.log({chr + " Test Example:": wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))})
-
+            wandb.log({chr + " Insulation Score": wandb.Image(plot_two_insulation_scores(real_insulation_scores, pred_insulation_scores))})
 if __name__ == '__main__':
     main()
