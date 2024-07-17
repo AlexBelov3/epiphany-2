@@ -133,9 +133,9 @@ def main():
             y_up_list.append(y)
             y_down_list.append(y_rev)
             labels.append(test_label[100])
-            if i == 0:
-                prod_model = outer_prod_big().cuda().eval()
-                co_signal = prod_model(test_data)
+            # if i == 0:
+            #     co_signal = model.bulk_summed_2d(test_data)
+
 
         y_hat_L_list = []
         y_hat_R_list = []
