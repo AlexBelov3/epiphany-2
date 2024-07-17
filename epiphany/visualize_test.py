@@ -136,11 +136,16 @@ def main():
             if i == 0:
                 co_sig = model.right.bulk_summed_2d(test_data)
                 co_sig.squeeze()
-                a, b, c = co_sig.shape
-                for j in range(a):
-                    signal = np.array(co_sig[j].cpu())
-                    co_signal.append(signal)
-                    print(j)
+                if len(co_sig.shape) == 3:
+                    a, b, c = co_sig.shape
+                    for j in range(a):
+                        signal = np.array(co_sig[j].cpu())
+                        co_signal.append(signal)
+                else:
+                    a, b, c, d = co_sig.shape
+                    for j in range(b):
+                        signal = np.array(co_sig[j].cpu())
+                        co_signal.append(signal)
 
 
         y_hat_L_list = []
