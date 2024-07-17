@@ -499,15 +499,35 @@ def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
     plt.imsave(path, im, cmap='RdYlBu_r', vmin=0)
     return plt.imread(path)
 
+
 def plot_cosignal_matrix(matrix, title='Co-Signal Matrix'):
+    """
+    Function to plot a 2D numpy array representing a co-signal matrix.
+
+    Parameters:
+    - matrix (numpy.ndarray): 2D array representing the co-signal matrix.
+    - title (str): Title of the plot.
+
+    Returns:
+    - matplotlib.figure.Figure: The figure object containing the plot.
+    """
+
     # Create a figure and axis
     fig, ax = plt.subplots(figsize=(10, 8))
-    # print(np.shape(matrix))
-    # Plot the matrix using a heatmap
-    cax = ax.imshow(matrix, aspect='auto', cmap='RdYlBu_r', interpolation='none')
+
+    # Determine the min and max values for scaling
+    vmin = np.min(matrix)
+    vmax = np.max(matrix)
+
+    # Plot the matrix using a heatmap with scaling
+    cax = ax.imshow(matrix, aspect='auto', cmap='RdYlBu_r', interpolation='none', vmin=vmin, vmax=vmax)
+
+    # Print debug information
     print(f"matrix type: {type(matrix)}")
     print(f"matrix shape: {np.shape(matrix)}")
-    print(f"matrix first value: {matrix[0][0]}")
+    print(f"matrix min value: {vmin}")
+    print(f"matrix max value: {vmax}")
+
     # Add a colorbar
     cbar = fig.colorbar(cax, ax=ax)
     cbar.set_label('Signal Intensity')
