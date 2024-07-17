@@ -502,9 +502,9 @@ def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
 def plot_cosignal_matrix(matrix, title='Co-Signal Matrix'):
     # Create a figure and axis
     fig, ax = plt.subplots(figsize=(10, 8))
-
+    # print(np.shape(matrix))
     # Plot the matrix using a heatmap
-    cax = ax.imshow(matrix, aspect='auto', cmap='viridis', interpolation='none')
+    cax = ax.imshow(matrix, aspect='auto', cmap='RdYlBu_r', interpolation='none')
 
     # Add a colorbar
     cbar = fig.colorbar(cax, ax=ax)
