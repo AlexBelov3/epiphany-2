@@ -134,7 +134,7 @@ def main():
             y_down_list.append(y_rev)
             labels.append(test_label[100])
             if i == 0:
-                co_signal = model.left.bulk_summed_2d(test_data)
+                co_signal = model.right.bulk_summed_2d(test_data)
 
 
         y_hat_L_list = []
