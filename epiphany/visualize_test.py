@@ -125,7 +125,7 @@ def main():
         test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=[chr],
                                    mode='test')
         test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
-        for i, (test_data, test_label, co_signal) in enumerate(test_loader):
+        for i, (test_data, test_label, co_s) in enumerate(test_loader):
             if i >= eval_length:
                 break
             test_label = test_label.squeeze()
@@ -134,7 +134,7 @@ def main():
             y_down_list.append(y_rev)
             labels.append(test_label[100])
             if i == 0:
-                co_signal.append(model.right.bulk_summed_2d(test_data))
+                co_signal = model.right.bulk_summed_2d(test_data)
 
 
         y_hat_L_list = []
@@ -157,7 +157,7 @@ def main():
             im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))
             wandb.log({chr + " Evaluation Examples": im})
             im = wandb.Image(
-                plot_cosignal_matrix(np.array(co_signal[0].cpu())))
+                plot_cosignal_matrix(np.array(co_signal.cpu())))
             wandb.log({"First " + chr + " Co-Signal": im})
         np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=eval_length), delimiter="\t", fmt="%.6f")
         np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length),
