@@ -134,7 +134,7 @@ def main():
             y_down_list.append(y_rev)
             labels.append(test_label[100])
             if i == 0:
-                prod_model = outer_prod_big().cuda()
+                prod_model = outer_prod_big().cuda().eval()
                 co_signal = prod_model(test_data)
 
         y_hat_L_list = []
