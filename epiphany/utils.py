@@ -499,6 +499,27 @@ def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
     plt.imsave(path, im, cmap='RdYlBu_r', vmin=0)
     return plt.imread(path)
 
+def plot_cosignal_matrix(matrix, title='Co-Signal Matrix'):
+    # Create a figure and axis
+    fig, ax = plt.subplots(figsize=(10, 8))
+
+    # Plot the matrix using a heatmap
+    cax = ax.imshow(matrix, aspect='auto', cmap='viridis', interpolation='none')
+
+    # Add a colorbar
+    cbar = fig.colorbar(cax, ax=ax)
+    cbar.set_label('Signal Intensity')
+
+    # Set title and labels
+    ax.set_title(title)
+    ax.set_xlabel('Bins')
+    ax.set_ylabel('Bins')
+
+    # Show the plot
+    plt.show()
+
+    return fig
+
 
 def plot_two_insulation_scores(real_log_insulation_scores, predicted_log_insulation_scores):
     # Calculate the maximum and minimum log2 insulation scores and set the y-axis limits
@@ -506,9 +527,6 @@ def plot_two_insulation_scores(real_log_insulation_scores, predicted_log_insulat
     min_score = min(np.min(real_log_insulation_scores), np.min(predicted_log_insulation_scores))
     y_max_limit = max_score * 1.1
     y_min_limit = min_score * 0.9
-    print(f"real_log_insulation_scores SHAPE:{np.shape(real_log_insulation_scores)}")
-    print(f"predicted_log_insulation_scores SHAPE:{np.shape(predicted_log_insulation_scores)}")
-
     # Create a figure
     fig, ax = plt.subplots(figsize=(10, 5))
 

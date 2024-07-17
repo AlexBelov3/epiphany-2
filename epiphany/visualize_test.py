@@ -121,6 +121,7 @@ def main():
         y_up_list = []
         y_down_list = []
         labels = []
+        co_signal = []
         test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=[chr],
                                    mode='test')
         test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
@@ -132,13 +133,15 @@ def main():
             y_up_list.append(y)
             y_down_list.append(y_rev)
             labels.append(test_label[100])
+            if i == 0:
+                prod_model = outer_prod_big().cuda()
+                co_signal = prod_model(test_data)
 
-        im = []
         y_hat_L_list = []
         y_hat_R_list = []
         model.eval()
         i = 0
-        for (test_data, test_label, co_signal) in tqdm(test_loader):
+        for (test_data, test_label, co_s) in tqdm(test_loader):
             if i < eval_length:
                 if np.linalg.norm(test_label) < 1e-8:
                     continue
@@ -153,6 +156,9 @@ def main():
         if args.wandb:
             im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))
             wandb.log({chr + " Evaluation Examples": im})
+            im = wandb.Image(
+                plot_cosignal_matrix(co_signal))
+            wandb.log({"First " + chr + " Co-Signal": im})
         np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=eval_length), delimiter="\t", fmt="%.6f")
         np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length),
                    delimiter="\t", fmt="%.6f")
