@@ -223,7 +223,7 @@ def main():
 
         correlation_list = []
         for i in range(len(y_hat)):
-            corr_matrix = np.corrcoef(y_hat[i].cpu(), y_list[i].cpu())
+            corr_matrix = np.corrcoef(y_hat_list[i].cpu(), y_list[i].cpu())
             correlation = corr_matrix[0, 1]
             correlation_list.append(correlation)
         if args.wandb:
