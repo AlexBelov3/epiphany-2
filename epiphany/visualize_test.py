@@ -229,6 +229,8 @@ def main():
         print(np.shape(np.array(y_list)))
         print(np.shape(np.array(y_hat_list)))
         corr = np.corrcoef(y_hat_list, y_list)
+        print(type(corr))
+        print(corr)
         if args.wandb:
             wandb.log({chr + " Correlation": wandb.Image(plot_correlation(correlation_list, corr))})
 if __name__ == '__main__':
