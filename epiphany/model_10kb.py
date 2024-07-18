@@ -690,7 +690,7 @@ class outer_prod_big(nn.Module):
                 x = x.squeeze()
                 binned_signals = x.flatten(0)
                 co_signal = torch.outer(binned_signals, binned_signals)
-                # co_signal = torch.log2(co_signal+1)
+                co_signal = torch.log2(co_signal+1)
                 a, b = co_signal.shape
                 co_signal = co_signal.reshape(1, 1, a, b)
                 return torch.tensor(co_signal).cuda()
