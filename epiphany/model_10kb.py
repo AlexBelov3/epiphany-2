@@ -689,7 +689,6 @@ class outer_prod_big(nn.Module):
             if len(x.shape) == 3:
                 x = x.squeeze()
                 binned_signals = x.flatten(0)
-                binned_signals = torch.log2(binned_signals.cpu())
                 co_signal = torch.outer(binned_signals, binned_signals)
                 a, b = co_signal.shape
                 co_signal = co_signal.reshape(1, 1, a, b)
