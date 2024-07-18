@@ -580,10 +580,14 @@ def plot_correlation(correlations, corr):
     # Create a figure
     fig, ax = plt.subplots(figsize=(10, 5))
 
-    # Plot the real and predicted log2 insulation scores
-    ax.plot(correlations, color='blue', label='Real')
+    # Plot the correlations
+    ax.plot(correlations, color='blue', label='Correlation')
     ax.set_ylim(y_min_limit, y_max_limit)
     ax.set_facecolor('white')
+
+    # Calculate and plot the average correlation line
+    avg_correlation = np.mean(correlations)
+    ax.axhline(y=avg_correlation, color='lightblue', linestyle='--', linewidth=2, label='Average Correlation')
 
     # Add correlation text to the plot
     text_x = len(correlations) - 1
