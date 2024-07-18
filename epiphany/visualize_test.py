@@ -163,7 +163,7 @@ def main():
                 test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
                 with torch.no_grad():
                     y_hat = model(test_data)
-                    y_hat_list.append(y_hat.cpu())
+                    y_hat_list.append(np.array(y_hat.cpu()))
                     y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
             else:
@@ -226,8 +226,8 @@ def main():
             corr_matrix = np.corrcoef(y_hat_list[i], y_list[i])
             correlation = corr_matrix[0, 1]
             correlation_list.append(correlation)
-        print(np.shape(np.array(y_hat_list)))
         print(np.shape(np.array(y_list)))
+        print(np.shape(np.array(y_hat_list)))
         corr = np.corrcoef(y_hat_list, y_list)
         if args.wandb:
             wandb.log({chr + " Correlation": wandb.Image(plot_correlation(correlation_list, corr))})
