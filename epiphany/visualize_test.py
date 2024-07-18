@@ -226,9 +226,7 @@ def main():
             corr_matrix = np.corrcoef(y_hat_list[i], y_list[i])
             correlation = corr_matrix[0, 1]
             correlation_list.append(correlation)
-        corr = np.corrcoef(y_hat_list, y_list, rowvar=False)
-        print(corr)
-        print(np.shape(corr))
+        corr = np.corrcoef(np.ravel(y_hat_list), np.ravel(y_list))
         if args.wandb:
             wandb.log({chr + " Correlation": wandb.Image(plot_correlation(correlation_list, corr))})
 if __name__ == '__main__':
