@@ -511,7 +511,6 @@ def plot_cosignal_matrix(matrix, title='Co-Signal Matrix'):
     Returns:
     - matplotlib.figure.Figure: The figure object containing the plot.
     """
-    matrix = np.log2(matrix+1)
     # Create a figure and axis
     fig, ax = plt.subplots(figsize=(10, 8))
 
