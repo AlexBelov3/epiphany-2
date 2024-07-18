@@ -548,18 +548,56 @@ def plot_two_insulation_scores(real_log_insulation_scores, predicted_log_insulat
     min_score = min(np.min(real_log_insulation_scores), np.min(predicted_log_insulation_scores))
     y_max_limit = max_score * 1.1
     y_min_limit = min_score * 0.9
+
+    # Calculate the correlation between the real and predicted insulation scores
+    correlation = np.corrcoef(real_log_insulation_scores, predicted_log_insulation_scores)[0, 1]
+
     # Create a figure
     fig, ax = plt.subplots(figsize=(10, 5))
 
     # Plot the real and predicted log2 insulation scores
-    ax.plot(real_log_insulation_scores, color='blue')
-    ax.plot(predicted_log_insulation_scores, color='red')
+    ax.plot(real_log_insulation_scores, color='blue', label='Real')
+    ax.plot(predicted_log_insulation_scores, color='red', label='Predicted')
     ax.set_ylim(y_min_limit, y_max_limit)
     ax.set_facecolor('white')
+
+    # Add correlation text to the plot
+    text_x = len(real_log_insulation_scores) - 1
+    text_y = y_max_limit * 0.9
+    ax.text(text_x, text_y, f'R: {correlation:.2f}', fontsize=12, ha='right', va='top')
 
     # Set axis labels
     ax.set_xlabel('Bin Number')
     ax.set_ylabel('Log2 Insulation Score')
+
+    # Show the plot
+    plt.show()
+
+    return fig
+
+
+def plot_correlation(correlation):
+    # Calculate the maximum and minimum log2 insulation scores and set the y-axis limits
+    max_score = np.max(correlation)
+    min_score = np.min(correlation)
+    y_max_limit = max_score * 1.1
+    y_min_limit = min_score * 0.9
+
+    # Create a figure
+    fig, ax = plt.subplots(figsize=(10, 5))
+
+    # Plot the real and predicted log2 insulation scores
+    ax.plot(correlation, color='blue', label='Real')
+    ax.set_ylim(y_min_limit, y_max_limit)
+    ax.set_facecolor('white')
+
+    # Add correlation text to the plot
+    text_x = len(correlation) - 1
+    text_y = y_max_limit * 0.9
+
+    # Set axis labels
+    ax.set_xlabel('Bin Number')
+    ax.set_ylabel('Correlation')
 
     # Show the plot
     plt.show()
@@ -609,23 +647,6 @@ def test_model(model, test_loader, device, seq_length):
         y_hat_list = test(test_loader, model, device, seq_length)
     return y_hat_list
 
-# def extract_diagonals(arr):
-#     if isinstance(arr, torch.Tensor):
-#         arr = arr.detach().cpu().numpy()
-#     elif not isinstance(arr, np.ndarray):
-#         arr = np.array(arr)
-#     assert arr.shape == (200, 100), "Input array must be 200x100 in size"
-#
-#     up_diagonal = np.zeros(100)
-#     down_diagonal = np.zeros(100)
-#
-#     for i in range(100):
-#         up_diagonal[i] = arr[99 + i//2, i]
-#         down_diagonal[i] = arr[99 - i//2, i]
-#         # up_diagonal[i] = arr[0, i]
-#         # down_diagonal[i] = arr[i, 0]
-#
-#     return up_diagonal, down_diagonal
 
 def extract_diagonals(tensor):
     assert tensor.shape == (200, 100), "Input tensor must be 200x100 in size"
@@ -642,48 +663,48 @@ def extract_diagonals(tensor):
 
     return up_diagonal, down_diagonal
 
-
-def cpu_jaccard_vstripe(x):
-    # calculate jaccard similarity of rows
-    scatac_res = 500
-    size = x.shape[1]
-    eps = 1e-8
-    i = np.int16(1000 / scatac_res)
-
-    x = torch.where(x > 0.0, torch.tensor([1.0]), torch.tensor([0.0]))
-    num = torch.mm(
-        x[2000 * i : 2010 * i, :],
-        x[np.r_[:, 0 : 2000 * i, 2010 * i : 4010 * i]].transpose(0, 1),
-    )
-
-    x = torch.where(x == 0.0, torch.tensor([1.0]), torch.tensor([0.0]))
-    denom = torch.mm(
-        x[2000 * i : 2010 * i, :],
-        x[np.r_[:, 0 : 2000 * i, 2010 * i : 4010 * i]].transpose(0, 1),
-    )
-    denom = size - denom
-
-    num = torch.div(num, torch.max(denom, eps * torch.ones_like(denom)))
-
-    return num
-
-
-def cpu_batch_corcoeff_vstripe(x):
-    c = cpu_jaccard_vstripe(x.permute(1, 0))
-    c[c != c] = 0
-    return c
-
-
-def bin_and_sum(arr, bin_size=100):
-    # Ensure the array length is a multiple of bin_size
-    n = len(arr)
-    remainder = n % bin_size
-    if remainder != 0:
-        arr = arr[:n - remainder]
-
-    # Reshape the array to have bin_size columns
-    reshaped_arr = arr.reshape(-1, bin_size)
-    # Calculate the mean across the columns
-    binned_sum = reshaped_arr.sum(axis=1)
-
-    return binned_sum
+#
+# def cpu_jaccard_vstripe(x):
+#     # calculate jaccard similarity of rows
+#     scatac_res = 500
+#     size = x.shape[1]
+#     eps = 1e-8
+#     i = np.int16(1000 / scatac_res)
+#
+#     x = torch.where(x > 0.0, torch.tensor([1.0]), torch.tensor([0.0]))
+#     num = torch.mm(
+#         x[2000 * i : 2010 * i, :],
+#         x[np.r_[:, 0 : 2000 * i, 2010 * i : 4010 * i]].transpose(0, 1),
+#     )
+#
+#     x = torch.where(x == 0.0, torch.tensor([1.0]), torch.tensor([0.0]))
+#     denom = torch.mm(
+#         x[2000 * i : 2010 * i, :],
+#         x[np.r_[:, 0 : 2000 * i, 2010 * i : 4010 * i]].transpose(0, 1),
+#     )
+#     denom = size - denom
+#
+#     num = torch.div(num, torch.max(denom, eps * torch.ones_like(denom)))
+#
+#     return num
+#
+#
+# def cpu_batch_corcoeff_vstripe(x):
+#     c = cpu_jaccard_vstripe(x.permute(1, 0))
+#     c[c != c] = 0
+#     return c
+#
+#
+# def bin_and_sum(arr, bin_size=100):
+#     # Ensure the array length is a multiple of bin_size
+#     n = len(arr)
+#     remainder = n % bin_size
+#     if remainder != 0:
+#         arr = arr[:n - remainder]
+#
+#     # Reshape the array to have bin_size columns
+#     reshaped_arr = arr.reshape(-1, bin_size)
+#     # Calculate the mean across the columns
+#     binned_sum = reshaped_arr.sum(axis=1)
+#
+#     return binned_sum
