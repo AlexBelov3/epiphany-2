@@ -564,7 +564,7 @@ def plot_two_insulation_scores(real_log_insulation_scores, predicted_log_insulat
     # Add correlation text to the plot
     text_x = len(real_log_insulation_scores) - 1
     text_y = y_max_limit * 0.9
-    ax.text(text_x, text_y, f'R: {correlation:.2f}', fontsize=12, ha='right', va='top')
+    ax.text(text_x, text_y, f'R: {correlation:.2f}', fontsize=24, ha='right', va='top')
 
     # Set axis labels
     ax.set_xlabel('Bin Number')

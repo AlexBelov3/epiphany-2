@@ -220,5 +220,13 @@ def main():
 
         if args.wandb:
             wandb.log({chr + " Insulation Score": wandb.Image(plot_two_insulation_scores(real_insulation_scores, pred_insulation_scores))})
+
+        correlation_list = []
+        for i in range(len(y_hat)):
+            corr_matrix = np.corrcoef(y_hat[i], y_list[i])
+            correlation = corr_matrix[0, 1]
+            correlation_list.append(correlation)
+        if args.wandb:
+            wandb.log({chr + " Insulation Score": wandb.Image(plot_correlation(correlation_list))})
 if __name__ == '__main__':
     main()
