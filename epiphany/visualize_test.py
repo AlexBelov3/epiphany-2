@@ -198,36 +198,36 @@ def main():
         except Exception as e:
             print(f"An error occurred while running the R script: {e}")
 
-        # Calculate insulation scores using the output data from the R script
-        bins_real_path = f"{real_output_data_path}_bins.tsv"
-        counts_real_path = f"{real_output_data_path}_counts.tsv"
-        bins_pred_path = f"{pred_output_data_path}_bins.tsv"
-        counts_pred_path = f"{pred_output_data_path}_counts.tsv"
-
-        # Load the bins and counts data
-        bins = pd.read_csv(bins_real_path, sep="\t")
-        counts = np.loadtxt(counts_real_path, delimiter="\t")
-        # Calculate insulation scores
-        insulation_scores = calculate_insulation_scores(bins, counts)
-        real_insulation_scores = np.log2(insulation_scores + 1e-10)
-        # Plot log2 insulation scores
-
-        bins = pd.read_csv(bins_pred_path, sep="\t")
-        counts = np.loadtxt(counts_pred_path, delimiter="\t")
-        # Calculate insulation scores
-        insulation_scores = calculate_insulation_scores(bins, counts)
-        pred_insulation_scores = np.log2(insulation_scores + 1e-10)
-
-        if args.wandb:
-            wandb.log({chr + " Insulation Score": wandb.Image(plot_two_insulation_scores(real_insulation_scores, pred_insulation_scores))})
+        # # Calculate insulation scores using the output data from the R script
+        # bins_real_path = f"{real_output_data_path}_bins.tsv"
+        # counts_real_path = f"{real_output_data_path}_counts.tsv"
+        # bins_pred_path = f"{pred_output_data_path}_bins.tsv"
+        # counts_pred_path = f"{pred_output_data_path}_counts.tsv"
+        #
+        # # Load the bins and counts data
+        # bins = pd.read_csv(bins_real_path, sep="\t")
+        # counts = np.loadtxt(counts_real_path, delimiter="\t")
+        # # Calculate insulation scores
+        # insulation_scores = calculate_insulation_scores(bins, counts)
+        # real_insulation_scores = np.log2(insulation_scores + 1e-10)
+        # # Plot log2 insulation scores
+        #
+        # bins = pd.read_csv(bins_pred_path, sep="\t")
+        # counts = np.loadtxt(counts_pred_path, delimiter="\t")
+        # # Calculate insulation scores
+        # insulation_scores = calculate_insulation_scores(bins, counts)
+        # pred_insulation_scores = np.log2(insulation_scores + 1e-10)
+        #
+        # if args.wandb:
+        #     wandb.log({chr + " Insulation Score": wandb.Image(plot_two_insulation_scores(real_insulation_scores, pred_insulation_scores))})
 
         correlation_list = []
         for i in range(len(y_list)):
             corr_matrix = np.corrcoef(y_hat_list[i], y_list[i])
             correlation = corr_matrix[0, 1]
             correlation_list.append(correlation)
-        corr = np.corrcoef(np.ravel(y_hat_list), np.ravel(y_list))
-        print(np.shape(np.ravel(y_hat_list)))
+        corr = np.corrcoef(np.ravel(y_hat_list), np.ravel(y_list))[0, 1]
+        print(np.shape(np.ravel(y_list)))
         print(corr)
         if args.wandb:
             wandb.log({chr + " Correlation": wandb.Image(plot_correlation(correlation_list, corr))})
