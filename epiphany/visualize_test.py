@@ -223,12 +223,11 @@ def main():
 
         correlation_list = []
         for i in range(len(y_hat)):
-            print(f"y_hat_list type: {type(y_hat_list)}")
-            print(f"y_list type: {type(y_list)}")
             corr_matrix = np.corrcoef(y_hat_list[i].cpu(), y_list[i])
             correlation = corr_matrix[0, 1]
             correlation_list.append(correlation)
+        print(correlation_list)
         if args.wandb:
-            wandb.log({chr + " Insulation Score": wandb.Image(plot_correlation(correlation_list))})
+            wandb.log({chr + " Correlation": wandb.Image(plot_correlation(correlation_list))})
 if __name__ == '__main__':
     main()
