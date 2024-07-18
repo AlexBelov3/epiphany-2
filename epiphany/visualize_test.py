@@ -163,7 +163,7 @@ def main():
                 test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
                 with torch.no_grad():
                     y_hat = model(test_data)
-                    y_hat_list.append(np.array(y_hat.cpu()))
+                    y_hat_list.append(np.array(y_hat.cpu().squeeze()))
                     y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
             else:
