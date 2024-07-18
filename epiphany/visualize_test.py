@@ -134,7 +134,7 @@ def main():
             y_down_list.append(y_rev)
             labels.append(test_label[100])
             if i == 0:
-                co_sig = model.right.bulk_summed_2d(np.log2(test_data))
+                co_sig = model.right.bulk_summed_2d(test_data)
                 co_sig.squeeze()
                 if len(co_sig.shape) == 3:
                     a, b, c = co_sig.shape
