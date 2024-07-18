@@ -73,7 +73,7 @@ def main():
         model = trunk(branch_outer_prod_small().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'e':
         # conv1d right arm ad outer_prod_big right arm
-        model_name = "outer_prod_big_high_res"
+        model_name = "outer_prod_big"
         model = trunk(branch_outer_prod_big().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'f':
         # use a trunk that adds the two predicitons together? idk
