@@ -690,7 +690,7 @@ class outer_prod_big(nn.Module):
                 x = x.squeeze()
                 binned_signals = x.flatten(0)
                 co_signal = torch.outer(binned_signals, binned_signals)
-                # co_signal = torch.log2(co_signal+1)
+                co_signal = torch.log2(co_signal+1)
                 a, b = co_signal.shape
                 co_signal = co_signal.reshape(1, 1, a, b)
                 return torch.tensor(co_signal).cuda()
@@ -831,36 +831,24 @@ class branch_transformer(nn.Module):
         )
         # self.transformer = nn.Transformer(d_model=440, nhead=8, num_encoder_layers=6, num_decoder_layers=6,
         #                                   dim_feedforward=2048, dropout=0.1, activation='relu', batch_first=True)
-        self.transformer = nn.TransformerEncoder(nn.TransformerEncoderLayer(d_model=440, nhead=2), num_layers=6)
-        # self.fc1 = nn.Linear(440 * 5, 900)  # 5 is the sequence length
-        # self.fc2 = nn.Linear(900, 200)
-        # self.fc1 = nn.Linear(2400, 900)
-        # self.act = nn.ReLU()
-        # self.fc2 = nn.Linear(900, 200)
-        # self.act2 = nn.ReLU()
-
-        self.global_avg_pool = nn.AdaptiveAvgPool1d(1)
-        self.conv1 = nn.Conv1d(in_channels=5, out_channels=16, kernel_size=3, stride=1, padding=1)
-        self.conv2 = nn.Conv1d(in_channels=16, out_channels=32, kernel_size=3, stride=1, padding=1)
-        self.fc1 = nn.Linear(32, 900)
+        self.transformer = nn.TransformerEncoder(nn.TransformerEncoderLayer(d_model=440, nhead=8), num_layers=6)
+        self.fc1 = nn.Linear(440 * 5, 900)
+        self.act = nn.ReLU()
         self.fc2 = nn.Linear(900, 200)
+
+        # self.global_avg_pool = nn.AdaptiveAvgPool1d(1)
+        # self.conv1 = nn.Conv1d(in_channels=5, out_channels=16, kernel_size=3, stride=1, padding=1)
+        # self.conv2 = nn.Conv1d(in_channels=16, out_channels=32, kernel_size=3, stride=1, padding=1)
+        # self.fc1 = nn.Linear(32, 900)
+        # self.fc2 = nn.Linear(900, 200)
 
     def forward(self, x2):
         x = self.bulk_summed(x2)
-        # x = self.transformer.encoder(x)#(x, x)
         x = self.transformer(x)
-        # x = x.view(x.size(0), -1)
-        # x = self.fc1(x)
-        # x = self.fc2(x)
-        x = self.global_avg_pool(x)
-        x = self.conv1(x)  # (batch_size, 16, d_model)
-        x = F.relu(x)
-        x = self.conv2(x)  # (batch_size, 32, d_model)
-        x = F.relu(x)
-        x = x.mean(dim=2)  # (batch_size, 32)
-        x = self.fc1(x)  # (batch_size, 900)
-        x = F.relu(x)
-        x = self.fc2(x)  # (batch_size, 200)
+        x = x.view(x.size(0), -1)
+        x = self.fc1(x)
+        x = self.act(x)
+        x = self.fc2(x)
         return x
 
 class branch_outer_prod_high_res(nn.Module):
