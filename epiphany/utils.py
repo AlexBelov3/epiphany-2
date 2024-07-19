@@ -592,7 +592,7 @@ def plot_correlation(correlations, corr):
     # Add correlation text to the plot
     text_x = len(correlations) - 1
     text_y = y_max_limit * 0.975
-    ax.text(text_x, text_y, f'R: {corr:.2f}', fontsize=24, ha='right', va='top')
+    ax.text(text_x, text_y, f'Global: {corr:.2f}', fontsize=24, ha='right', va='top')
 
     # Set axis labels
     ax.set_xlabel('Bin Number')

@@ -117,7 +117,7 @@ def main():
 
     eval_length = 800
     # GM12878 Standard
-    test_chroms = ['chr3', 'chr11', 'chr17', 'chr2', 'chr22']
+    test_chroms = ['chr3', 'chr11', 'chr17', 'chr2']
     # match test chroms with chromafold!!
 
     for chr in test_chroms:
@@ -226,7 +226,7 @@ def main():
 
         correlation_list = []
         for i in range(len(y_list)):
-            corr_matrix = np.corrcoef(y_hat_list[i], y_list[i],rowvar=False)
+            corr_matrix = np.corrcoef(y_hat_list[i], y_list[i], rowvar=True)
             correlation = corr_matrix[0, 1]
             correlation_list.append(correlation)
         corr = np.corrcoef(np.ravel(y_hat_list), np.ravel(y_list))[0, 1]
