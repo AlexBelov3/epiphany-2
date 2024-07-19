@@ -49,7 +49,7 @@ print(config)
 EPI_INPUT_DIR = config['epi_input_dir']
 HIC_INPUT_DIR = config['hic_input_dir']
 TARGET_DIR = config['target_dir']
-EPI_ORDER = ["ATAC", "H3K36me3", "H3K27ac", "H3K4me3", "H3K4me1"]#config['epi_order']
+EPI_ORDER = config['epi_order']
 EPI_RESOLUTION = config['epi_resolution']
 HIC_RESOLUTION = config['hic_resolution']
 CELL_TYPE = [config['cell_type']]
@@ -73,7 +73,7 @@ def load_epitracks(input_dir = EPI_INPUT_DIR, chrom = "chr1", epi_order = EPI_OR
     """
     files = [i for i in os.listdir(input_dir) if "bw" in i]
     print(f"files: {files}")
-    print(f"files: {epi_order}")
+    print(f"epi_order: {epi_order}")
     idx = [[i for i, s in enumerate(files) if chip in s][0] for chip in epi_order]
     files = [files[i] for i in idx]
     bw_list = []
@@ -141,7 +141,7 @@ def main():
     EPI_INPUT_DIR = config['epi_input_dir']
     HIC_INPUT_DIR = config['hic_input_dir']
     TARGET_DIR = config['target_dir']
-    EPI_ORDER = config['epi_order']
+    EPI_ORDER = ["ATAC", "H3K36me3", "H3K27ac", "H3K4me3", "H3K4me1"]#config['epi_order']
     EPI_RESOLUTION = config['epi_resolution']
     HIC_RESOLUTION = config['hic_resolution']
     FILE_NAME_PREFIX = config['file_name']
