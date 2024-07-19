@@ -22,6 +22,10 @@ python /train_epiphany/prepare_data.py \
 --cell_type "GM12878" \
 --file_name "ATAC-H3K36me3-H3K27ac-H3K27me3"
 '''
+'''
+python3 prepare_data.py --epi_input_dir /data/leslie/yangr2/setd2/train_epiphany/GM12878_files --hic_input_dir /data/leslie/yangr2/setd2/train_epiphany/GM12878_hic/normcounts --target_dir ./GM12878_processed --cell_type "GM12878" --file_name "ATAC-H3K36me3-H3K27ac-H3K27me3"
+python3 prepare_data.py --epi_input_dir /data/leslie/yangr2/setd2/train_epiphany/GM12878_files --hic_input_dir /data/leslie/yangr2/setd2/train_epiphany/GM12878_hic/normcounts --target_dir ./GM12878_processed --cell_type "GM12878" --file_name "ATAC-H3K36me3-H3K27ac-H3K27me3"
+'''
 
 parser = argparse.ArgumentParser(description="Set-up data preparations",
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -130,6 +134,7 @@ def make_labels(input_dir = HIC_INPUT_DIR, target_dir = TARGET_DIR,
 #########################
 
 def main():
+    print("MAIN")
     args = parser.parse_args()
     config = vars(args)
     print(config)
