@@ -95,6 +95,9 @@ def main():
     elif args.model == 'i':
         model_name = "branch_outer_prod_learned"
         model = trunk_new_loss(branch_outer_prod_learned().cuda(), branch_cov().cuda()).cuda()
+    elif args.model == 'j':
+        model_name = "branch_transformer"
+        model = trunk(branch_transformer().cuda(), branch_cov().cuda()).cuda()
     else:
         model_name = "DEFAULT"
         model = Net(1, 5, int(args.window_size)).cuda()
@@ -170,8 +173,8 @@ def main():
                 break
             i += 1
         if args.wandb:
-            # im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))
-            # wandb.log({chr + " Evaluation Examples": im})
+            im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))
+            wandb.log({chr + " Evaluation Examples": im})
             for i in range(len(co_signal)):
                 im = wandb.Image(
                     plot_cosignal_matrix(co_signal[i]))
@@ -227,8 +230,6 @@ def main():
             correlation = corr_matrix[0, 1]
             correlation_list.append(correlation)
         corr = np.corrcoef(np.ravel(y_hat_list), np.ravel(y_list))[0, 1]
-        print(np.shape(np.ravel(y_list)))
-        print(corr)
         if args.wandb:
             wandb.log({chr + " Correlation": wandb.Image(plot_correlation(correlation_list, corr))})
 if __name__ == '__main__':
