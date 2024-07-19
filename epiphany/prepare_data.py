@@ -72,7 +72,8 @@ def load_epitracks(input_dir = EPI_INPUT_DIR, chrom = "chr1", epi_order = EPI_OR
         list of lists containing the 1D epigenmic tracks in certain order.
     """
     files = [i for i in os.listdir(input_dir) if "bw" in i]
-    print(files)
+    print(f"files: {files}")
+    print(f"files: {epi_order}")
     idx = [[i for i, s in enumerate(files) if chip in s][0] for chip in epi_order]
     files = [files[i] for i in idx]
     bw_list = []
