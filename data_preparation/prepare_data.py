@@ -143,7 +143,7 @@ def main():
     CELL_TYPE = [config['cell_type']]
     NORM_TYPE = config['normalization_type']
     make_chip(input_dir = EPI_INPUT_DIR, target_dir = TARGET_DIR, 
-              cell_types = CELL_TYPE, dtype = NORM_TYPE,
+              cell_types = CELL_TYPE, #dtype = NORM_TYPE,
               name_prefix = FILE_NAME_PREFIX, resolution = EPI_RESOLUTION,
               epi_order = EPI_ORDER)
     # make_labels(input_dir = HIC_INPUT_DIR, target_dir = TARGET_DIR,
