@@ -24,7 +24,6 @@ python /train_epiphany/prepare_data.py \
 '''
 '''
 python3 prepare_data.py --epi_input_dir /data/leslie/yangr2/setd2/train_epiphany/GM12878_files --hic_input_dir /data/leslie/yangr2/setd2/train_epiphany/GM12878_hic/normcounts --target_dir ./GM12878_processed --cell_type "GM12878" --file_name "ATAC-H3K36me3-H3K27ac-H3K27me3"
-python3 prepare_data.py --epi_input_dir /data/leslie/yangr2/setd2/train_epiphany/GM12878_files --hic_input_dir /data/leslie/yangr2/setd2/train_epiphany/GM12878_hic/normcounts --target_dir ./GM12878_processed --cell_type "GM12878" --file_name "ATAC-H3K36me3-H3K27ac-H3K27me3"
 '''
 
 parser = argparse.ArgumentParser(description="Set-up data preparations",
@@ -50,7 +49,7 @@ print(config)
 EPI_INPUT_DIR = config['epi_input_dir']
 HIC_INPUT_DIR = config['hic_input_dir']
 TARGET_DIR = config['target_dir']
-EPI_ORDER = config['epi_order']
+EPI_ORDER = ["ATAC", "H3K36me3", "H3K27ac", "H3K4me3", "H3K4me1"]#config['epi_order']
 EPI_RESOLUTION = config['epi_resolution']
 HIC_RESOLUTION = config['hic_resolution']
 CELL_TYPE = [config['cell_type']]
@@ -73,7 +72,8 @@ def load_epitracks(input_dir = EPI_INPUT_DIR, chrom = "chr1", epi_order = EPI_OR
         list of lists containing the 1D epigenmic tracks in certain order.
     """
     files = [i for i in os.listdir(input_dir) if "bw" in i]
-    print(files)
+    print(f"files: {files}")
+    print(f"files: {epi_order}")
     idx = [[i for i, s in enumerate(files) if chip in s][0] for chip in epi_order]
     files = [files[i] for i in idx]
     bw_list = []
@@ -98,6 +98,7 @@ def make_chip(input_dir = EPI_INPUT_DIR, target_dir = TARGET_DIR,
     chroms = ["chr" + str(i) for i in range(1, 23)][::-1]
     for cell in cell_types:
         chipseq_path = input_dir
+        print(f"chipseq_path: {chipseq_path}")
         inputs = {}
         for chr in chroms:
             print("Loading", chr)
@@ -134,7 +135,6 @@ def make_labels(input_dir = HIC_INPUT_DIR, target_dir = TARGET_DIR,
 #########################
 
 def main():
-    print("MAIN")
     args = parser.parse_args()
     config = vars(args)
     print(config)
