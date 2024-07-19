@@ -102,7 +102,7 @@ def make_chip(input_dir = EPI_INPUT_DIR, target_dir = TARGET_DIR,
                                      epi_order = epi_order)
             inputs[chr] = np.array(bw_list)
             print(np.array(bw_list).shape)
-        save_path_X = f"{target_dir}/{cell}_{name_prefix}_X.pickle"
+        save_path_X = f"{target_dir}/{cell}_{name_prefix}_X_test.pickle"
         with open(save_path_X, "wb") as handle:
             pickle.dump(inputs, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
@@ -146,9 +146,9 @@ def main():
               cell_types = CELL_TYPE, dtype = NORM_TYPE,
               name_prefix = FILE_NAME_PREFIX, resolution = EPI_RESOLUTION,
               epi_order = EPI_ORDER)
-    make_labels(input_dir = HIC_INPUT_DIR, target_dir = TARGET_DIR,
-                cell_types = CELL_TYPE, dtype = NORM_TYPE,
-                name_prefix = FILE_NAME_PREFIX, res = HIC_RESOLUTION)
+    # make_labels(input_dir = HIC_INPUT_DIR, target_dir = TARGET_DIR,
+    #             cell_types = CELL_TYPE, dtype = NORM_TYPE,
+    #             name_prefix = FILE_NAME_PREFIX, res = HIC_RESOLUTION)
     
 if __name__ == '__main__':
     main()
