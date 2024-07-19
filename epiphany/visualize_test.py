@@ -138,20 +138,20 @@ def main():
             y_down_list.append(y_rev)
             y_list.append(np.concatenate((y, y_rev), axis=0))
             labels.append(test_label[100])
-            if i == 0:
-                co_sig = model.right.bulk_summed_2d(test_data)
-                co_sig.squeeze()
-                if len(co_sig.shape) == 3:
-                    a, b, c = co_sig.shape
-                    for j in range(a):
-                        signal = np.array(co_sig[j].cpu())
-                        co_signal.append(signal)
-                else:
-                    a, b, c, d = co_sig.shape
-                    co_sig = co_sig.reshape(b, c, d)
-                    for j in range(b):
-                        signal = np.array(co_sig[j].cpu())
-                        co_signal.append(signal)
+            # if i == 0:
+            #     co_sig = model.right.bulk_summed_2d(test_data)
+            #     co_sig.squeeze()
+            #     if len(co_sig.shape) == 3:
+            #         a, b, c = co_sig.shape
+            #         for j in range(a):
+            #             signal = np.array(co_sig[j].cpu())
+            #             co_signal.append(signal)
+            #     else:
+            #         a, b, c, d = co_sig.shape
+            #         co_sig = co_sig.reshape(b, c, d)
+            #         for j in range(b):
+            #             signal = np.array(co_sig[j].cpu())
+            #             co_signal.append(signal)
 
 
         y_hat_L_list = []
@@ -175,10 +175,10 @@ def main():
         if args.wandb:
             im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))
             wandb.log({chr + " Evaluation Examples": im})
-            for i in range(len(co_signal)):
-                im = wandb.Image(
-                    plot_cosignal_matrix(co_signal[i]))
-                wandb.log({f"{i} " + chr + " Co-Signal": im})
+            # for i in range(len(co_signal)):
+            #     im = wandb.Image(
+            #         plot_cosignal_matrix(co_signal[i]))
+            #     wandb.log({f"{i} " + chr + " Co-Signal": im})
         np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=eval_length), delimiter="\t", fmt="%.6f")
         np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length),
                    delimiter="\t", fmt="%.6f")
@@ -201,28 +201,28 @@ def main():
         except Exception as e:
             print(f"An error occurred while running the R script: {e}")
 
-        # # Calculate insulation scores using the output data from the R script
-        # bins_real_path = f"{real_output_data_path}_bins.tsv"
-        # counts_real_path = f"{real_output_data_path}_counts.tsv"
-        # bins_pred_path = f"{pred_output_data_path}_bins.tsv"
-        # counts_pred_path = f"{pred_output_data_path}_counts.tsv"
-        #
-        # # Load the bins and counts data
-        # bins = pd.read_csv(bins_real_path, sep="\t")
-        # counts = np.loadtxt(counts_real_path, delimiter="\t")
-        # # Calculate insulation scores
-        # insulation_scores = calculate_insulation_scores(bins, counts)
-        # real_insulation_scores = np.log2(insulation_scores + 1e-10)
-        # # Plot log2 insulation scores
-        #
-        # bins = pd.read_csv(bins_pred_path, sep="\t")
-        # counts = np.loadtxt(counts_pred_path, delimiter="\t")
-        # # Calculate insulation scores
-        # insulation_scores = calculate_insulation_scores(bins, counts)
-        # pred_insulation_scores = np.log2(insulation_scores + 1e-10)
-        #
-        # if args.wandb:
-        #     wandb.log({chr + " Insulation Score": wandb.Image(plot_two_insulation_scores(real_insulation_scores, pred_insulation_scores))})
+        # Calculate insulation scores using the output data from the R script
+        bins_real_path = f"{real_output_data_path}_bins.tsv"
+        counts_real_path = f"{real_output_data_path}_counts.tsv"
+        bins_pred_path = f"{pred_output_data_path}_bins.tsv"
+        counts_pred_path = f"{pred_output_data_path}_counts.tsv"
+
+        # Load the bins and counts data
+        bins = pd.read_csv(bins_real_path, sep="\t")
+        counts = np.loadtxt(counts_real_path, delimiter="\t")
+        # Calculate insulation scores
+        insulation_scores = calculate_insulation_scores(bins, counts)
+        real_insulation_scores = np.log2(insulation_scores + 1e-10)
+        # Plot log2 insulation scores
+
+        bins = pd.read_csv(bins_pred_path, sep="\t")
+        counts = np.loadtxt(counts_pred_path, delimiter="\t")
+        # Calculate insulation scores
+        insulation_scores = calculate_insulation_scores(bins, counts)
+        pred_insulation_scores = np.log2(insulation_scores + 1e-10)
+
+        if args.wandb:
+            wandb.log({chr + " Insulation Score": wandb.Image(plot_two_insulation_scores(real_insulation_scores, pred_insulation_scores))})
 
         correlation_list = []
         for i in range(len(y_list)):
