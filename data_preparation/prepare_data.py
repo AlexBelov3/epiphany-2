@@ -83,8 +83,8 @@ def load_epitracks(input_dir = EPI_INPUT_DIR, chrom = "chr1", epi_order = EPI_OR
         print(bwfile)
         bw = pyBigWig.open(bwfile)
         if control != "NA":
-            print(f"ATTEMPTING TO OPEN: {input_dir}/{control}")
-            bw_control = pyBigWig.open(f"{input_dir}/{control}")
+            print(f"ATTEMPTING TO OPEN: {input_dir}/{control}.bw")
+            bw_control = pyBigWig.open(f"{input_dir}/{control}.bw")
             print(bw_control)
 
         value_list = []
