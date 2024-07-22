@@ -22,53 +22,44 @@ import pyBigWig
 # --cell_type "GM12878" \
 # --file_name "ATAC-H3K36me3-H3K27ac-H3K27me3"
 # '''
-'''
-python3 prepare_data.py --epi_input_dir /data/leslie/belova1/epiphany-2/GM12878_files --target_dir ./GM12878_processed --cell_type "GM12878" --file_name "ATAC-H3K36me3-H3K27ac-H3K27me3"
-'''
-#python prepare_data.py --epi_input_dir ../epiphany/Epiphany_dataset/GM12878_files --target_dir ./GM12878_processed --cell_type "GM12878" --file_name "ATAC-H3K36me3-H3K27ac-H3K27me3"
-# parser = argparse.ArgumentParser(description="Set-up data preparations",
-#                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-# parser.add_argument("--epi_input_dir", help="Load prepared bigWig files.", type=str)
-# parser.add_argument("--hic_input_dir", help="Load prepared hic diagonal files.", type=str)
-# parser.add_argument("--target_dir", help="Output path. Path to store preprocessed data.",
-#                     type=str)
-# parser.add_argument("--cell_type", help="Prepare dataset for this cell type.", type=str)
-# parser.add_argument("--hic_resolution", help="Resolution of the Hi-C contact map.", type=str)
-# parser.add_argument("--normalization_type", help="Which normalization to use as target,",
-#                     choices=["z-value", "obs-over-exp"])
-# parser.add_argument("--epi_order", help="Order of the epigenomic tracks for input.", nargs="*")
-# # ["ATAC", "H3K36me3", "H3K27ac", "H3K4me3", "H3K4me1"]
-# parser.add_argument("--epi_resolution", help="Resolution to extract the epigenomic tracks",
-#                     type=int, nargs="?", const=100, default=100)
-# parser.add_argument("--file_name", help="Define processed file name to save as",
-#                     type=str, default="")
-# args = parser.parse_args()
-# config = vars(args)
-# print(config)
+# Dnase I: ENCSR000EMT
+# GSM736620.bw
+# Control: NA
 
+# CTCF: ENCSR000DRZ
+# GSM749706.bw
+# Control:ENCSR000DRV
 
-#python prepare_data.py --epi_input_dir ../epiphany/Epiphany_dataset/GM12878_files --target_dir ./GM12878_processed --cell_type "GM12878" --file_name "ATAC-H3K36me3-H3K27ac-H3K27me3"
-#python prepare_data.py
-# --epi_input_dir ../epiphany/Epiphany_dataset/GM12878_files
-# --target_dir ./GM12878_processed
-# --cell_type "GM12878"
-# --file_name "ATAC-H3K36me3-H3K27ac-H3K27me3"
-EPI_INPUT_DIR = "../epiphany/Epiphany_dataset"#"../epiphany/Epiphany_dataset/GM12878_files" #config['epi_input_dir']
+# H3K27ac: ENCSR000DRY
+# GSM945188.bw
+# Control: ENCSR000DRV
+
+# H3K27me3: ENCSR000DRX
+# GSM945196.bw
+# Control: ENCSR000DRV
+
+# H3K4me3: ENCSR000AKC
+# GSM733771.bw
+# Control: ENCSR000AKJ
+
+EPI_INPUT_DIR = "../../Epiphany_dataset"#"../epiphany/Epiphany_dataset/GM12878_files" #config['epi_input_dir']
 # HIC_INPUT_DIR = config['hic_input_dir']
 TARGET_DIR = "./GM12878_processed " #config['target_dir']
-EPI_ORDER = ["ATAC", "H3K36me3", "H3K27ac", "H3K4me3", "H3K4me1", "GSM733742", "GSM945259"] #["ATAC", "H3K36me3", "H3K27ac", "H3K4me3", "H3K4me1"] #config['epi_order']
+EPI_ORDER = ["GSM736620", "GSM945188", "GSM945196", "GSM945196", "GSM733771"] #config['epi_order']
+EPI_CONTROL_ORDER = ["NA", "GSM945259", "GSM945259", "GSM945259", "GSM733742"] #"GSM733742": Broad
+#UW tracks CTCF, H3K24me3, and H3K27me3 with ENCSR000DRV, Broad Institute tracks H3K27ac with ENCSR000AKJ as control.
 EPI_RESOLUTION = 100 #config['epi_resolution']
 # HIC_RESOLUTION = config['hic_resolution']
 CELL_TYPE = "GM12878" #[config['cell_type']]
 # NORM_TYPE = config['normalization_type']
-FILE_NAME_PREFIX = "ATAC-H3K36me3-H3K27ac-H3K27me3-Broad-UW"#config['file_name']
+FILE_NAME_PREFIX = "DnaseI-CTCF-H3K27ac-H3K27me3-H3K4me3"#config['file_name']
 
 #########################
 #     Load functions    #
 #########################
 
 def load_epitracks(input_dir = EPI_INPUT_DIR, chrom = "chr1", epi_order = EPI_ORDER, 
-                 resolution = EPI_RESOLUTION):
+                 resolution = EPI_RESOLUTION, control_order = EPI_CONTROL_ORDER):
     """Extract values from each .bw files. 
     Args:
         dir: directory to epigenomic tracks (bigWig files)
@@ -84,15 +75,31 @@ def load_epitracks(input_dir = EPI_INPUT_DIR, chrom = "chr1", epi_order = EPI_OR
     idx = [[i for i, s in enumerate(files) if chip in s][0] for chip in epi_order]
     files = [files[i] for i in idx]
     bw_list = []
-    for file in files:
+    for i in range(len(files)):
+        file = files[i]
+        control = control_order[i]
         # bwfile = os.path.join(dir, file)
         bwfile = f"{input_dir}/{file}"
         print(bwfile)
         bw = pyBigWig.open(bwfile)
+        if control != "NA":
+            print(f"ATTEMPTING TO OPEN: {input_dir}/{control}.bw")
+            bw_control = pyBigWig.open(f"{input_dir}/{control}.bw")
+            print(bw_control)
 
         value_list = []
         for i in list(range(0, bw.chroms()[chrom] - resolution, resolution)):
-            value_list.append(bw.stats(chrom, i, i + resolution)[0])
+            bw_val = bw.stats(chrom, i, i + resolution)[0]
+            print(bw_val)
+            if control != "NA":
+                control_val = bw_control.stats(chrom, i, i + resolution)[0]
+                print(control_val)
+                if bw_val != None or control_val != None:
+                    value_list.append(bw_val/control_val)
+                else:
+                    value_list.append(None)
+            else:
+                value_list.append(bw_val)
 
         value_list = [0 if v is None else v for v in value_list]
         bw_list.append(value_list)
@@ -101,7 +108,8 @@ def load_epitracks(input_dir = EPI_INPUT_DIR, chrom = "chr1", epi_order = EPI_OR
 
 def make_chip(input_dir = EPI_INPUT_DIR, target_dir = TARGET_DIR, 
               cell_types = CELL_TYPE, name_prefix = FILE_NAME_PREFIX,
-              resolution = EPI_RESOLUTION, epi_order = EPI_ORDER):
+              resolution = EPI_RESOLUTION, epi_order = EPI_ORDER,
+              control_order = EPI_CONTROL_ORDER):
     chroms = ["chr" + str(i) for i in range(1, 23)][::-1]
     for cell in cell_types:
         chipseq_path = input_dir
@@ -111,7 +119,9 @@ def make_chip(input_dir = EPI_INPUT_DIR, target_dir = TARGET_DIR,
             print("Loading", chr)
             bw_list = load_epitracks(chipseq_path, chrom=chr, 
                                      resolution = resolution,
-                                     epi_order = epi_order)
+                                     epi_order = epi_order,
+                                     control_order = control_order)
+
             inputs[chr] = np.array(bw_list)
             print(np.array(bw_list).shape)
         save_path_X = f"{target_dir}/{cell}_{name_prefix}_X_test.pickle"
