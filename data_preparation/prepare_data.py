@@ -44,7 +44,7 @@ import pyBigWig
 
 EPI_INPUT_DIR = "../../Epiphany_dataset"#"../epiphany/Epiphany_dataset/GM12878_files" #config['epi_input_dir']
 # HIC_INPUT_DIR = config['hic_input_dir']
-TARGET_DIR = "./GM12878_processed " #config['target_dir']
+TARGET_DIR = "../../Epiphany_dataset" #config['target_dir']
 EPI_ORDER = ["GSM736620", "GSM945188", "GSM945196", "GSM945196", "GSM733771"] #config['epi_order']
 EPI_CONTROL_ORDER = ["NA", "GSM945259", "GSM945259", "GSM945259", "GSM733742"] #"GSM733742": Broad
 #UW tracks CTCF, H3K24me3, and H3K27me3 with ENCSR000DRV, Broad Institute tracks H3K27ac with ENCSR000AKJ as control.
@@ -83,9 +83,7 @@ def load_epitracks(input_dir = EPI_INPUT_DIR, chrom = "chr1", epi_order = EPI_OR
         print(bwfile)
         bw = pyBigWig.open(bwfile)
         if control != "NA":
-            print(f"ATTEMPTING TO OPEN: {input_dir}/{control}.bw")
             bw_control = pyBigWig.open(f"{input_dir}/{control}.bw")
-            print(bw_control)
 
         value_list = []
         for i in list(range(0, bw.chroms()[chrom] - resolution, resolution)):
@@ -99,7 +97,7 @@ def load_epitracks(input_dir = EPI_INPUT_DIR, chrom = "chr1", epi_order = EPI_OR
                 elif control_val == None:
                     value_list.append(bw_val)
                 else:
-                    value_list.append(bw_val/control_val)
+                    value_list.append((bw_val-control_val)/control_val)
             else:
                 value_list.append(bw_val)
 
