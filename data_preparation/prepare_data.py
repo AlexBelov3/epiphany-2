@@ -53,7 +53,7 @@ python3 prepare_data.py --epi_input_dir /data/leslie/belova1/epiphany-2/GM12878_
 # --target_dir ./GM12878_processed
 # --cell_type "GM12878"
 # --file_name "ATAC-H3K36me3-H3K27ac-H3K27me3"
-EPI_INPUT_DIR = "../epiphany/Epiphany_dataset/GM12878_files"#"../epiphany/Epiphany_dataset/GM12878_files" #config['epi_input_dir']
+EPI_INPUT_DIR = "../../epiphany/Epiphany_dataset/GM12878_files"#"../epiphany/Epiphany_dataset/GM12878_files" #config['epi_input_dir']
 # HIC_INPUT_DIR = config['hic_input_dir']
 TARGET_DIR = "./GM12878_processed " #config['target_dir']
 EPI_ORDER = ["ATAC", "H3K36me3", "H3K27ac", "H3K4me3", "H3K4me1", "GSM733742", "GSM945259"] #["ATAC", "H3K36me3", "H3K27ac", "H3K4me3", "H3K4me1"] #config['epi_order']
