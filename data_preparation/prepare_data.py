@@ -94,10 +94,12 @@ def load_epitracks(input_dir = EPI_INPUT_DIR, chrom = "chr1", epi_order = EPI_OR
             if control != "NA":
                 control_val = bw_control.stats(chrom, i, i + resolution)[0]
                 print(control_val)
-                if bw_val != None or control_val != None:
-                    value_list.append(bw_val/control_val)
+                if bw_val == None:
+                    value_list.append(control_val)
+                elif control_val == None:
+                    value_list.append(bw_val)
                 else:
-                    value_list.append(None)
+                    value_list.append(bw_val/control_val)
             else:
                 value_list.append(bw_val)
 
