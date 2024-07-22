@@ -90,10 +90,10 @@ def load_epitracks(input_dir = EPI_INPUT_DIR, chrom = "chr1", epi_order = EPI_OR
         value_list = []
         for i in list(range(0, bw.chroms()[chrom] - resolution, resolution)):
             bw_val = bw.stats(chrom, i, i + resolution)[0]
-            print(bw_val)
+            # print(bw_val)
             if control != "NA":
                 control_val = bw_control.stats(chrom, i, i + resolution)[0]
-                print(control_val)
+                # print(control_val)
                 if bw_val == None:
                     value_list.append(control_val)
                 elif control_val == None:
