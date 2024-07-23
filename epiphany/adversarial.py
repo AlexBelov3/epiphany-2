@@ -60,7 +60,7 @@ def main():
     if args.model == 'a':
         # chromafold right arm with only conv1d
         model_name = "branch_cov"
-        model = branch_cov(num_Vs=5).cuda()
+        model = branch_cov(num_Vs=NUM_Vs).cuda()
         # model = branch_cov().cuda()
     elif args.model == 'c':
         # modified epiphany (without .as_strided())
