@@ -147,11 +147,8 @@ def main():
     for i, (test_data, test_label, co_signal) in enumerate(test_loader):
         test_label = test_label.squeeze()
         y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
-        # y, y_rev = extract_diagonals(test_label)
-        y_up_list.append(y[0])
-        y_down_list.append(y_rev[0])
-        # y_up_list.append(y)
-        # y_down_list.append(y_rev)
+        y_up_list.append(y)
+        y_down_list.append(y_rev)
         labels.append(test_label[100])
         if i > 400:
             break
@@ -178,31 +175,30 @@ def main():
         y_hat_R_list = []
         model.eval()
 
-        if epoch % 1 == 0:
-            i = 0
-            for (test_data, test_label, co_signal) in tqdm(test_loader):
-                if i < 400:
-                    if np.linalg.norm(test_label) < 1e-8:
-                        continue
-                    test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda() #NEW!!!!
-                    with torch.no_grad():
-                        y_hat = model(test_data)
+        i = 0
+        for (test_data, test_label, co_signal) in tqdm(test_loader):
+            if i < 400:
+                if np.linalg.norm(test_label) < 1e-8:
+                    continue
+                test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda() #NEW!!!!
+                with torch.no_grad():
+                    y_hat = model(test_data)
 
-                        y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
-                        y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
+                    y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
+                    y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
 
-                        test_label_L, test_label_R = extract_diagonals(test_label.squeeze()) # ONLY LOOKING AT THE LEFT VECTOR
-                        test_label = torch.concat((test_label_L, test_label_R), dim=0)
-                        loss = model.loss(y_hat, test_label)
-                        test_loss.append(loss)
-                else:
-                    break
-                i += 1 # test
+                    test_label_L, test_label_R = extract_n_diagonals(test_label, NUM_Vs)
+                    test_label = torch.concat((test_label_L, test_label_R), dim=0)
+                    loss = model.loss(y_hat, test_label)
+                    test_loss.append(loss)
+            else:
+                break
+            i += 1
 
-            if args.wandb:
-                im.append(
-                    wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
-                                                    seq_length=400)))  # TEST_SEQ_LENGTH
+        if args.wandb:
+            im.append(
+                wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
+                                                seq_length=400)))  # TEST_SEQ_LENGTH
         test_loss_cpu = torch.stack(test_loss).cpu().numpy()
         if args.wandb:
             wandb.log({"Validation Examples": im})
