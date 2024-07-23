@@ -663,7 +663,7 @@ def extract_diagonals(tensor):
     return up_diagonal, down_diagonal
 
 def extract_n_diagonals(tensor, n):
-    assert tensor.shape == (200+n, 100), f"Input tensor must be {200+n}x100 in size"
+    assert tensor.shape == (200+n-1, 100), f"Input tensor must be {200+n-1}x100 in size"
     device = tensor.device
     dtype = tensor.dtype
     right_diagonals = torch.zeros(n, 100, device=device, dtype=dtype)
