@@ -155,7 +155,7 @@ def main():
                 #     y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                 #     y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
                 for i in range(len(test_data)):
-                    im = wandb.Image(plot_correlation(test_data, i))
+                    im = wandb.Image(plot_correlation(np.array(test_data[0]), i))
                     wandb.log({f"Track {i} " + chr: im})
             else:
                 break
