@@ -20,7 +20,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         # save_path_y = os.path.join(save_dir, 'new_GM12878_y.pickle')
         save_path_y = os.path.join(save_dir, 'GM12878_y.pickle')
 
-        self.seq_length = seq_length
+        self.seq_length = 1#seq_length
         self.chroms = chroms
         self.buf = 200 #100
         self.window_size = window_size
@@ -47,15 +47,6 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
 
         print(self.sizes)
 
-        # for chr in self.chroms:
-        #     for signal in self.inputs[chr]:
-        #         for i in range ()
-        #             print(f"inputs[chr] shape: {np.shape(self.inputs[chr])}")
-        #             print(f"number of signals: {len(self.inputs[chr])}")
-        #             print(f"signal type: {type(signal)}")
-        #             print(f"signal shape: {np.shape(signal)}")
-        #             self.co_signals.append(np.outer(signal.astype('float16'), signal.astype('float16')))
-
         return
 
     def __len__(self):
@@ -70,18 +61,18 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         chrom_idx = np.argmin(arr)
         chr = self.chroms[chrom_idx]
         idx = int(index - ([0] + np.cumsum(self.sizes).tolist())[chrom_idx])
-        # start = idx*self.seq_length + self.buf
-        start = idx + self.buf
-        # end = np.minimum(idx*self.seq_length + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
-        end = np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
+        start = idx*self.seq_length + self.buf
+        # start = idx + self.buf
+        end = np.minimum(idx*self.seq_length + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
+        # end = np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
         contact_data = []
 
-        for t in range(idx + self.buf, np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1):
+        # for t in range(idx + self.buf, np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1):
+        for t in range(idx * self.seq_length + self.buf, np.minimum(idx * self.seq_length + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf), 1):
             contact_vec = data_preparation(t,self.labels[chr],self.inputs[chr], distance=100)
             contact_data.append(contact_vec)
 
-        X_chr = self.inputs[chr][:self.num_channels, 100*start-(self.window_size//2):100*end+(self.window_size//2)].astype('float32') #100
-
+        X_chr = self.inputs[chr][:self.num_channels, 100*start-(self.window_size//2):100*end+(self.window_size//2)].astype('float32')
         y_chr = np.array(contact_data)
 
         if self.zero_pad and y_chr.shape[0] < self.seq_length:
