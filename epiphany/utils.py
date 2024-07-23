@@ -662,6 +662,21 @@ def extract_diagonals(tensor):
 
     return up_diagonal, down_diagonal
 
+def extract_n_diagonals(tensor, n):
+    assert tensor.shape == (200+n, 100), "Input tensor must be 200x100 in size"
+
+    device = tensor.device
+    dtype = tensor.dtype
+
+    up_diagonal = torch.zeros(100, device=device, dtype=dtype)
+    down_diagonal = torch.zeros(100, device=device, dtype=dtype)
+    for i in range(100):
+        for j in range(-n//2, n//2):
+            print(f"len(range(-n//2, n//2)): {len(range(-n//2, n//2))}")
+            up_diagonal[i] = tensor[99 + i // 2, i]
+            down_diagonal[i] = tensor[99 - i // 2, i]
+
+    return up_diagonal, down_diagonal
 #
 # def cpu_jaccard_vstripe(x):
 #     # calculate jaccard similarity of rows
