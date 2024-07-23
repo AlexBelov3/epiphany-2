@@ -9,7 +9,8 @@ import argparse
 from utils import *
 import time
 from data_loader_10kb import *
-from model_10kb_Vs import *
+# from model_10kb_Vs import *
+from model_10kb import *
 from tqdm import tqdm
 import subprocess
 
@@ -51,7 +52,7 @@ def main():
     LAMBDA = float(args.lam)
     TRAIN_SEQ_LENGTH = 200
     TEST_SEQ_LENGTH = 200
-    NUM_Vs = 5
+    NUM_Vs = 1#5
 
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
@@ -59,7 +60,8 @@ def main():
     if args.model == 'a':
         # chromafold right arm with only conv1d
         model_name = "branch_cov"
-        model = branch_cov(num_Vs=5).cuda()
+        # model = branch_cov(num_Vs=5).cuda()
+        model = branch_cov().cuda()
     elif args.model == 'c':
         # modified epiphany (without .as_strided())
         model_name = "epiphany1.1"
@@ -144,9 +146,12 @@ def main():
     labels = []
     for i, (test_data, test_label, co_signal) in enumerate(test_loader):
         test_label = test_label.squeeze()
-        y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
-        y_up_list.append(y[0])
-        y_down_list.append(y_rev[0])
+        # y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
+        y, y_rev = extract_diagonals(test_label)
+        # y_up_list.append(y[0])
+        # y_down_list.append(y_rev[0])
+        y_up_list.append(y)
+        y_down_list.append(y_rev)
         labels.append(test_label[100])
         if i > 400:
             break
