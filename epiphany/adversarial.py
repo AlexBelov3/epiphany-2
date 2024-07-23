@@ -147,6 +147,7 @@ def main():
     labels = []
     for i, (test_data, test_label, co_signal) in enumerate(test_loader):
         test_label = test_label.squeeze()
+        print(f"test label shape: {test_label.shape}")
         y, y_rev = extract_diagonals(test_label)
         y_up_list.append(y)
         y_down_list.append(y_rev)
