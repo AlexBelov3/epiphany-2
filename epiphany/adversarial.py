@@ -59,11 +59,7 @@ def main():
     if args.model == 'a':
         # chromafold right arm with only conv1d
         model_name = "branch_cov"
-        model = branch_cov().cuda()
-    elif args.model == 'b':
-        # chromafold conv1d all --> conv2d
-        model_name = "branch_cov_2d"
-        model = branch_cov_2d().cuda()
+        model = branch_cov(num_Vs=5).cuda()
     elif args.model == 'c':
         # modified epiphany (without .as_strided())
         model_name = "epiphany1.1"
@@ -148,10 +144,9 @@ def main():
     labels = []
     for i, (test_data, test_label, co_signal) in enumerate(test_loader):
         test_label = test_label.squeeze()
-        print(test_label.shape)
-        y, y_rev = extract_n_diagonals(test_label, 5)
-        y_up_list.append(y)
-        y_down_list.append(y_rev)
+        y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
+        y_up_list.append(y[0])
+        y_down_list.append(y_rev[0])
         labels.append(test_label[100])
         if i > 400:
             break

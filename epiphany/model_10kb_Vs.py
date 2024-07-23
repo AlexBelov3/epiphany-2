@@ -1178,7 +1178,7 @@ class branch_pbulk(nn.Module):
 
 
 class branch_cov(nn.Module):
-    def __init__(self):
+    def __init__(self, num_Vs):
         super(branch_cov, self).__init__()
 
         self.cov_extractor = nn.Sequential(
@@ -1233,13 +1233,13 @@ class branch_cov(nn.Module):
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
                 in_channels=16,
-                out_channels=1,  # 16
+                out_channels=num_Vs,
                 kernel_size=3,
                 stride=1,
                 dilation=1,
                 padding=1,
             ),
-            # nn.BatchNorm1d(16), #1
+            nn.BatchNorm1d(num_Vs),
             nn.ReLU(),
         )
 
@@ -1256,115 +1256,6 @@ class branch_cov(nn.Module):
         if x.ndimension() == 2:
             x = x.unsqueeze(0)
         x = self.cov_extractor(x)
-        x = torch.flatten(x, 1)
-        x_out = self.classifier(x)
-
-        return x_out
-
-    def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
-        l1_loss = 0
-        if isinstance(prediction, np.ndarray):
-            prediction = torch.tensor(prediction)
-        if isinstance(label, np.ndarray):
-            label = torch.tensor(label)
-
-        if prediction.ndim != 1 or label.ndim != 1:
-            prediction = prediction.view(-1)
-            label = label.view(-1)
-
-        if prediction.size() != label.size():
-            raise ValueError(
-                f"Shape mismatch: prediction size {prediction.size()} does not match label size {label.size()}")
-
-        # Compute L1 and L2 losses
-        # l1_loss = F.l1_loss(prediction, label, reduction=reduction)
-        l2_loss = F.mse_loss(prediction, label, reduction=reduction)
-
-        # Combine losses with lambda
-        total_loss = lam * l2_loss + (1 - lam) * l1_loss
-        return total_loss
-
-
-class branch_cov_2d(nn.Module):
-    def __init__(self):
-        super(branch_cov_2d, self).__init__()
-
-        self.cov_extractor = nn.Sequential(
-            nn.Conv2d(
-                in_channels=1, out_channels=16, kernel_size=5, stride=1, padding=2
-            ),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=(1, 2)),
-            nn.Conv2d(
-                in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
-            ),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=(1, 2)),
-            nn.Conv2d(
-                in_channels=16,
-                out_channels=16,
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding=1,
-            ),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=(1, 2)),
-            resblock_2d(16),
-            resblock_2d(16),
-            nn.MaxPool2d(kernel_size=(1, 2)),
-            nn.Conv2d(
-                in_channels=16,
-                out_channels=16,
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding=1,
-            ),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),  # if input_channels=2, this should be (1,2)
-            nn.Conv2d(
-                in_channels=16,
-                out_channels=16,
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding=1,
-            ),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(
-                in_channels=16,
-                out_channels=1,  # 16
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding=1,
-            ),
-            nn.BatchNorm2d(1),  # 1
-            nn.ReLU(),
-        )
-
-        self.classifier = nn.Sequential(
-            # nn.Linear(in_features=1875, out_features=512),
-            nn.Linear(in_features=687, out_features=200),  # 512
-        )
-
-    def forward(self, x):
-        if x.ndimension() == 2:
-            a, b = x.shape
-            x = x.view(1, 1, a, b)
-        elif x.ndimension() == 3:
-            a, b, c = x.shape
-            x = x.view(1, a, b, c)
-        # print(f"input shape: {x.shape}")
-        x = self.cov_extractor(x)
-        # print(f"x shape: {x.shape}")
         x = torch.flatten(x, 1)
         x_out = self.classifier(x)
 
