@@ -9,7 +9,7 @@ import argparse
 from utils import *
 import time
 from data_loader_10kb import *
-from model_10kb import *
+from model_10kb_Vs import *
 from tqdm import tqdm
 import subprocess
 
@@ -51,6 +51,7 @@ def main():
     LAMBDA = float(args.lam)
     TRAIN_SEQ_LENGTH = 200
     TEST_SEQ_LENGTH = 200
+    NUM_Vs = 5
 
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
@@ -124,8 +125,8 @@ def main():
     # train_chroms = ['chr19', 'chr20', 'chr21', 'chr22']
     # train_chroms = ['chr22']
 
-    train_set = Chip2HiCDataset(seq_length=TRAIN_SEQ_LENGTH, window_size=int(args.window_size), chroms=train_chroms, mode='train')
-    test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=test_chroms, mode='test')
+    train_set = Chip2HiCDataset(seq_length=TRAIN_SEQ_LENGTH, window_size=int(args.window_size), chroms=train_chroms, mode='train', num_Vs=NUM_Vs)
+    test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=test_chroms, mode='test', num_Vs=NUM_Vs)
 
     train_loader = torch.utils.data.DataLoader(train_set, batch_size=1, shuffle=True, num_workers=1)
     test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
