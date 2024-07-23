@@ -150,7 +150,8 @@ def main():
         y_up_list.append(y)
         y_down_list.append(y_rev)
         # labels.append(test_label[100]) #FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        labels.append(test_label[100 - NUM_Vs//2 :100 + NUM_Vs//2 + NUM_Vs%2])
+        labels.append(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])
+        # (-((n - 1) // 2), n // 2 + 1)
         if i > 400:
             break
     #
