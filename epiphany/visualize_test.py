@@ -154,12 +154,16 @@ def main():
                     y_hat_list.append(np.array(y_hat.cpu().squeeze()))
                     y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
+                for i in range(len(test_data)):
+                    im = wandb.Image(plot_correlation(test_data[i]))
+                    wandb.log({f"Track {i} " + chr: im})
             else:
                 break
             i += 1
         if args.wandb:
             im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))
             wandb.log({chr + " Evaluation Examples": im})
+
             # for i in range(len(co_signal)):
             #     im = wandb.Image(
             #         plot_cosignal_matrix(co_signal[i]))
