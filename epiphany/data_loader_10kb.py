@@ -20,7 +20,8 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         # save_path_y = os.path.join(save_dir, 'new_GM12878_y.pickle')
         save_path_y = os.path.join(save_dir, 'GM12878_y.pickle')
 
-        self.seq_length = 1#seq_length
+        self.seq_length = seq_length
+        self.num_Vs = 1
         self.chroms = chroms
         self.buf = 200 #100
         self.window_size = window_size
@@ -61,14 +62,14 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         chrom_idx = np.argmin(arr)
         chr = self.chroms[chrom_idx]
         idx = int(index - ([0] + np.cumsum(self.sizes).tolist())[chrom_idx])
-        start = idx*self.seq_length + self.buf
+        start = idx*self.num_Vs + self.buf
         # start = idx + self.buf
-        end = np.minimum(idx*self.seq_length + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
+        end = np.minimum(idx*self.num_Vs + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
         # end = np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
         contact_data = []
 
         # for t in range(idx + self.buf, np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1):
-        for t in range(idx * self.seq_length + self.buf, np.minimum(idx * self.seq_length + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf), 1):
+        for t in range(idx * self.num_Vs + self.buf, np.minimum(idx * self.num_Vs + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf), 1):
             contact_vec = data_preparation(t,self.labels[chr],self.inputs[chr], distance=100)
             contact_data.append(contact_vec)
 
