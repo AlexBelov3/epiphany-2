@@ -68,16 +68,15 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         # end = np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
         contact_data = []
         # for t in range(idx + self.buf, np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1):
-        print(range(idx * self.num_Vs + self.buf, np.minimum(idx + self.seq_length + self.num_Vs + self.buf, len(self.labels[chr][0]) - self.buf), 1))
+        print(f"len(self.labels[chr][0]) - self.buf: {len(self.labels[chr][0]) - self.buf}")
+        print(f"idx + self.seq_length + self.num_Vs + self.buf: {idx + self.seq_length + self.num_Vs + self.buf}")
         for t in range(idx * self.num_Vs + self.buf, np.minimum(idx + self.seq_length + self.num_Vs + self.buf, len(self.labels[chr][0]) - self.buf), 1):
             contact_vec = data_preparation(t,self.labels[chr],self.inputs[chr], distance=100)
             contact_data.append(contact_vec)
 
         X_chr = self.inputs[chr][:self.num_channels, 100*start-(self.window_size//2):100*end+(self.window_size//2)].astype('float32')
         y_chr = np.array(contact_data)
-        print(f"y_chr shape: {np.shape(y_chr)}")
         if self.zero_pad and y_chr.shape[0] < self.seq_length:
-            print("self.zero_pad and y_chr.shape[0] < self.seq_length")
             try:
                 pad_y = np.zeros((self.seq_length - y_chr.shape[0], y_chr.shape[1]))
                 y_chr = np.concatenate((y_chr, pad_y), axis=0)
