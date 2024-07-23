@@ -52,7 +52,7 @@ def main():
     LAMBDA = float(args.lam)
     TRAIN_SEQ_LENGTH = 200
     TEST_SEQ_LENGTH = 200
-    NUM_Vs = 1
+    NUM_Vs = 2
 
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
@@ -151,7 +151,6 @@ def main():
         y_down_list.append(y_rev)
         # labels.append(test_label[100]) #FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         labels.append(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])
-        # (-((n - 1) // 2), n // 2 + 1)
         if i > 400:
             break
     #
