@@ -151,7 +151,7 @@ def main():
         y_down_list.append(y_rev)
         # labels.append(test_label[100]) #FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         labels.append(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])
-        if i > 400:
+        if i > 400//NUM_Vs:
             break
     #
     if args.wandb:
