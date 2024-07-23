@@ -50,7 +50,7 @@ EPI_CONTROL_ORDER = ["NA", "GSM945259", "GSM945259", "GSM945259", "GSM733742"] #
 #UW tracks CTCF, H3K24me3, and H3K27me3 with ENCSR000DRV, Broad Institute tracks H3K27ac with ENCSR000AKJ as control.
 EPI_RESOLUTION = 100 #config['epi_resolution']
 # HIC_RESOLUTION = config['hic_resolution']
-CELL_TYPE = "GM12878" #[config['cell_type']]
+CELL_TYPE = ["GM12878"] #[config['cell_type']]
 # NORM_TYPE = config['normalization_type']
 FILE_NAME_PREFIX = "DnaseI-CTCF-H3K27ac-H3K27me3-H3K4me3"#config['file_name']
 
