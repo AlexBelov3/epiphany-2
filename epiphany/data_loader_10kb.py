@@ -68,7 +68,6 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         # end = np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf)
         contact_data = []
         # for t in range(idx + self.buf, np.minimum(idx + self.seq_length + self.buf, len(self.labels[chr][0]) - self.buf),1):
-        print(f"idx + self.seq_length + self.num_Vs + self.buf: {idx + self.seq_length + self.num_Vs + self.buf}")
         for t in range(idx + self.buf, np.minimum(idx + self.seq_length + self.num_Vs + self.buf, len(self.labels[chr][0]) - self.buf), 1):
             contact_vec = data_preparation(t,self.labels[chr],self.inputs[chr], distance=100)
             contact_data.append(contact_vec)
