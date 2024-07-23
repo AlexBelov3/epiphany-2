@@ -671,6 +671,7 @@ def extract_n_diagonals(tensor, n):
     up_diagonals = torch.zeros(n, device=device, dtype=dtype)
     down_diagonals = torch.zeros(n, device=device, dtype=dtype)
     for j in range(-n // 2, n // 2):
+        print(j)
         up_diagonal = torch.zeros(100, device=device, dtype=dtype)
         down_diagonal = torch.zeros(100, device=device, dtype=dtype)
         for i in range(100):
