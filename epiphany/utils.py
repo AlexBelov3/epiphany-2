@@ -667,8 +667,8 @@ def extract_n_diagonals(tensor, n):
     left_diagonals = torch.zeros(n, 100, device=device, dtype=dtype)
     for j in range(-((n - 1) // 2), n // 2 + 1):
         for i in range(100):
-            right_diagonals[j + n//2, i] = tensor[99 + j + i // 2, i]
-            left_diagonals[j + n//2, i] = tensor[99 + j - i // 2, i]
+            right_diagonals[j + (n-1)//2, i] = tensor[99 + j + i // 2, i]
+            left_diagonals[j + (n-1)//2, i] = tensor[99 + j - i // 2, i]
     return right_diagonals, left_diagonals
 #
 # def cpu_jaccard_vstripe(x):
