@@ -21,7 +21,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         save_path_y = os.path.join(save_dir, 'GM12878_y.pickle')
 
         self.seq_length = seq_length
-        self.num_Vs = 5
+        self.num_Vs = 200
         self.chroms = chroms
         self.buf = 200 #100
         self.window_size = window_size
