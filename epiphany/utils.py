@@ -664,23 +664,14 @@ def extract_diagonals(tensor):
 
 def extract_n_diagonals(tensor, n):
     assert tensor.shape == (200+n, 100), f"Input tensor must be {200+n}x100 in size"
-
     device = tensor.device
     dtype = tensor.dtype
-
-    up_diagonals = torch.zeros(n, device=device, dtype=dtype)
-    down_diagonals = torch.zeros(n, device=device, dtype=dtype)
+    up_diagonals = torch.zeros(n, 100, device=device, dtype=dtype)
+    down_diagonals = torch.zeros(n, 100, device=device, dtype=dtype)
     for j in range(-(n // 2), n // 2 + n%2):
-        print(j)
-        up_diagonal = torch.zeros(100, device=device, dtype=dtype)
-        down_diagonal = torch.zeros(100, device=device, dtype=dtype)
         for i in range(100):
-            up_diagonal[i] = tensor[99 + j + i // 2, i]
-            down_diagonal[i] = tensor[99 + j - i // 2, i]
-        print(f"up_diagonals[j + n//2]: {up_diagonals[j + n//2].shape}")
-        print(f"up_diagonal: {up_diagonal.shape}")
-        up_diagonals[j + n//2] = up_diagonal
-        down_diagonals[j + n//2] = down_diagonal
+            up_diagonals[j + n//2, i] = tensor[99 + j + i // 2, i]
+            down_diagonals[j + n//2, i] = tensor[99 + j - i // 2, i]
     print(f"up_diagonals shape: {up_diagonals.shape}")
     print(f"down_diagonals shape: {down_diagonals.shape}")
     return up_diagonals, down_diagonals
