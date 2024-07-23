@@ -1239,7 +1239,7 @@ class branch_cov(nn.Module):
                 dilation=1,
                 padding=1,
             ),
-            # nn.BatchNorm1d(num_Vs),
+            nn.BatchNorm1d(num_Vs),
             nn.ReLU(),
         )
 
@@ -1256,7 +1256,7 @@ class branch_cov(nn.Module):
         if x.ndimension() == 2:
             x = x.unsqueeze(0)
         x = self.cov_extractor(x)
-        x = torch.flatten(x, 1)
+        # x = torch.flatten(x, 1)
         x_out = self.classifier(x)
 
         return x_out
