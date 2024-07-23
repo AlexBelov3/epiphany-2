@@ -43,8 +43,8 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
         for chr in self.chroms:
             diag_log_list = self.labels[chr]
             print(len(diag_log_list[0]))
-            # self.sizes.append((len(diag_log_list[0]) - 2*self.buf)//self.seq_length + 1)
-            self.sizes.append((len(diag_log_list[0]) - 2 * self.buf) + 1)
+            self.sizes.append((len(diag_log_list[0]) - 2*self.buf)//self.num_Vs + 1)
+            # self.sizes.append((len(diag_log_list[0]) - 2 * self.buf) + 1)
 
         print(self.sizes)
 
