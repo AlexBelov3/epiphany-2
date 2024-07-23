@@ -668,15 +668,19 @@ def extract_n_diagonals(tensor, n):
     device = tensor.device
     dtype = tensor.dtype
 
-    up_diagonal = torch.zeros(100, device=device, dtype=dtype)
-    down_diagonal = torch.zeros(100, device=device, dtype=dtype)
-    for i in range(100):
-        for j in range(-n//2, n//2):
-            print(f"len(range(-n//2, n//2)): {len(range(-n//2, n//2))}")
-            up_diagonal[i] = tensor[99 + i // 2, i]
-            down_diagonal[i] = tensor[99 - i // 2, i]
-
-    return up_diagonal, down_diagonal
+    up_diagonals = torch.zeros(n, device=device, dtype=dtype)
+    down_diagonals = torch.zeros(n, device=device, dtype=dtype)
+    for j in range(-n // 2, n // 2):
+        up_diagonal = torch.zeros(100, device=device, dtype=dtype)
+        down_diagonal = torch.zeros(100, device=device, dtype=dtype)
+        for i in range(100):
+            up_diagonal[i] = tensor[99 + i + j // 2, i]
+            down_diagonal[i] = tensor[99 - i + j // 2, i]
+        up_diagonals[j + n//2] = up_diagonal
+        down_diagonals[j + n//2] = down_diagonal
+    print(f"up_diagonals shape: {up_diagonals.shape}")
+    print(f"down_diagonals shape: {down_diagonals.shape}")
+    return up_diagonals, down_diagonals
 #
 # def cpu_jaccard_vstripe(x):
 #     # calculate jaccard similarity of rows
