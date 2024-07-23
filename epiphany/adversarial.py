@@ -59,7 +59,7 @@ def main():
 
     if args.model == 'a':
         # chromafold right arm with only conv1d
-        # model_name = "branch_cov"
+        model_name = "branch_cov"
         model = branch_cov(num_Vs=5).cuda()
         # model = branch_cov().cuda()
     elif args.model == 'c':
