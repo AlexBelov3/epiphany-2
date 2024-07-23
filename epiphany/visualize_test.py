@@ -114,7 +114,7 @@ def main():
     else:
         os.makedirs(LOG_PATH)
 
-    eval_length = 4000
+    eval_length = 1
     # GM12878 Standard
     test_chroms = ['chr3', 'chr11', 'chr17', 'chr2']
     # match test chroms with chromafold!!
@@ -155,7 +155,7 @@ def main():
                     y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
                 for i in range(len(test_data)):
-                    im = wandb.Image(plot_correlation(test_data[i]))
+                    im = wandb.Image(plot_correlation(test_data[i], i))
                     wandb.log({f"Track {i} " + chr: im})
             else:
                 break
