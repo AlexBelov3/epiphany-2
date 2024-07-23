@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 from torchvision import datasets
 from torchvision import transforms
-import numpy as np
 import torch.nn.functional as F
 import torch.optim as optim
 import argparse
@@ -130,28 +129,14 @@ def main():
                                    mode='test')
         test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
         for i, (test_data, test_label, co_s) in enumerate(test_loader):
-            if i >= eval_length:
-                break
+            # if i >= eval_length:
+            #     break
             test_label = test_label.squeeze()
             y, y_rev = extract_diagonals(test_label)
             y_up_list.append(y)
             y_down_list.append(y_rev)
             y_list.append(np.concatenate((y, y_rev), axis=0))
             labels.append(test_label[100])
-            # if i == 0:
-            #     co_sig = model.right.bulk_summed_2d(test_data)
-            #     co_sig.squeeze()
-            #     if len(co_sig.shape) == 3:
-            #         a, b, c = co_sig.shape
-            #         for j in range(a):
-            #             signal = np.array(co_sig[j].cpu())
-            #             co_signal.append(signal)
-            #     else:
-            #         a, b, c, d = co_sig.shape
-            #         co_sig = co_sig.reshape(b, c, d)
-            #         for j in range(b):
-            #             signal = np.array(co_sig[j].cpu())
-            #             co_signal.append(signal)
 
 
         y_hat_L_list = []
@@ -160,7 +145,7 @@ def main():
         model.eval()
         i = 0
         for (test_data, test_label, co_s) in tqdm(test_loader):
-            if i < eval_length:
+            if i < eval_length or 1==1:
                 if np.linalg.norm(test_label) < 1e-8:
                     continue
                 test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
@@ -173,14 +158,14 @@ def main():
                 break
             i += 1
         if args.wandb:
-            im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))
+            im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels))) #eval_length
             wandb.log({chr + " Evaluation Examples": im})
             # for i in range(len(co_signal)):
             #     im = wandb.Image(
             #         plot_cosignal_matrix(co_signal[i]))
             #     wandb.log({f"{i} " + chr + " Co-Signal": im})
         np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=eval_length), delimiter="\t", fmt="%.6f")
-        np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length),
+        np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)), #eval_length
                    delimiter="\t", fmt="%.6f")
         cwd = os.getcwd()
         # Define paths
