@@ -149,12 +149,13 @@ def main():
         y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
         y_up_list.append(y)
         y_down_list.append(y_rev)
-        labels.append(test_label[100])
+        # labels.append(test_label[100]) #FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        labels.append(test_label[100 - NUM_Vs//2 :100 + NUM_Vs//2 + NUM_Vs%2])
         if i > 400:
             break
     #
     if args.wandb:
-        im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400))
+        im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400, num_vs=NUM_Vs))
         wandb.log({"Validation Examples": im})
 
     #scaler = torch.cuda.amp.GracddScaler()
@@ -198,7 +199,7 @@ def main():
         if args.wandb:
             im.append(
                 wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH,
-                                                seq_length=400)))  # TEST_SEQ_LENGTH
+                                                seq_length=400, num_vs=NUM_Vs)))  # TEST_SEQ_LENGTH
         test_loss_cpu = torch.stack(test_loss).cpu().numpy()
         if args.wandb:
             wandb.log({"Validation Examples": im})

@@ -337,16 +337,24 @@ def safe_tensor_to_numpy(label):
     return label
 
 
-def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200):
+def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200, num_vs = 1):
     path = os.path.join(path, 'ex_test.png')
     # label = np.squeeze(label.numpy()).T
     # Ensure label is a numpy array
+    label = torch.cat(label, dim=0)
     label = safe_tensor_to_numpy(label)
 
     # Extract the diagonals
     # label_up, label_down = extract_diagonals(label.T)
     # label_up = label_up
     # label_down = label_down
+    print(f"y_up_list shape (before): {y_up_list.shape}")
+    y_up_list = torch.cat(y_up_list, dim=0)
+    print(f"y_up_list shape (after): {y_up_list.shape}")
+    print(f"y_down_list shape (before): {y_down_list.shape}")
+    y_down_list = torch.cat(y_down_list, dim=0)
+    print(f"y_down_list shape (after): {y_down_list.shape}")
+
 
     # Initialize the image arrays
     im1 = np.zeros((seq_length, seq_length))
