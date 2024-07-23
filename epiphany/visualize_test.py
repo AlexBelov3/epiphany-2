@@ -114,7 +114,7 @@ def main():
     else:
         os.makedirs(LOG_PATH)
 
-    eval_length = 800
+    eval_length = 4000
     # GM12878 Standard
     test_chroms = ['chr3', 'chr11', 'chr17', 'chr2']
     # match test chroms with chromafold!!
@@ -129,8 +129,8 @@ def main():
                                    mode='test')
         test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
         for i, (test_data, test_label, co_s) in enumerate(test_loader):
-            # if i >= eval_length:
-            #     break
+            if i >= eval_length:
+                break
             test_label = test_label.squeeze()
             y, y_rev = extract_diagonals(test_label)
             y_up_list.append(y)
@@ -145,7 +145,7 @@ def main():
         model.eval()
         i = 0
         for (test_data, test_label, co_s) in tqdm(test_loader):
-            if i < eval_length or 1==1:
+            if i < eval_length:
                 if np.linalg.norm(test_label) < 1e-8:
                     continue
                 test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
@@ -158,14 +158,14 @@ def main():
                 break
             i += 1
         if args.wandb:
-            im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels))) #eval_length
+            im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))
             wandb.log({chr + " Evaluation Examples": im})
             # for i in range(len(co_signal)):
             #     im = wandb.Image(
             #         plot_cosignal_matrix(co_signal[i]))
             #     wandb.log({f"{i} " + chr + " Co-Signal": im})
         np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=eval_length), delimiter="\t", fmt="%.6f")
-        np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)), #eval_length
+        np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length),
                    delimiter="\t", fmt="%.6f")
         cwd = os.getcwd()
         # Define paths
