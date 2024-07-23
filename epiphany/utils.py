@@ -344,21 +344,12 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     label = torch.cat(label, dim=0)
     label = safe_tensor_to_numpy(label)
 
-    # Extract the diagonals
-    # label_up, label_down = extract_diagonals(label.T)
-    # label_up = label_up
-    # label_down = label_down
-    # y_up_list = torch.tensor(y_up_list)
-    # print(f"y_up_list shape (before): {np.shape(y_up_list)}")
     y_up_list = torch.cat(y_up_list, dim=0)
     # print(f"y_up_list shape (after): {np.shape(y_up_list)}")
     # y_down_list = torch.tensor(y_down_list)
     # print(f"y_down_list shape (before): {np.shape(y_down_list)}")
     y_down_list = torch.cat(y_down_list, dim=0)
     # print(f"y_down_list shape (after): {np.shape(y_down_list)}")
-    # y_up_list = safe_tensor_to_numpy(y_up_list)
-    # y_down_list = safe_tensor_to_numpy(y_down_list)
-
 
     # Initialize the image arrays
     im1 = np.zeros((seq_length, seq_length))
