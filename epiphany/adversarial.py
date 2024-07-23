@@ -52,7 +52,7 @@ def main():
     LAMBDA = float(args.lam)
     TRAIN_SEQ_LENGTH = 200
     TEST_SEQ_LENGTH = 200
-    NUM_Vs = 2
+    NUM_Vs = 1
 
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
@@ -147,8 +147,10 @@ def main():
     for i, (test_data, test_label, co_signal) in enumerate(test_loader):
         test_label = test_label.squeeze()
         y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
-        y_up_list.append(y)
-        y_down_list.append(y_rev)
+        # y_up_list.append(y)
+        # y_down_list.append(y_rev)
+        y_up_list.append(y_rev)
+        y_down_list.append(y)
         # labels.append(test_label[100]) #FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         labels.append(test_label[100 - NUM_Vs//2 :100 + NUM_Vs//2 + NUM_Vs%2])
         if i > 400:
