@@ -672,8 +672,6 @@ def extract_n_diagonals(tensor, n):
         for i in range(100):
             right_diagonals[j + n//2, i] = tensor[99 + j + i // 2, i]
             left_diagonals[j + n//2, i] = tensor[99 + j - i // 2, i]
-    print(f"up_diagonals shape: {right_diagonals.shape}")
-    print(f"down_diagonals shape: {left_diagonals.shape}")
     return right_diagonals, left_diagonals
 #
 # def cpu_jaccard_vstripe(x):
