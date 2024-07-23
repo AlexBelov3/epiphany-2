@@ -114,7 +114,7 @@ def main():
     else:
         os.makedirs(LOG_PATH)
 
-    eval_length = 1
+    eval_length = 200
     # GM12878 Standard
     test_chroms = ['chr3', 'chr11', 'chr17', 'chr2']
     # match test chroms with chromafold!!
