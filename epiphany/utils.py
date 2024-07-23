@@ -339,8 +339,6 @@ def safe_tensor_to_numpy(label):
 
 def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200, num_vs = 1):
     path = os.path.join(path, 'ex_test.png')
-    # label = np.squeeze(label.numpy()).T
-    # Ensure label is a numpy array
     label = torch.cat(label, dim=0)
     label = safe_tensor_to_numpy(label)
 
@@ -670,7 +668,7 @@ def extract_n_diagonals(tensor, n):
     dtype = tensor.dtype
     right_diagonals = torch.zeros(n, 100, device=device, dtype=dtype)
     left_diagonals = torch.zeros(n, 100, device=device, dtype=dtype)
-    for j in range(-(n // 2), n // 2 + n%2):
+    for j in range(-((n - 1) // 2), n // 2 + 1):
         for i in range(100):
             right_diagonals[j + n//2, i] = tensor[99 + j + i // 2, i]
             left_diagonals[j + n//2, i] = tensor[99 + j - i // 2, i]
