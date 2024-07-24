@@ -149,7 +149,7 @@ def main():
     y_down_list = []
     labels = []
     for i, (test_data, test_label, co_signal) in enumerate(test_loader):
-        if i >+ 400//NUM_Vs:
+        if i > 400//NUM_Vs:
             break
         test_label = test_label.squeeze()
         y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
@@ -188,7 +188,6 @@ def main():
                 test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda() #NEW!!!!
                 with torch.no_grad():
                     y_hat = model(test_data).squeeze()
-                    print(f"y_hat shape: {y_hat.shape}")
                     for i in range(NUM_Vs):
                         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[i][:100]))
                         y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[i][100:]))
