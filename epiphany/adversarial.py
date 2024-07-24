@@ -232,7 +232,7 @@ def main():
             optimizer.zero_grad()
             output = model(data)
 
-            label_1d_v_up, label_1d_v_down = extract_diagonals(label)
+            label_1d_v_up, label_1d_v_down = extract_n_diagonals(label, NUM_Vs)
             label = torch.concat((label_1d_v_up, label_1d_v_down), dim=0)
 
             mse_loss = model.loss(output, label, seq_length=TRAIN_SEQ_LENGTH)
