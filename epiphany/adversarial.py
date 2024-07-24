@@ -10,7 +10,7 @@ from utils import *
 import time
 # from data_loader_10kb import *
 from model_10kb_Vs import *
-from model_10kb import *
+# from model_10kb import *
 from tqdm import tqdm
 import subprocess
 
