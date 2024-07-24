@@ -188,11 +188,11 @@ def main():
                 test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda() #NEW!!!!
                 with torch.no_grad():
                     y_hat = model(test_data)
-
+                    print(f"y_hat shape: {y_hat.shape}")
                     y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
 
-                    test_label_L, test_label_R = extract_n_diagonals(test_label, NUM_Vs) #Reversed?
+                    test_label_L, test_label_R = extract_n_diagonals(test_label.squeeze(), NUM_Vs) #Reversed?
                     test_label = torch.concat((test_label_L, test_label_R), dim=0)
                     loss = model.loss(y_hat, test_label)
                     test_loss.append(loss)
