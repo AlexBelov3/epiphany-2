@@ -185,12 +185,13 @@ def main():
             if i < 400//NUM_Vs:
                 if np.linalg.norm(test_label) < 1e-8:
                     continue
-                test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda() #NEW!!!!
+                test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
                 with torch.no_grad():
                     y_hat = model(test_data).squeeze()
-                    for j in range(NUM_Vs):
-                        y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]).unsqueeze(0))
-                        y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]).unsqueeze(0))
+                    if NUM_Vs > 1:
+                        for j in range(NUM_Vs):
+                            y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]).unsqueeze(0))
+                            y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]).unsqueeze(0))
                     # y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     # y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
 
