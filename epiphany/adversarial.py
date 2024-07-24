@@ -193,7 +193,7 @@ def main():
                         y_hat = model(test_data)
                     for j in range(NUM_Vs):
                         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]))
-                        y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:])))
+                        y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]))
                     # y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     # y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
 
