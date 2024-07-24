@@ -940,13 +940,13 @@ class branch_pbulk(nn.Module):
         pbulk_res = 50
         scatac_res = 500
 
-        # self.bulk_summed_2d = nn.Sequential(
-        #     nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), symmetrize_bulk()
-        # )
-
         self.bulk_summed_2d = nn.Sequential(
-            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod()
+            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), symmetrize_bulk()
         )
+
+        # self.bulk_summed_2d = nn.Sequential(
+        #     nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)), outer_prod()
+        # )
 
         self.bulk_extractor_2d = nn.Sequential(
             nn.Conv1d(

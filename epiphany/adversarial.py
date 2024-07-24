@@ -62,7 +62,7 @@ def main():
         model_name = "branch_cov"
         model = branch_cov(num_Vs=NUM_Vs).cuda()
         # model = branch_cov().cuda()
-    if args.model == 'b':
+    elif args.model == 'b':
         # chromafold right arm with only conv1d
         model_name = "branch_big_cov"
         model = branch_big_cov().cuda()
@@ -79,9 +79,9 @@ def main():
         model_name = "outer_prod_big"
         model = trunk(branch_outer_prod_big().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'f':
-        # use a trunk that adds the two predicitons together? idk
-        model_name = "add_trunk"
-        model = add_trunk(branch_outer_prod_small().cuda(), branch_cov().cuda()).cuda()
+        # branch_pbulk
+        model_name = "branch_pbulk"
+        model = branch_pbulk.cuda()
     elif args.model == 'g':
         model_name = "high_res_prod"
         model = trunk(branch_outer_prod_high_res().cuda(), branch_cov().cuda()).cuda()
