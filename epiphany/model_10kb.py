@@ -1384,7 +1384,7 @@ class branch_big_cov(nn.Module):
 
         self.bulk_extractor_2d = nn.Sequential(
             nn.Conv1d(
-                in_channels=2,
+                in_channels=5,
                 out_channels=16,
                 kernel_size=11,
                 stride=1,
