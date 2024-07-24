@@ -342,11 +342,13 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     # label = torch.cat(label, dim=0)
     label = safe_tensor_to_numpy(label)
     # print(f"y_up_list len (before): {len(y_up_list)}")
-    y_up_list = torch.cat(y_up_list, dim=0)
+    # y_up_list = torch.cat(y_up_list, dim=0)
     # print(f"y_up_list len (after): {len(y_up_list)}")
     # print(f"y_down_list len (before): {len(y_down_list)}")
-    y_down_list = torch.cat(y_down_list, dim=0)
+    # y_down_list = torch.cat(y_down_list, dim=0)
     # print(f"y_down_list len (after): {len(y_down_list)}")
+    y_up_list = y_up_list.squeeze()
+    y_down_list = y_down_list.squeeze()
 
     # Initialize the image arrays
     im1 = np.zeros((seq_length, seq_length))
