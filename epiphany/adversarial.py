@@ -52,7 +52,7 @@ def main():
     LAMBDA = float(args.lam)
     TRAIN_SEQ_LENGTH = 200
     TEST_SEQ_LENGTH = 200
-    NUM_Vs = 1
+    NUM_Vs = 2
 
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
@@ -239,15 +239,15 @@ def main():
 
             initial_params = {name: param.clone() for name, param in model.named_parameters()}
             loss.backward()
-            for name, param in model.named_parameters():
-                if param.grad is None:
-                    print(f"No gradients for {name}")
+            # for name, param in model.named_parameters():
+            #     if param.grad is None:
+            #         print(f"No gradients for {name}")
 
             optimizer.step()
 
-            for name, param in model.named_parameters():
-                if torch.equal(param, initial_params[name]):
-                    print(f"Parameter {name} has NOT been updated.")
+            # for name, param in model.named_parameters():
+            #     if torch.equal(param, initial_params[name]):
+            #         print(f"Parameter {name} has NOT been updated.")
 
 
             if args.wandb:
