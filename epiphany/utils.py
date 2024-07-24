@@ -338,6 +338,12 @@ def safe_tensor_to_numpy(label):
 
 
 def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200, num_vs = 1):
+    print(type(y_up_list))
+    print(type(y_down_list))
+    print(len(y_up_list))
+    print(len(y_down_list))
+    print(y_up_list[0].shape)
+    print(y_down_list[0].shape)
     path = os.path.join(path, 'ex_test.png')
     # label = torch.cat(label, dim=0)
     label = safe_tensor_to_numpy(label)
