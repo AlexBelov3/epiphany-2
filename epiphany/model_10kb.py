@@ -1555,7 +1555,7 @@ class branch_big_cov(nn.Module):
         #     x = self.cov_extractor_backup(x)
         if x.ndimension() == 2:
             x = x.unsqueeze(0)
-        x = self.cov_extractor(x)
+        x = self.bulk_extractor_2d(x)
         x = torch.flatten(x, 1)
         x_out = self.classifier(x)
 
