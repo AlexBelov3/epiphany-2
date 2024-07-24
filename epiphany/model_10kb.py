@@ -1544,7 +1544,7 @@ class branch_big_cov(nn.Module):
 
         self.classifier = nn.Sequential(
             # nn.Linear(in_features=(265), out_features=512), #992
-            nn.Linear(in_features=343, out_features=200), #input = 312 for window_size == 20,000
+            nn.Linear(in_features=220, out_features=200), #input = 312 for window_size == 20,000
         )
 
 
