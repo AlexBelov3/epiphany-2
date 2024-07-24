@@ -1124,7 +1124,7 @@ class branch_pbulk(nn.Module):
         # self.classifier = nn.Sequential(
         #     nn.Linear(in_features=(400), out_features=512), #nn.Linear(in_features=(1936), out_features=512),
         # )
-        self.classifier2 = nn.Sequential(nn.Linear(in_features=(400), out_features=200)) #(nn.Linear(in_features=(512), out_features=200))
+        self.classifier2 = nn.Sequential(nn.Linear(in_features=(576), out_features=200)) #(nn.Linear(in_features=(512), out_features=200))
 
     def forward(self, x2):
         x3_2d = self.bulk_summed_2d(x2)
