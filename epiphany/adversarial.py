@@ -9,8 +9,8 @@ import argparse
 from utils import *
 import time
 from data_loader_10kb import *
-from model_10kb_Vs import *
-# from model_10kb import *
+# from model_10kb_Vs import *
+from model_10kb import *
 from tqdm import tqdm
 import subprocess
 
@@ -60,8 +60,12 @@ def main():
     if args.model == 'a':
         # chromafold right arm with only conv1d
         model_name = "branch_cov"
-        model = branch_cov(num_Vs=NUM_Vs).cuda()
-        # model = branch_cov().cuda()
+        # model = branch_cov(num_Vs=NUM_Vs).cuda()
+        model = branch_cov().cuda()
+    if args.model == 'b':
+        # chromafold right arm with only conv1d
+        model_name = "branch_big_cov"
+        model = branch_big_cov().cuda()
     elif args.model == 'c':
         # modified epiphany (without .as_strided())
         model_name = "epiphany1.1"
@@ -119,9 +123,9 @@ def main():
     test_chroms = ['chr3', 'chr11', 'chr17']
     # match test chroms with chromafold!!
     # test_chroms = ['chr17']
-    train_chroms = ['chr1', 'chr2', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22']
+    # train_chroms = ['chr1', 'chr2', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr18', 'chr19', 'chr20', 'chr21', 'chr22']
     # train_chroms = ['chr19', 'chr20', 'chr21', 'chr22']
-    # train_chroms = ['chr22']
+    train_chroms = ['chr22']
 
     train_set = Chip2HiCDataset(seq_length=TRAIN_SEQ_LENGTH, window_size=int(args.window_size), chroms=train_chroms, mode='train', num_Vs=NUM_Vs)
     test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=test_chroms, mode='test', num_Vs=NUM_Vs)
@@ -145,14 +149,14 @@ def main():
     y_down_list = []
     labels = []
     for i, (test_data, test_label, co_signal) in enumerate(test_loader):
+        if i >+ 400//NUM_Vs:
+            break
         test_label = test_label.squeeze()
         y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
         y_up_list.append(y)
         y_down_list.append(y_rev)
         # labels.append(test_label[100]) #FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         labels.append(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])
-        if i > 400//NUM_Vs:
-            break
     #
     if args.wandb:
         im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400, num_vs=NUM_Vs))
