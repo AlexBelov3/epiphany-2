@@ -8,8 +8,8 @@ import torch.optim as optim
 import argparse
 from utils import *
 import time
-from data_loader_10kb import *
-# from model_10kb_Vs import *
+# from data_loader_10kb import *
+from model_10kb_Vs import *
 from model_10kb import *
 from tqdm import tqdm
 import subprocess
@@ -60,12 +60,12 @@ def main():
     if args.model == 'a':
         # chromafold right arm with only conv1d
         model_name = "branch_cov"
-        # model = branch_cov(num_Vs=NUM_Vs).cuda()
-        model = branch_cov().cuda()
-    if args.model == 'b':
-        # chromafold right arm with only conv1d
-        model_name = "branch_big_cov"
-        model = branch_big_cov().cuda()
+        model = branch_cov(num_Vs=NUM_Vs).cuda()
+        # model = branch_cov().cuda()
+    # if args.model == 'b':
+    #     # chromafold right arm with only conv1d
+    #     model_name = "branch_big_cov"
+    #     model = branch_big_cov().cuda()
     elif args.model == 'c':
         # modified epiphany (without .as_strided())
         model_name = "epiphany1.1"
