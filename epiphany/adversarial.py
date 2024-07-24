@@ -52,7 +52,7 @@ def main():
     LAMBDA = float(args.lam)
     TRAIN_SEQ_LENGTH = 200
     TEST_SEQ_LENGTH = 200
-    NUM_Vs = 2
+    NUM_Vs = 10
 
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
