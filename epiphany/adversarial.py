@@ -187,11 +187,11 @@ def main():
                     continue
                 test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
                 with torch.no_grad():
-                    y_hat = model(test_data).squeeze()
+                    y_hat = model(test_data)
                     if NUM_Vs > 1:
                         for j in range(NUM_Vs):
-                            y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]).unsqueeze(0))
-                            y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]).unsqueeze(0))
+                            y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu().squeeze())[j][:100]).unsqueeze(0))
+                            y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu().squeeze())[j][100:]).unsqueeze(0))
                     # y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     # y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
 
