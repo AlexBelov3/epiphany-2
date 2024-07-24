@@ -81,7 +81,7 @@ def main():
     elif args.model == 'f':
         # branch_pbulk
         model_name = "branch_pbulk"
-        model = branch_pbulk.cuda()
+        model = branch_pbulk().cuda()
     elif args.model == 'g':
         model_name = "high_res_prod"
         model = trunk(branch_outer_prod_high_res().cuda(), branch_cov().cuda()).cuda()
