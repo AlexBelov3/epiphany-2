@@ -345,6 +345,7 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     y_up_list = torch.cat(y_up_list, dim=0)
     print(f"y_up_list len (after): {len(y_up_list)}")
     print(f"y_down_list len (before): {len(y_down_list)}")
+    print(f"y_down_list first item: {y_down_list[0].shape}")
     y_down_list = torch.cat(y_down_list, dim=0)
     print(f"y_down_list len (after): {len(y_down_list)}")
     if num_vs == 1:
