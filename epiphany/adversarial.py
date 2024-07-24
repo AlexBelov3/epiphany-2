@@ -189,8 +189,8 @@ def main():
                 with torch.no_grad():
                     y_hat = model(test_data).squeeze()
                     for j in range(NUM_Vs):
-                        y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]))
-                        y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]))
+                        y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]).unsqueeze(0))
+                        y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:].unsqueeze(0)))
                     # y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     # y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
 
