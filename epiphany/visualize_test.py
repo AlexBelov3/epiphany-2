@@ -176,6 +176,7 @@ def main():
                     if NUM_Vs != 1:
                         y_hat = y_hat[0]
                     for j in range(NUM_Vs):
+                        y_hat_list.append(np.array(y_hat.cpu().squeeze()))
                         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]))
                         y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]))
             else:
