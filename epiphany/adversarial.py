@@ -52,7 +52,7 @@ def main():
     LAMBDA = float(args.lam)
     TRAIN_SEQ_LENGTH = 200
     TEST_SEQ_LENGTH = 200
-    NUM_Vs = 5
+    NUM_Vs = 1
 
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
@@ -137,7 +137,7 @@ def main():
     test_log = os.path.join(LOG_PATH, 'test_log.txt')
 
     hidden = None
-    log_interval = 50
+    log_interval = 50 * NUM_Vs
     parameters = list(model.parameters())
     optimizer = optim.Adam(parameters, lr=LEARNING_RATE, weight_decay=0.0005)
     disc_optimizer = optim.Adam(disc.parameters(), lr=LEARNING_RATE, weight_decay=0.0005)
