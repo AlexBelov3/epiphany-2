@@ -339,7 +339,7 @@ def safe_tensor_to_numpy(label):
 
 def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200, num_vs = 1):
     path = os.path.join(path, 'ex_test.png')
-    # label = torch.cat(label, dim=0)
+    label = torch.cat(label, dim=0)
     label = safe_tensor_to_numpy(label)
     for i in range(len(y_up_list)):
         y_up_list[i] = y_up_list[i].squeeze()
@@ -378,8 +378,8 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     #             im1[i, i + j] = np.mean([diag_values_up[j], im1[i, i + j]])
 
     bands = len(label)
-    print(f"bands: {bands}")
-    print(len(label[0]))
+    # print(f"bands: {bands}")
+    # print(len(label[0]))
     label = np.flip(label, axis=0)
     for j in range(bands - 1):
         if j > 0:
