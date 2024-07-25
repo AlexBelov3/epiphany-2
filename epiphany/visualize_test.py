@@ -173,7 +173,8 @@ def main():
                 test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
                 with torch.no_grad():
                     y_hat = model(test_data)#.squeeze()
-                    # y_hat = y_hat[0]
+                    if NUM_Vs != 1:
+                        y_hat = y_hat[0]
                     for j in range(NUM_Vs):
                         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]))
                         y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]))
@@ -256,6 +257,8 @@ def main():
             y_hat_list_by_distance.append(y_hat_list_distance)
 
         correlation_list = []
+        print(f"y_list_by_distance shape: {np.shape(y_list_by_distance)}")
+        print(f"y_hat_list_by_distance shape: {np.shape(y_hat_list_by_distance)}")
         for i in range(len(y_list_by_distance)):
             corr_matrix = np.corrcoef(y_list_by_distance[i], y_hat_list_by_distance[i], rowvar=True)
             correlation = corr_matrix[0, 1]
