@@ -153,7 +153,7 @@ def main():
             break
         test_label = test_label.squeeze()
         y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
-        y, y_rev = torch.cat(y, dim=0), torch.cat(y_rev, dim=0)
+        # y, y_rev = torch.cat(y, dim=0), torch.cat(y_rev, dim=0)
         for j in range(NUM_Vs):
             y_up_list.append(y[j])
             y_down_list.append(y_rev[j])
