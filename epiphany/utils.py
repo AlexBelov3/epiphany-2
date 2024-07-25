@@ -341,7 +341,11 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     path = os.path.join(path, 'ex_test.png')
     # label = torch.cat(label, dim=0)
     label = safe_tensor_to_numpy(label)
-
+    print(len(y_up_list))
+    print(y_down_list[0].shape)
+    print(len(y_down_list))
+    print(y_down_list[0].shape)
+    print("SQUEEZE")
     for i in range(len(y_up_list)):
         y_up_list[i] = y_up_list[i].squeeze()
         y_down_list[i] = y_down_list[i].squeeze()
