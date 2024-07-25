@@ -149,7 +149,7 @@ def main():
     y_down_list = []
     labels = []
     for i, (test_data, test_label, co_signal) in enumerate(test_loader):
-        if i > 400//NUM_Vs:
+        if i > 400:#//NUM_Vs:
             break
         test_label = test_label.squeeze()
         y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
@@ -158,7 +158,7 @@ def main():
             y_up_list.append(y[j])
             y_down_list.append(y_rev[j])
         # labels.append(test_label[100]) #FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        print(f"label shape: {np.shape(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])}")
+        # print(f"label shape: {np.shape(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])}")
         labels.append(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])
     #
     if args.wandb:
