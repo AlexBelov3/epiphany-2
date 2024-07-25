@@ -132,11 +132,11 @@ def main():
         for i, (test_data, test_label, co_s) in enumerate(test_loader):
             # if i >= eval_length:
             #     break
-            # test_label = test_label.squeeze()
-            # y, y_rev = extract_diagonals(test_label)
+            test_label = test_label.squeeze()
+            y, y_rev = extract_diagonals(test_label)
             # y_up_list.append(y)
             # y_down_list.append(y_rev)
-            # y_list.append(np.concatenate((y, y_rev), axis=0))
+            y_list.append(np.concatenate((y, y_rev), axis=0))
             # labels.append(test_label[100])
             if i >= eval_length // NUM_Vs:
                 break
