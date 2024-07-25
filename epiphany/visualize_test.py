@@ -132,11 +132,9 @@ def main():
         for i, (test_data, test_label, co_s) in enumerate(test_loader):
             # if i >= eval_length:
             #     break
-            test_label = test_label.squeeze()
-            y, y_rev = extract_diagonals(test_label)
             # y_up_list.append(y)
             # y_down_list.append(y_rev)
-            y_list.append(np.concatenate((y, y_rev), axis=0))
+
             # labels.append(test_label[100])
             if i >= eval_length // NUM_Vs:
                 break
@@ -146,6 +144,7 @@ def main():
             for j in range(NUM_Vs):
                 y_up_list.append(y[j])
                 y_down_list.append(y_rev[j])
+                y_list.append(np.concatenate((y[j], y_rev[j]), axis=0))
             # labels.append([test_label[100], test_label[101]])
             # print(f"label shape: {np.shape(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])}")
             # labels.append(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])
