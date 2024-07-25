@@ -157,11 +157,11 @@ def main():
         for j in range(NUM_Vs):
             y_up_list.append(y[j])
             y_down_list.append(y_rev[j])
-        labels.append(test_label[100])
-        labels.append(test_label[101])
+        # labels.append([test_label[100], test_label[101]])
         # print(f"label shape: {np.shape(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])}")
         # labels.append(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])
-    #
+        labels.append(test_label[100: 100+NUM_Vs])
+
     if args.wandb:
         im = wandb.Image(generate_image_test(labels, y_up_list, y_down_list, path=LOG_PATH, seq_length=400, num_vs=NUM_Vs))
         wandb.log({"Validation Examples": im})
