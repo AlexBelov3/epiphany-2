@@ -58,7 +58,7 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
 
         arr = np.array(np.cumsum(self.sizes).tolist())
-        arr[arr <= index] = 100000
+        arr[arr <= index*self.num_Vs] = 100000
         chrom_idx = np.argmin(arr)
         chr = self.chroms[chrom_idx]
         idx = int(index*self.num_Vs - ([0] + np.cumsum(self.sizes).tolist())[chrom_idx])
