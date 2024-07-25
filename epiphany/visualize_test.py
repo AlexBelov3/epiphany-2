@@ -158,18 +158,25 @@ def main():
         model.eval()
         i = 0
         for (test_data, test_label, co_s) in tqdm(test_loader):
-            if i < eval_length:
+            # if i < eval_length:
+            #     if np.linalg.norm(test_label) < 1e-8:
+            #         continue
+            #     test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
+            #     with torch.no_grad():
+            #         y_hat = model(test_data)
+            #         y_hat_list.append(np.array(y_hat.cpu().squeeze()))
+            #         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
+            #         y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
+            if i < 400//NUM_Vs:
                 if np.linalg.norm(test_label) < 1e-8:
                     continue
-                # test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
-                # with torch.no_grad():
-                #     y_hat = model(test_data)
-                #     y_hat_list.append(np.array(y_hat.cpu().squeeze()))
-                #     y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
-                #     y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
-                for i in range(len(test_data)):
-                    im = wandb.Image(plot_correlation(np.array(test_data[i]), i))
-                    wandb.log({f"Track {i} " + chr: im})
+                test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
+                with torch.no_grad():
+                    y_hat = model(test_data)#.squeeze()
+                    y_hat = y_hat[0]
+                    for j in range(NUM_Vs):
+                        y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]))
+                        y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]))
             else:
                 break
             i += 1
