@@ -115,7 +115,7 @@ def main():
     else:
         os.makedirs(LOG_PATH)
 
-    eval_length = 200
+    eval_length = 400
     # GM12878 Standard
     test_chroms = ['chr3', 'chr11', 'chr17', 'chr2']
     # match test chroms with chromafold!!
@@ -166,7 +166,7 @@ def main():
             #         y_hat_list.append(np.array(y_hat.cpu().squeeze()))
             #         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
             #         y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
-            if i < 400//NUM_Vs:
+            if i < eval_length//NUM_Vs:
                 if np.linalg.norm(test_label) < 1e-8:
                     continue
                 test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
