@@ -569,7 +569,7 @@ def plot_two_insulation_scores(real_log_insulation_scores, predicted_log_insulat
     return fig
 
 
-def plot_correlation(correlations, corr):
+def plot_correlation(correlations, corr = 0):
     # Calculate the maximum and minimum log2 insulation scores and set the y-axis limits
     max_score = np.max(correlations)
     min_score = np.min(correlations)
@@ -591,7 +591,8 @@ def plot_correlation(correlations, corr):
     # Add correlation text to the plot
     text_x = len(correlations) - 1
     text_y = y_max_limit * 0.975
-    ax.text(text_x, text_y, f'Global: {corr:.2f}', fontsize=24, ha='right', va='top')
+    if corr != 0:
+        ax.text(text_x, text_y, f'Global: {corr:.2f}', fontsize=24, ha='right', va='top')
 
     # Set axis labels
     ax.set_xlabel('Bin Number')
