@@ -57,6 +57,7 @@ def main():
     LAMBDA = float(args.lam)
     TRAIN_SEQ_LENGTH = 200
     TEST_SEQ_LENGTH = 200
+    NUM_Vs = 1
 
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
@@ -129,14 +130,26 @@ def main():
                                    mode='test')
         test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
         for i, (test_data, test_label, co_s) in enumerate(test_loader):
-            if i >= eval_length:
+            # if i >= eval_length:
+            #     break
+            # test_label = test_label.squeeze()
+            # y, y_rev = extract_diagonals(test_label)
+            # y_up_list.append(y)
+            # y_down_list.append(y_rev)
+            # y_list.append(np.concatenate((y, y_rev), axis=0))
+            # labels.append(test_label[100])
+            if i >= eval_length // NUM_Vs:
                 break
             test_label = test_label.squeeze()
-            y, y_rev = extract_diagonals(test_label)
-            y_up_list.append(y)
-            y_down_list.append(y_rev)
-            y_list.append(np.concatenate((y, y_rev), axis=0))
-            labels.append(test_label[100])
+            y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
+            # y, y_rev = torch.cat(y, dim=0), torch.cat(y_rev, dim=0)
+            for j in range(NUM_Vs):
+                y_up_list.append(y[j])
+                y_down_list.append(y_rev[j])
+            # labels.append([test_label[100], test_label[101]])
+            # print(f"label shape: {np.shape(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])}")
+            # labels.append(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])
+            labels.append(test_label[100: 100 + NUM_Vs])
 
 
         y_hat_L_list = []
