@@ -115,7 +115,7 @@ def main():
     else:
         os.makedirs(LOG_PATH)
 
-    eval_length = 400
+    eval_length = 800
     # GM12878 Standard
     test_chroms = ['chr3', 'chr11', 'chr17', 'chr2']
     # match test chroms with chromafold!!
@@ -268,6 +268,6 @@ def main():
             correlation_list.append(correlation)
         corr = np.corrcoef(np.ravel(y_hat_list), np.ravel(y_list))[0, 1]
         if args.wandb:
-            wandb.log({chr + " Correlation Across Distance from Diag": wandb.Image(plot_correlation(correlation_list, corr))})
+            wandb.log({chr + " Correlation Across Distance from Diag": wandb.Image(plot_correlation(correlation_list))})
 if __name__ == '__main__':
     main()
