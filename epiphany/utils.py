@@ -344,17 +344,6 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     for i in range(len(y_up_list)):
         y_up_list[i] = y_up_list[i].squeeze()
         y_down_list[i] = y_down_list[i].squeeze()
-    print(len(y_up_list))
-    print(y_down_list[0].shape)
-    print(len(y_down_list))
-    print(y_down_list[0].shape)
-    # print("DO THE THING")
-    # y_up_list = torch.cat(y_up_list, dim=0)
-    # y_down_list = torch.cat(y_down_list, dim=0)
-    # print(len(y_up_list))
-    # print(y_down_list[0].shape)
-    # print(len(y_down_list))
-    # print(y_down_list[0].shape)
 
     # Initialize the image arrays
     im1 = np.zeros((seq_length, seq_length))
