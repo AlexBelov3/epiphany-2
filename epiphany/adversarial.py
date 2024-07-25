@@ -194,8 +194,8 @@ def main():
                             y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[100:]))
                     else:
                         for j in range(NUM_Vs):
-                            y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu()[0])[:100]))
-                            y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu()[0])[100:]))
+                            y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu()[0][j])[:100]))
+                            y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu()[0][j])[100:]))
                     # y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     # y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
 
