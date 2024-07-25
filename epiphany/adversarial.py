@@ -153,8 +153,10 @@ def main():
             break
         test_label = test_label.squeeze()
         y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
-        y_up_list.append(y)
-        y_down_list.append(y_rev)
+        y, y_rev = torch.cat(y, dim=0), torch.cat(y_rev, dim=0)
+        for j in range(NUM_Vs):
+            y_up_list.append(y[j])
+            y_down_list.append(y_rev[j])
         # labels.append(test_label[100]) #FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         labels.append(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])
     #
@@ -188,17 +190,11 @@ def main():
                 test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
                 with torch.no_grad():
                     y_hat = model(test_data)#.squeeze()
-                    if NUM_Vs == 1:
-                        for j in range(NUM_Vs):
-                            y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[:100]))
-                            y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[100:]))
-                    else:
+                    if NUM_Vs != 1:
                         y_hat = y_hat[0]
-                        for j in range(NUM_Vs):
-                            y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]))
-                            y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]))
-                    # y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
-                    # y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
+                    for j in range(NUM_Vs):
+                        y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]))
+                        y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]))
 
                     test_label_L, test_label_R = extract_n_diagonals(test_label.squeeze(), NUM_Vs) #Reversed?
                     test_label = torch.concat((test_label_L, test_label_R), dim=0)
