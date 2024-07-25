@@ -155,7 +155,7 @@ def main():
                 #     y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                 #     y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
                 for i in range(len(test_data)):
-                    im = wandb.Image(plot_correlation(np.array(test_data[0]), i))
+                    im = wandb.Image(plot_correlation(np.array(test_data[i]), i))
                     wandb.log({f"Track {i} " + chr: im})
             else:
                 break
@@ -220,6 +220,28 @@ def main():
             correlation_list.append(correlation)
         corr = np.corrcoef(np.ravel(y_hat_list), np.ravel(y_list))[0, 1]
         if args.wandb:
-            wandb.log({chr + " Correlation": wandb.Image(plot_correlation(correlation_list, corr))})
+            wandb.log({chr + " Correlation Across Vs": wandb.Image(plot_correlation(correlation_list, corr))})
+
+        y_list_by_distance = []
+        y_hat_list_by_distance = []
+        for j in range(100):
+            y_list_distance = []
+            y_hat_list_distance = []
+            for i in range(len(y_list)):
+                y_list_distance.append(y_up_list[i][j])
+                y_list_distance.append(y_down_list[i][j])
+                y_hat_list_distance.append(y_hat_L_list[i][j])
+                y_hat_list_distance.append(y_hat_R_list[i][j])
+            y_list_by_distance.append(y_list_distance)
+            y_hat_list_by_distance.append(y_hat_list_distance)
+
+        correlation_list = []
+        for i in range(len(y_list_by_distance)):
+            corr_matrix = np.corrcoef(y_list_by_distance[i], y_hat_list_by_distance[i], rowvar=True)
+            correlation = corr_matrix[0, 1]
+            correlation_list.append(correlation)
+        corr = np.corrcoef(np.ravel(y_hat_list), np.ravel(y_list))[0, 1]
+        if args.wandb:
+            wandb.log({chr + " Correlation Across Distance from Diag": wandb.Image(plot_correlation(correlation_list, corr))})
 if __name__ == '__main__':
     main()
