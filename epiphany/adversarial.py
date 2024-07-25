@@ -158,6 +158,7 @@ def main():
             y_up_list.append(y[j])
             y_down_list.append(y_rev[j])
         # labels.append(test_label[100]) #FIX THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        print(f"label shape: {np.shape(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])}")
         labels.append(test_label[100 - (NUM_Vs-1)//2 :100 + NUM_Vs//2 + 1])
     #
     if args.wandb:
