@@ -379,6 +379,7 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
 
     bands = len(label)
     print(f"bands: {bands}")
+    print(label)
     label = np.flip(label, axis=0)
     for j in range(bands - 1):
         if j > 0:
