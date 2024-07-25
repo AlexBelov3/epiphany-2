@@ -117,8 +117,7 @@ def main():
 
     eval_length = 800
     # GM12878 Standard
-    test_chroms = ['chr3', 'chr11', 'chr17', 'chr2']
-    # match test chroms with chromafold!!
+    test_chroms = ['chr3', 'chr11', 'chr17', 'chr2', 'chr22']
 
     for chr in test_chroms:
         y_list = []
@@ -234,9 +233,6 @@ def main():
         if args.wandb:
             wandb.log({chr + " Insulation Score": wandb.Image(plot_two_insulation_scores(real_insulation_scores, pred_insulation_scores))})
 
-        print(f"y_hat_list shape: {np.shape(y_hat_list)}")
-        print(f"y_list shape: {np.shape(y_list)}")
-
         correlation_list = []
         for i in range(len(y_list)):
             corr_matrix = np.corrcoef(y_hat_list[i], y_list[i], rowvar=True)
@@ -260,8 +256,6 @@ def main():
             y_hat_list_by_distance.append(y_hat_list_distance)
 
         correlation_list = []
-        print(f"y_list_by_distance shape: {np.shape(y_list_by_distance)}")
-        print(f"y_hat_list_by_distance shape: {np.shape(y_hat_list_by_distance)}")
         for i in range(len(y_list_by_distance)):
             corr_matrix = np.corrcoef(y_list_by_distance[i], y_hat_list_by_distance[i], rowvar=True)
             correlation = corr_matrix[0, 1]
