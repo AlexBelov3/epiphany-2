@@ -193,9 +193,11 @@ def main():
                             y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[:100]))
                             y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[100:]))
                     else:
+                        print(f"y_hat[0] shape: {y_hat[0].shape}")
+                        y_hat = y_hat.squeeze()
                         for j in range(NUM_Vs):
-                            y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu()[0][j])[:100]))
-                            y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu()[0][j])[100:]))
+                            y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu()[j])[:100]))
+                            y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu()[j])[100:]))
                     # y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
                     # y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
 
