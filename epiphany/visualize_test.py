@@ -234,6 +234,9 @@ def main():
         if args.wandb:
             wandb.log({chr + " Insulation Score": wandb.Image(plot_two_insulation_scores(real_insulation_scores, pred_insulation_scores))})
 
+        print(f"y_hat_list shape: {np.shape(y_hat_list)}")
+        print(f"y_list shape: {np.shape(y_list)}")
+
         correlation_list = []
         for i in range(len(y_list)):
             corr_matrix = np.corrcoef(y_hat_list[i], y_list[i], rowvar=True)
