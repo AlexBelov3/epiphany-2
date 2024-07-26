@@ -1915,7 +1915,7 @@ class branch_small_pbulk_prod(nn.Module):
         x4 = self.total_extractor_2d(x4)
         x4 = torch.flatten(x4, 1)
         x4 = self.classifier2(x4)
-
+        print(x4.shape)
         return x4
 
     def loss(self, prediction, label, seq_length = 200, reduction='mean', lam=1):
