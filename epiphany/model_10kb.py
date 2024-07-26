@@ -2030,10 +2030,10 @@ class branch_small_pbulk(nn.Module):
             ),
             nn.BatchNorm1d(16), #1
             nn.ReLU(),
+            nn.Linear(in_features=(343), out_features=220),
         )
 
         self.linear_prod = nn.Sequential(
-            nn.Linear(in_features=(343), out_features=220),
             outer_prod()
         )
 
