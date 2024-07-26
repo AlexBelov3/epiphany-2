@@ -1959,7 +1959,7 @@ class branch_pbulk_prod(nn.Module):
 class branch_small_pbulk(nn.Module):
     def __init__(self):
         super(branch_small_pbulk, self).__init__()
-        pbulk_res = 60
+        pbulk_res = 70
         scatac_res = 500
 
         # self.bulk_summed_2d = nn.Sequential(
@@ -1994,27 +1994,9 @@ class branch_small_pbulk(nn.Module):
             nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(
-                in_channels=16,
-                out_channels=16,
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding=1,
-            ),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
+            resblock(16),
             nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(
-                in_channels=16,
-                out_channels=16,
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding=1,
-            ),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
+            resblock(16),
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
                 in_channels=16,
