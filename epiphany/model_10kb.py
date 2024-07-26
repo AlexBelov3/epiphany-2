@@ -1888,6 +1888,7 @@ class branch_small_pbulk_prod(nn.Module):
             ),
             nn.BatchNorm1d(16), #1
             nn.ReLU(),
+            nn.Flatten(),
             nn.Linear(in_features=(343), out_features=220),
             outer_prod(),
         )
