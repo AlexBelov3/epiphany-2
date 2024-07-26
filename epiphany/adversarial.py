@@ -9,8 +9,8 @@ import argparse
 from utils import *
 import time
 from data_loader_10kb import *
-from model_10kb_Vs import *
-# from model_10kb import *
+# from model_10kb_Vs import *
+from model_10kb import *
 from tqdm import tqdm
 import subprocess
 
@@ -86,8 +86,8 @@ def main():
         model_name = "high_res_prod"#_" + str(NUM_Vs)
         model = trunk(branch_outer_prod_high_res().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'h':
-        model_name = "branch_LSTM"#_" + str(NUM_Vs)
-        model = trunk(branch_BiLSTM().cuda(), branch_cov().cuda()).cuda()
+        model_name = "big_cov_plus_transformer"
+        model = trunk(branch_transformer().cuda(), branch_big_cov().cuda()).cuda()
     elif args.model == 'i':
         model_name = "branch_outer_prod_learned"#_" + str(NUM_Vs)
         model = trunk_new_loss(branch_outer_prod_learned().cuda(), branch_cov().cuda()).cuda()
