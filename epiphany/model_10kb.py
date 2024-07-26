@@ -2033,7 +2033,7 @@ class branch_small_pbulk(nn.Module):
         )
 
         self.linear_prod = nn.Sequential(
-            nn.Linear(in_features=(220), out_features=220),
+            nn.Linear(in_features=(343), out_features=220),
             outer_prod()
         )
 
