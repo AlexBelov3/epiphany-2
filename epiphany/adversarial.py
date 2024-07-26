@@ -9,8 +9,8 @@ import argparse
 from utils import *
 import time
 from data_loader_10kb import *
-from model_10kb_Vs import *
-# from model_10kb import *
+# from model_10kb_Vs import *
+from model_10kb import *
 from tqdm import tqdm
 import subprocess
 
@@ -59,40 +59,40 @@ def main():
 
     if args.model == 'a':
         # chromafold right arm with only conv1d
-        model_name = "branch_cov"
+        model_name = "branch_cov_" + str(NUM_Vs)
         model = branch_cov(num_Vs=NUM_Vs).cuda()
         # model = branch_cov().cuda()
     elif args.model == 'b':
         # chromafold right arm with only conv1d
-        model_name = "branch_big_cov"
+        model_name = "branch_big_cov"#_" + str(NUM_Vs)
         model = branch_big_cov().cuda()
     elif args.model == 'c':
         # branch_pbulk with outer product instead of symmetrize_bulk
-        model_name = "branch_pbulk_prod"
+        model_name = "branch_pbulk_prod"#_" + str(NUM_Vs)
         model = branch_pbulk_prod().cuda()
     elif args.model == 'd':
         # conv1d right arm ad outer_prod_small right arm
-        model_name = "epiphany_2"
+        model_name = "epiphany_2"#_" + str(NUM_Vs)
         model = trunk(branch_outer_prod_small().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'e':
         # conv1d right arm ad outer_prod_big right arm
-        model_name = "outer_prod_big"
+        model_name = "outer_prod_big"#_" + str(NUM_Vs)
         model = trunk(branch_outer_prod_big().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'f':
         # branch_pbulk
-        model_name = "branch_pbulk"
+        model_name = "branch_pbulk"#_" + str(NUM_Vs)
         model = branch_pbulk().cuda()
     elif args.model == 'g':
-        model_name = "high_res_prod"
+        model_name = "high_res_prod"#_" + str(NUM_Vs)
         model = trunk(branch_outer_prod_high_res().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'h':
-        model_name = "branch_LSTM"
+        model_name = "branch_LSTM"#_" + str(NUM_Vs)
         model = trunk(branch_BiLSTM().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'i':
-        model_name = "branch_outer_prod_learned"
+        model_name = "branch_outer_prod_learned"#_" + str(NUM_Vs)
         model = trunk_new_loss(branch_outer_prod_learned().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'j':
-        model_name = "branch_transformer"
+        model_name = "branch_transformer"#_" + str(NUM_Vs)
         model = trunk(branch_transformer().cuda(), branch_cov().cuda()).cuda()
     else:
         model_name = "DEFAULT"
