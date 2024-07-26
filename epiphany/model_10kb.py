@@ -2030,10 +2030,6 @@ class branch_small_pbulk(nn.Module):
             ),
             nn.BatchNorm1d(16), #1
             nn.ReLU(),
-            nn.Linear(in_features=(343), out_features=220),
-        )
-
-        self.linear_prod = nn.Sequential(
             outer_prod()
         )
 
@@ -2058,18 +2054,18 @@ class branch_small_pbulk(nn.Module):
 
     def forward(self, x2):
         x3_2d = self.bulk_summed_2d(x2)
-        print(f"bulk_summed_2d: {torch. sum(x3_2d.isnan())}")
+        # print(f"bulk_summed_2d: {torch. sum(x3_2d.isnan())}")
         x2_2d = self.bulk_extractor_2d(x2)
-        print(f"bulk_extractor_2d: {torch.sum(x2_2d.isnan())}")
-        x2_2d = self.linear_prod(x2_2d)
-        print(f"linear_prod: {torch.sum(x2_2d.isnan())}")
+        # print(f"bulk_extractor_2d: {torch.sum(x2_2d.isnan())}")
+        # x2_2d = self.linear_prod(x2_2d)
+        # print(f"linear_prod: {torch.sum(x2_2d.isnan())}")
         x4 = torch.cat((x3_2d, x2_2d), 1)
-        print(f"cat: {torch.sum(x4.isnan())}")
+        # print(f"cat: {torch.sum(x4.isnan())}")
         x4 = self.total_extractor_2d(x4)
-        print(f"total_extractor_2d: {torch.sum(x4.isnan())}")
+        # print(f"total_extractor_2d: {torch.sum(x4.isnan())}")
         x4 = torch.flatten(x4, 1)
         x4 = self.classifier2(x4)
-        print(f"classifier2: {torch.sum(x4.isnan())}")
+        # print(f"classifier2: {torch.sum(x4.isnan())}")
         return x4
 
     def loss(self, prediction, label, seq_length = 200, reduction='mean', lam=1):
