@@ -1913,7 +1913,7 @@ class branch_small_pbulk_prod(nn.Module):
     def forward(self, x2):
         x3_2d = self.bulk_summed_2d(x2)
         x2_2d = self.bulk_extractor_2d(x2)
-        x3_2d = self.classifier(x2_2d)
+        x2_2d = self.classifier(x2_2d)
         x4 = torch.cat((x3_2d, x2_2d), 1)
         x4 = self.total_extractor_2d(x4)
         x4 = torch.flatten(x4, 1)
