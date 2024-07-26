@@ -1956,9 +1956,9 @@ class branch_pbulk_prod(nn.Module):
 #         total_loss = lam * l2_loss + (1 - lam) * l1_loss
 #         return total_loss
 
-class branch_small_pbulk_prod(nn.Module):
+class branch_small_pbulk(nn.Module):
     def __init__(self):
-        super(branch_small_pbulk_prod, self).__init__()
+        super(branch_small_pbulk, self).__init__()
 
         pbulk_res = 50
         scatac_res = 500

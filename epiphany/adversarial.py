@@ -89,8 +89,8 @@ def main():
         model_name = "big_cov_plus_transformer"
         model = trunk(branch_transformer().cuda(), branch_big_cov().cuda()).cuda()
     elif args.model == 'i':
-        model_name = "branch_small_pbulk_prod"
-        model = branch_small_pbulk_prod().cuda()
+        model_name = "branch_small_pbulk"
+        model = branch_small_pbulk().cuda()
     elif args.model == 'j':
         model_name = "branch_transformer"#_" + str(NUM_Vs)
         model = trunk(branch_transformer().cuda(), branch_cov().cuda()).cuda()
