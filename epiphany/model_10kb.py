@@ -1829,68 +1829,68 @@ class branch_small_pbulk_prod(nn.Module):
         )
 
         self.bulk_extractor_2d = nn.Sequential(
-            nn.Conv1d(
-                in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
-            ),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(
-                in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
-            ),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(
-                in_channels=16,
-                out_channels=16,
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding=1,
-            ),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=2),
-            resblock(16),
-            nn.MaxPool1d(kernel_size=2),
-            resblock(16),
-            nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(
-                in_channels=16,
-                out_channels=16,
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding=1,
-            ),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(
-                in_channels=16,
-                out_channels=16,
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding=1,
-            ),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(
-                in_channels=16,
-                out_channels=16,  # 16
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding=1,
-            ),
-            nn.BatchNorm1d(16), #1
-            nn.ReLU(),
-            # nn.Flatten(),
-            nn.Linear(in_features=(343), out_features=220),
-            nn.ReLU(),
+            # nn.Conv1d(
+            #     in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
+            # ),
+            # nn.BatchNorm1d(16),
+            # nn.ReLU(),
+            # nn.MaxPool1d(kernel_size=2),
+            # nn.Conv1d(
+            #     in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
+            # ),
+            # nn.BatchNorm1d(16),
+            # nn.ReLU(),
+            # nn.MaxPool1d(kernel_size=2),
+            # nn.Conv1d(
+            #     in_channels=16,
+            #     out_channels=16,
+            #     kernel_size=3,
+            #     stride=1,
+            #     dilation=1,
+            #     padding=1,
+            # ),
+            # nn.BatchNorm1d(16),
+            # nn.ReLU(),
+            # nn.MaxPool1d(kernel_size=2),
+            # resblock(16),
+            # nn.MaxPool1d(kernel_size=2),
+            # resblock(16),
+            # nn.MaxPool1d(kernel_size=2),
+            # nn.Conv1d(
+            #     in_channels=16,
+            #     out_channels=16,
+            #     kernel_size=3,
+            #     stride=1,
+            #     dilation=1,
+            #     padding=1,
+            # ),
+            # nn.BatchNorm1d(16),
+            # nn.ReLU(),
+            # nn.MaxPool1d(kernel_size=2),
+            # nn.Conv1d(
+            #     in_channels=16,
+            #     out_channels=16,
+            #     kernel_size=3,
+            #     stride=1,
+            #     dilation=1,
+            #     padding=1,
+            # ),
+            # nn.BatchNorm1d(16),
+            # nn.ReLU(),
+            # nn.MaxPool1d(kernel_size=2),
+            # nn.Conv1d(
+            #     in_channels=16,
+            #     out_channels=16,  # 16
+            #     kernel_size=3,
+            #     stride=1,
+            #     dilation=1,
+            #     padding=1,
+            # ),
+            # nn.BatchNorm1d(16), #1
+            # nn.ReLU(),
+            # nn.Linear(in_features=(343), out_features=220),
+            # nn.ReLU(),
+            nn.AvgPool1d(kernel_size=np.int64(1e04 / pbulk_res)),
             outer_prod(),
         )
 
