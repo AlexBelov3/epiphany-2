@@ -1880,13 +1880,13 @@ class branch_small_pbulk_prod(nn.Module):
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
                 in_channels=16,
-                out_channels=8,  # 16
+                out_channels=16,  # 16
                 kernel_size=3,
                 stride=1,
                 dilation=1,
                 padding=1,
             ),
-            nn.BatchNorm1d(8), #1
+            nn.BatchNorm1d(16), #1
             nn.ReLU(),
             outer_prod(),
         )
@@ -1905,14 +1905,15 @@ class branch_small_pbulk_prod(nn.Module):
             nn.ReLU(),
         )
 
-        # self.classifier = nn.Sequential(
-        #     nn.Linear(in_features=(400), out_features=512), #nn.Linear(in_features=(1936), out_features=512),
-        # )
+        self.classifier = nn.Sequential(
+            nn.Linear(in_features=(343), out_features=220),
+        )
         self.classifier2 = nn.Sequential(nn.Linear(in_features=(576), out_features=200)) #(nn.Linear(in_features=(512), out_features=200))
 
     def forward(self, x2):
         x3_2d = self.bulk_summed_2d(x2)
         x2_2d = self.bulk_extractor_2d(x2)
+        x3_2d = self.classifier(x3_2d)
         x4 = torch.cat((x3_2d, x2_2d), 1)
         x4 = self.total_extractor_2d(x4)
         x4 = torch.flatten(x4, 1)
