@@ -1880,7 +1880,7 @@ class branch_small_pbulk_prod(nn.Module):
             nn.MaxPool1d(kernel_size=2),
             nn.Conv1d(
                 in_channels=16,
-                out_channels=16,  # 16
+                out_channels=8,  # 16
                 kernel_size=3,
                 stride=1,
                 dilation=1,
