@@ -1959,7 +1959,7 @@ class branch_pbulk_prod(nn.Module):
 class branch_small_pbulk(nn.Module):
     def __init__(self):
         super(branch_small_pbulk, self).__init__()
-        pbulk_res = 70
+        pbulk_res = 77.7
         scatac_res = 500
 
         # self.bulk_summed_2d = nn.Sequential(
