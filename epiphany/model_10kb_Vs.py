@@ -307,107 +307,211 @@ class Net2(nn.Module):
         total_loss = lam * l2_loss + (1 - lam) * l1_loss
         return total_loss
 
+class branch_big_cov(nn.Module):
+    def __init__(self, num_Vs):
+        super(branch_big_cov, self).__init__()
 
-# class Net(nn.Module):
-#     def __init__(self, num_layers=1, input_channels=5, window_size=14000):
-#         super(Net, self).__init__()
-#
-#         self.cov_extractor = nn.Sequential(
-#             nn.Conv1d(
-#                 in_channels=5, out_channels=16, kernel_size=5, stride=1, padding=2
-#             ),
-#             # nn.BatchNorm1d(34000),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(
-#                 in_channels=16, out_channels=16, kernel_size=5, stride=1, padding=2
-#             ),
-#             # nn.BatchNorm1d(34000),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(
-#                 in_channels=16,
-#                 out_channels=16,
-#                 kernel_size=3,
-#                 stride=1,
-#                 dilation=1,
-#                 padding=1,
-#             ),
-#             # nn.BatchNorm1d(34000),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             # resblock(34000),
-#             nn.MaxPool1d(kernel_size=2),
-#             # resblock(34000),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(
-#                 in_channels=16,
-#                 out_channels=16,
-#                 kernel_size=3,
-#                 stride=1,
-#                 dilation=1,
-#                 padding=1,
-#             ),
-#             # nn.BatchNorm1d(34000),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(
-#                 in_channels=16,
-#                 out_channels=16,
-#                 kernel_size=3,
-#                 stride=1,
-#                 dilation=1,
-#                 padding=1,
-#             ),
-#             # nn.BatchNorm1d(34000),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(
-#                 in_channels=16,
-#                 out_channels=16,
-#                 kernel_size=3,
-#                 stride=1,
-#                 dilation=1,
-#                 padding=1,
-#             ),
-#             # nn.BatchNorm1d(34000),
-#             nn.ReLU(),
-#         )
-#
-#         self.classifier = nn.Sequential(
-#             nn.Linear(in_features=(265), out_features=512),  # 992
-#         )
-#
-#     def forward(self, x):
-#         x = self.cov_extractor(x)
-#         x = torch.flatten(x, 1)
-#         x_out = self.classifier(x)
-#
-#         return x_out
-#
-#     def loss(self, prediction, label, seq_length=200, reduction='mean', lam=1):
-#         l1_loss = 0
-#         if isinstance(prediction, np.ndarray):
-#             prediction = torch.tensor(prediction)
-#         if isinstance(label, np.ndarray):
-#             label = torch.tensor(label)
-#
-#         if prediction.ndim != 1 or label.ndim != 1:
-#             prediction = prediction.view(-1)
-#             label = label.view(-1)
-#
-#         if prediction.size() != label.size():
-#             raise ValueError(
-#                 f"Shape mismatch: prediction size {prediction.size()} does not match label size {label.size()}")
-#
-#         # Compute L1 and L2 losses
-#         # l1_loss = F.l1_loss(prediction, label, reduction=reduction)
-#         l2_loss = F.mse_loss(prediction, label, reduction=reduction)
-#
-#         # Combine losses with lambda
-#         total_loss = lam * l2_loss + (1 - lam) * l1_loss
-#         return total_loss
+        self.bulk_extractor_2d = nn.Sequential(
+            nn.Conv1d(
+                in_channels=5,
+                out_channels=16,
+                kernel_size=11,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=32,
+                kernel_size=7,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=2,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=3,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=5,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=5,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=7,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=11,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=11,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=5),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=5),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=num_Vs,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(num_Vs),
+            nn.ReLU(),
+            # symmetrize_bulk(),
+        )
 
+
+        self.classifier = nn.Sequential(
+            # nn.Linear(in_features=(265), out_features=512), #992
+            nn.Linear(in_features=220, out_features=200), #input = 312 for window_size == 20,000
+        )
+
+
+    def forward(self, x):
+        # try:
+        #     x = self.cov_extractor(x)
+        # except:
+        #     x = self.cov_extractor_backup(x)
+        if x.ndimension() == 2:
+            x = x.unsqueeze(0)
+        x = self.bulk_extractor_2d(x)
+        # x = torch.flatten(x, 1)
+        x_out = self.classifier(x)
+
+        return x_out
+
+    def loss(self, prediction, label, seq_length = 200, reduction='mean', lam=1):
+        l1_loss = 0
+        if isinstance(prediction, np.ndarray):
+            prediction = torch.tensor(prediction)
+        if isinstance(label, np.ndarray):
+            label = torch.tensor(label)
+
+        if prediction.ndim != 1 or label.ndim != 1:
+            prediction = prediction.view(-1)
+            label = label.view(-1)
+
+        if prediction.size() != label.size():
+            raise ValueError(
+                f"Shape mismatch: prediction size {prediction.size()} does not match label size {label.size()}")
+
+        # Compute L1 and L2 losses
+        # l1_loss = F.l1_loss(prediction, label, reduction=reduction)
+        l2_loss = F.mse_loss(prediction, label, reduction=reduction)
+
+        # Combine losses with lambda
+        total_loss = lam * l2_loss + (1 - lam) * l1_loss
+        return total_loss
 
 class Disc(nn.Module):
 
@@ -484,11 +588,11 @@ class Disc(nn.Module):
 
 
 class trunk(nn.Module):
-    def __init__(self, right, left):
+    def __init__(self, right, left, num_Vs):
         super(trunk, self).__init__()
 
-        self.right = right
-        self.left = left
+        self.right = right(num_Vs)
+        self.left = left(num_Vs)
 
         self.out = nn.Sequential(
             # nn.Linear(in_features=(916), out_features=512), #replace 116 with 512 * 2
@@ -707,7 +811,7 @@ class outer_prod_big(nn.Module):
 
 
 class branch_outer_prod_small(nn.Module):
-    def __init__(self):
+    def __init__(self, num_Vs):
         super(branch_outer_prod_small, self).__init__()
         pbulk_res = 50
 
@@ -904,7 +1008,7 @@ class branch_outer_prod_high_res(nn.Module):
 
 
 class branch_outer_prod_big(nn.Module):
-    def __init__(self):
+    def __init__(self, num_Vs):
         super(branch_outer_prod_big, self).__init__()
         pbulk_res = 50
 
