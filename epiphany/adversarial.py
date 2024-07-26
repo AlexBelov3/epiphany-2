@@ -8,8 +8,8 @@ import torch.optim as optim
 import argparse
 from utils import *
 import time
-from data_loader_10kb import *
-# from model_10kb_Vs import *
+# from data_loader_10kb import *
+from model_10kb_Vs import *
 from model_10kb import *
 from tqdm import tqdm
 import subprocess
@@ -52,7 +52,7 @@ def main():
     LAMBDA = float(args.lam)
     TRAIN_SEQ_LENGTH = 200
     TEST_SEQ_LENGTH = 200
-    NUM_Vs = 1
+    NUM_Vs = 5
 
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
@@ -64,8 +64,8 @@ def main():
         # model = branch_cov().cuda()
     elif args.model == 'b':
         # chromafold right arm with only conv1d
-        model_name = "branch_big_cov"#_" + str(NUM_Vs)
-        model = branch_big_cov().cuda()
+        model_name = "branch_big_cov_" + str(NUM_Vs)
+        model = branch_big_cov(num_Vs=NUM_Vs).cuda()
     elif args.model == 'c':
         # branch_pbulk with outer product instead of symmetrize_bulk
         model_name = "branch_pbulk_prod"#_" + str(NUM_Vs)
