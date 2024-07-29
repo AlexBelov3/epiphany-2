@@ -70,7 +70,7 @@ def main():
         # model = branch_cov().cuda()
     elif args.model == 'b':
         # chromafold right arm with only conv1d
-        model_name = "branch_big_cov_" + str(NUM_Vs)
+        model_name = "branch_big_cov"#_" + str(NUM_Vs)
         model = branch_big_cov(num_Vs=NUM_Vs).cuda()
     elif args.model == 'c':
         # branch_pbulk with outer product instead of symmetrize_bulk
