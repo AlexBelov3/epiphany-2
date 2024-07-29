@@ -64,39 +64,40 @@ def main():
 
     if args.model == 'a':
         # chromafold right arm with only conv1d
-        model_name = "branch_cov"
-        model = branch_cov().cuda()
+        model_name = "branch_cov_" + str(NUM_Vs)
+        model = branch_cov(num_Vs=NUM_Vs).cuda()
+        # model = branch_cov().cuda()
     elif args.model == 'b':
-        # chromafold conv1d all --> conv2d
-        model_name = "branch_cov_2d"
-        model = branch_cov_2d().cuda()
+        # chromafold right arm with only conv1d
+        model_name = "branch_big_cov_" + str(NUM_Vs)
+        model = branch_big_cov(num_Vs=NUM_Vs).cuda()
     elif args.model == 'c':
-        # modified epiphany (without .as_strided())
-        model_name = "epiphany1.1"
-        model = Net2(1, 5, int(args.window_size)).cuda()
+        # branch_pbulk with outer product instead of symmetrize_bulk
+        model_name = "branch_pbulk_prod"  # _" + str(NUM_Vs)
+        model = branch_pbulk_prod().cuda()
     elif args.model == 'd':
         # conv1d right arm ad outer_prod_small right arm
-        model_name = "epiphany_2"
+        model_name = "epiphany_2"  # _" + str(NUM_Vs)
         model = trunk(branch_outer_prod_small().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'e':
         # conv1d right arm ad outer_prod_big right arm
-        model_name = "outer_prod_big"
+        model_name = "outer_prod_big"  # _" + str(NUM_Vs)
         model = trunk(branch_outer_prod_big().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'f':
-        # use a trunk that adds the two predicitons together? idk
-        model_name = "add_trunk"
-        model = add_trunk(branch_outer_prod_small().cuda(), branch_cov().cuda()).cuda()
+        # branch_pbulk
+        model_name = "branch_pbulk"  # _" + str(NUM_Vs)
+        model = branch_pbulk().cuda()
     elif args.model == 'g':
-        model_name = "high_res_prod"
+        model_name = "high_res_prod"  # _" + str(NUM_Vs)
         model = trunk(branch_outer_prod_high_res().cuda(), branch_cov().cuda()).cuda()
     elif args.model == 'h':
-        model_name = "trunk_new_loss"
-        model = trunk_new_loss(branch_outer_prod_small().cuda(), branch_cov().cuda()).cuda()
+        model_name = "big_cov_plus_transformer"
+        model = trunk(branch_transformer().cuda(), branch_big_cov().cuda()).cuda()
     elif args.model == 'i':
-        model_name = "branch_outer_prod_learned"
-        model = trunk_new_loss(branch_outer_prod_learned().cuda(), branch_cov().cuda()).cuda()
+        model_name = "branch_small_pbulk"
+        model = branch_small_pbulk().cuda()
     elif args.model == 'j':
-        model_name = "branch_transformer"
+        model_name = "branch_transformer"  # _" + str(NUM_Vs)
         model = trunk(branch_transformer().cuda(), branch_cov().cuda()).cuda()
     else:
         model_name = "DEFAULT"
