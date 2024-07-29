@@ -137,8 +137,8 @@ def main():
             # y_down_list.append(y_rev)
 
             # labels.append(test_label[100])
-            if i >= eval_length // NUM_Vs:
-                break
+            # if i >= eval_length // NUM_Vs:
+            #     break
             test_label = test_label.squeeze()
             y, y_rev = extract_n_diagonals(test_label, NUM_Vs)
             # y, y_rev = torch.cat(y, dim=0), torch.cat(y_rev, dim=0)
@@ -167,31 +167,31 @@ def main():
             #         y_hat_list.append(np.array(y_hat.cpu().squeeze()))
             #         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
             #         y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
-            if i < eval_length//NUM_Vs:
-                if np.linalg.norm(test_label) < 1e-8:
-                    continue
-                test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
-                with torch.no_grad():
-                    y_hat = model(test_data)#.squeeze()
-                    if NUM_Vs != 1:
-                        y_hat = y_hat[0]
-                    for j in range(NUM_Vs):
-                        y_hat_list.append(np.array(y_hat.cpu().squeeze()))
-                        y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]))
-                        y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]))
-            else:
-                break
-            i += 1
+            # if i < eval_length//NUM_Vs:
+            if np.linalg.norm(test_label) < 1e-8:
+                continue
+            test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
+            with torch.no_grad():
+                y_hat = model(test_data)#.squeeze()
+                if NUM_Vs != 1:
+                    y_hat = y_hat[0]
+                for j in range(NUM_Vs):
+                    y_hat_list.append(np.array(y_hat.cpu().squeeze()))
+                    y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]))
+                    y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]))
+            # else:
+            #     break
+            # i += 1
         if args.wandb:
-            im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))
+            im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)))
             wandb.log({chr + " Evaluation Examples": im})
 
             # for i in range(len(co_signal)):
             #     im = wandb.Image(
             #         plot_cosignal_matrix(co_signal[i]))
             #     wandb.log({f"{i} " + chr + " Co-Signal": im})
-        np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=eval_length), delimiter="\t", fmt="%.6f")
-        np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length),
+        np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=len(labels)), delimiter="\t", fmt="%.6f")
+        np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)),
                    delimiter="\t", fmt="%.6f")
         cwd = os.getcwd()
         # Define paths
