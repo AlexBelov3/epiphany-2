@@ -131,8 +131,8 @@ def main():
                                    mode='test')
         test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
         for i, (test_data, test_label, co_s) in enumerate(test_loader):
-            # if i >= eval_length:
-            #     break
+            if i >= eval_length:
+                break
             # y_up_list.append(y)
             # y_down_list.append(y_rev)
 
@@ -158,30 +158,30 @@ def main():
         model.eval()
         i = 0
         for (test_data, test_label, co_s) in tqdm(test_loader):
-            # if i < eval_length:
-            #     if np.linalg.norm(test_label) < 1e-8:
-            #         continue
-            #     test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
-            #     with torch.no_grad():
-            #         y_hat = model(test_data)
-            #         y_hat_list.append(np.array(y_hat.cpu().squeeze()))
-            #         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
-            #         y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
-            # if i < eval_length//NUM_Vs:
-            if np.linalg.norm(test_label) < 1e-8:
-                continue
-            test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
-            with torch.no_grad():
-                y_hat = model(test_data)#.squeeze()
-                if NUM_Vs != 1:
-                    y_hat = y_hat[0]
-                for j in range(NUM_Vs):
-                    y_hat_list.append(np.array(y_hat.cpu().squeeze()))
-                    y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]))
-                    y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]))
-            # else:
-            #     break
-            # i += 1
+            if i < eval_length:
+                #     if np.linalg.norm(test_label) < 1e-8:
+                #         continue
+                #     test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()  # NEW!!!!
+                #     with torch.no_grad():
+                #         y_hat = model(test_data)
+                #         y_hat_list.append(np.array(y_hat.cpu().squeeze()))
+                #         y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[0][:100]))
+                #         y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[0][100:]))
+                # if i < eval_length//NUM_Vs:
+                if np.linalg.norm(test_label) < 1e-8:
+                    continue
+                test_data, test_label = torch.Tensor(test_data).cuda(), torch.Tensor(test_label).cuda()
+                with torch.no_grad():
+                    y_hat = model(test_data)#.squeeze()
+                    if NUM_Vs != 1:
+                        y_hat = y_hat[0]
+                    for j in range(NUM_Vs):
+                        y_hat_list.append(np.array(y_hat.cpu().squeeze()))
+                        y_hat_L_list.append(torch.tensor(np.array(y_hat.cpu())[j][:100]))
+                        y_hat_R_list.append(torch.tensor(np.array(y_hat.cpu())[j][100:]))
+            else:
+                break
+            i += 1
         if args.wandb:
             im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=eval_length))
             wandb.log({chr + " Evaluation Examples": im})
