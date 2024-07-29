@@ -183,15 +183,15 @@ def main():
             #     break
             # i += 1
         if args.wandb:
-            im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)))
+            im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)-1))
             wandb.log({chr + " Evaluation Examples": im})
 
             # for i in range(len(co_signal)):
             #     im = wandb.Image(
             #         plot_cosignal_matrix(co_signal[i]))
             #     wandb.log({f"{i} " + chr + " Co-Signal": im})
-        np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=len(labels)), delimiter="\t", fmt="%.6f")
-        np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)),
+        np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=len(labels)-1), delimiter="\t", fmt="%.6f")
+        np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)-1),
                    delimiter="\t", fmt="%.6f")
         cwd = os.getcwd()
         # Define paths
