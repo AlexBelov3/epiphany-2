@@ -8,8 +8,8 @@ import argparse
 from utils import *
 import time
 from data_loader_10kb import *
-# from model_10kb import *
-from model_10kb_Vs import *
+from model_10kb import *
+# from model_10kb_Vs import *
 from tqdm import tqdm
 import subprocess
 import os
@@ -58,7 +58,7 @@ def main():
     LAMBDA = float(args.lam)
     TRAIN_SEQ_LENGTH = 200
     TEST_SEQ_LENGTH = 200
-    NUM_Vs = 5
+    NUM_Vs = 1
 
     torch.cuda.set_device(int(args.gpu))
     torch.manual_seed(0)
