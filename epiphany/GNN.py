@@ -139,6 +139,7 @@ for epoch in range(num_epochs):
 
         optimizer.step()
         for name, param in model.named_parameters():
+            print(name)
             if torch.equal(param, initial_params[name]):
                 print(f"Parameter {name} has NOT been updated.")
         total_loss += loss.item()
