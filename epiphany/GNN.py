@@ -9,7 +9,7 @@ from graph_data_loader import GraphDataset
 import wandb
 
 # Initialize Wandb
-wandb.init(project="gnn-hic-prediction")  # Replace 'your_entity' with your Wandb entity name
+wandb.init(project="gnn-hic-prediction", log='all')  # Replace 'your_entity' with your Wandb entity name
 wandb.config = {
     "learning_rate": 0.01,
     "epochs": 2,
@@ -279,71 +279,71 @@ for epoch in range(num_epochs):
     wandb.log({'train_loss': avg_loss})
 
     # Evaluation on test set and visualize results
-    model.eval()
-    all_ground_truth = []
-    all_predictions = []
+    if (epoch + 1) % 10 == 0:
+        # Evaluation on test set and visualize results
+        model.eval()
+        all_ground_truth = []
+        all_predictions = []
 
-    with torch.no_grad():
-        total_test_loss = 0
-        for batch in test_loader:
-            batch = batch.cuda()
-            out = model(batch)
-            edge_weights = model.predict_edge_weights(out, batch.edge_index)
-            loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
-            total_test_loss += loss.item()
+        with torch.no_grad():
+            total_test_loss = 0
+            for batch in test_loader:
+                out = model(batch)
+                edge_weights = model.predict_edge_weights(out, batch.edge_index)
+                loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
+                total_test_loss += loss.item()
 
-            # Collect ground truth and predictions for visualization
-            all_ground_truth.append(batch.edge_attr.squeeze(-1).cpu().numpy())
-            all_predictions.append(edge_weights.cpu().numpy())
-        avg_test_loss = total_test_loss / len(test_loader)
-        print(f'Test Loss: {avg_test_loss}')
-        wandb.log({'test_loss': avg_test_loss})
+                # Collect ground truth and predictions for visualization
+                all_ground_truth.append(batch.edge_attr.squeeze(-1).cpu().numpy())
+                all_predictions.append(edge_weights.cpu().numpy())
 
-    # Convert to numpy arrays for visualization
-    all_ground_truth = np.concatenate(all_ground_truth)
-    all_predictions = np.concatenate(all_predictions)
+        # Convert to numpy arrays for visualization
+        all_ground_truth = np.concatenate(all_ground_truth)
+        all_predictions = np.concatenate(all_predictions)
 
-    # Define num_nodes from test dataset
-    num_nodes = test_dataset[0].x.size(0)
+        # Define num_nodes from test dataset
+        num_nodes = test_dataset[0].x.size(0)
 
-    # Extract the ground truth Hi-C matrix from the test dataset
-    ground_truth_hic_matrix = test_dataset.contact_maps[chroms[0]]  # Assuming single chromosome in test set
+        # Extract the ground truth Hi-C matrix from the test dataset
+        ground_truth_hic_matrix = test_dataset.contact_maps[chroms[0]]  # Assuming single chromosome in test set
 
-    # Initialize an empty contact map for predictions
-    predicted_contact_map = np.zeros_like(ground_truth_hic_matrix)
+        # Initialize an empty contact map for predictions
+        predicted_contact_map = np.zeros_like(ground_truth_hic_matrix)
 
-    # Fill the contact map with predicted edge weights
-    edge_index = test_dataset[0].edge_index.numpy()
-    predicted_values = all_predictions
+        # Fill the contact map with predicted edge weights
+        edge_index = test_dataset[0].edge_index.numpy()
+        predicted_values = all_predictions
 
-    for idx in range(edge_index.shape[1]):
-        i, j = edge_index[:, idx]
-        if i < j:
-            predicted_contact_map[i, j - i] = predicted_values[idx]
-        elif i > j:
-            predicted_contact_map[i, i - j] = predicted_values[idx]
-        else:  # i == j
-            predicted_contact_map[i, 0] = predicted_values[idx]
+        for idx in range(edge_index.shape[1]):
+            i, j = edge_index[:, idx]
+            if i < j:
+                predicted_contact_map[i, j - i] = predicted_values[idx]
+            elif i > j:
+                predicted_contact_map[i, i - j] = predicted_values[idx]
+            else:  # i == j
+                predicted_contact_map[i, 0] = predicted_values[idx]
 
-    # Plot the last 400 genomic positions
-    n = 400
-    plt.figure(figsize=(14, 6))
+        # Plot the last 400 genomic positions
+        n = 400
 
-    plt.subplot(1, 2, 1)
-    plt.title("Ground Truth Hi-C Contact Map")
-    plt.imshow(ground_truth_hic_matrix[:n, :].T, cmap='RdYlBu_r', aspect='auto', origin='lower')
-    plt.colorbar()
-    plt.xlabel("Genomic Position")
-    plt.ylabel("Distance to Adjacent Nodes")
+        plt.figure(figsize=(14, 6))
+        plt.subplot(1, 2, 1)
+        plt.title("Ground Truth Hi-C Contact Map")
+        plt.imshow(ground_truth_hic_matrix[:n, :].T, cmap='RdYlBu_r', aspect='auto', origin='lower')
+        plt.colorbar()
+        plt.xlabel("Genomic Position")
+        plt.ylabel("Distance to Adjacent Nodes")
 
-    plt.subplot(1, 2, 2)
-    plt.title("Predicted Hi-C Contact Map")
-    plt.imshow(predicted_contact_map[:n, :].T, cmap='RdYlBu_r', aspect='auto', origin='lower')
-    plt.colorbar()
-    plt.xlabel("Genomic Position")
-    plt.ylabel("Distance to Adjacent Nodes")
+        plt.subplot(1, 2, 2)
+        plt.title("Predicted Hi-C Contact Map")
+        plt.imshow(predicted_contact_map[:n, :].T, cmap='RdYlBu_r', aspect='auto', origin='lower')
+        plt.colorbar()
+        plt.xlabel("Genomic Position")
+        plt.ylabel("Distance to Adjacent Nodes")
 
-    plt.tight_layout()
-    plt.savefig(f'epoch_{epoch+1}_hic_map.png')
-    wandb.log({f"Ground_Truth_HiC_Map_Epoch_{epoch+1}": wandb.Image(f'epoch_{epoch+1}_hic_map.png')})
-    wandb.log({f"Predicted_HiC_Map_Epoch_{epoch+1}": wandb.Image(f'epoch_{epoch+1}_hic_map.png')})
+        plt.tight_layout()
+        plt.savefig(f'epoch_{epoch + 1}_hic_maps.png')
+        plt.close()
+
+        # Log images to Wandb
+        wandb.log({"Validation Examples": wandb.Image(f'epoch_{epoch + 1}_hic_maps.png')})
