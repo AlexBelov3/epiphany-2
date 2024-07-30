@@ -8,6 +8,7 @@ import numpy as np
 from graph_data_loader import GraphDataset
 import wandb
 
+wandb.init(project='gnn-hic-prediction')
 class EdgeWeightMPNN(MessagePassing):
     def __init__(self, track_channels, track_length, hidden_dim, edge_dim):
         super(EdgeWeightMPNN, self).__init__(aggr='add')
