@@ -76,12 +76,19 @@ class EdgeWeightMPNN(MessagePassing):
         update_input = torch.cat([x, aggr_out], dim=-1)
         return self.update_mlp(update_input)
 
+    # def predict_edge_weights(self, x, edge_index):
+    #     print("PREDICT_EDGE_WEIGHTS")
+    #     row, col = edge_index
+    #     edge_embeddings = torch.cat([x[row], x[col]], dim=-1)
+    #     edge_weights = self.edge_predictor(edge_embeddings)
+    #     return torch.relu(edge_weights.squeeze(-1))  # Ensure the output is non-negative
+
     def predict_edge_weights(self, x, edge_index):
         print("PREDICT_EDGE_WEIGHTS")
         row, col = edge_index
         edge_embeddings = torch.cat([x[row], x[col]], dim=-1)
         edge_weights = self.edge_predictor(edge_embeddings)
-        return torch.relu(edge_weights.squeeze(-1))  # Ensure the output is non-negative
+        return edge_weights.squeeze(-1)
 
 # Parameters for the dataset
 window_size = 10000
