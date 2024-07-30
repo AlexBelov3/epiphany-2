@@ -9,48 +9,178 @@ from graph_data_loader import GraphDataset
 import wandb
 
 # Initialize Wandb
-wandb.init()
-wandb.watch(model, log='all')
+wandb.init(project="gnn-hic-prediction", entity="your_entity")  # Replace 'your_entity' with your Wandb entity name
+wandb.config = {
+    "learning_rate": 0.01,
+    "epochs": 2,
+    "batch_size": 2,
+    "window_size": 10000
+}
 
 class EdgeWeightMPNN(MessagePassing):
     def __init__(self, track_channels, track_length, hidden_dim, edge_dim):
         super(EdgeWeightMPNN, self).__init__(aggr='add')
         self.track_length = track_length
         self.hidden_dim = hidden_dim
-        self.conv = nn.Sequential(
-            nn.Conv1d(in_channels=track_channels, out_channels=16, kernel_size=11, padding="same"),
+        self.conv = nn.Conv1d(in_channels=track_channels, out_channels=hidden_dim, kernel_size=3, padding=1)
+        self.bulk_extractor_2d = nn.Sequential(
+            nn.Conv1d(
+                in_channels=5,
+                out_channels=16,
+                kernel_size=11,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(in_channels=16, out_channels=32, kernel_size=7, padding="same"),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=32,
+                kernel_size=7,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
             nn.BatchNorm1d(32),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding="same"),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
             nn.BatchNorm1d(32),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding="same"),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
             nn.BatchNorm1d(32),
             nn.ReLU(),
-            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding="same"),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
             nn.BatchNorm1d(32),
             nn.ReLU(),
-            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding="same"),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=2,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=3,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=5,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=5,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=7,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=11,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=11,
+                padding="same",
+            ),
             nn.BatchNorm1d(32),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=5),
-            nn.Conv1d(in_channels=32, out_channels=16, kernel_size=3, padding="same"),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=5),
-            nn.Conv1d(in_channels=16, out_channels=16, kernel_size=3, padding="same"),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
-            nn.Conv1d(in_channels=16, out_channels=16, kernel_size=3, padding="same"),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
             nn.BatchNorm1d(16),
             nn.ReLU()
         )
+
         self.linear = nn.Linear(800 + 1, hidden_dim)  # 800 from conv output + 1 for positional encoding
         self.message_mlp = nn.Sequential(
             nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
@@ -72,14 +202,18 @@ class EdgeWeightMPNN(MessagePassing):
         tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)  # 5 tracks of length 1000
         pos_enc = data.x[:, -1].unsqueeze(-1)  # Positional encoding
         # Apply 1D convolution
-        conv_out = torch.relu(self.conv(tracks))  # Shape: [batch_size, hidden_dim, track_length]
+        conv_out = torch.relu(self.bulk_extractor_2d(tracks))  # Shape: [batch_size, hidden_dim, track_length]
+        print(f"After bulk_extractor_2d: {conv_out.shape}")
         conv_out = conv_out.view(conv_out.size(0), -1)  # Flatten to [batch_size, hidden_dim * track_length]
+        print(f"After view: {conv_out.shape}")
 
         # Concatenate positional encoding
         node_features = torch.cat([conv_out, pos_enc], dim=1)  # Shape: [batch_size, hidden_dim * track_length + 1]
+        print(f"After concat: {node_features.shape}")
 
         # Linear layer
         node_features = torch.relu(self.linear(node_features))  # Shape: [batch_size, hidden_dim]
+        print(f"After linear: {node_features.shape}")
 
         # Propagate messages
         out = self.propagate(edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
@@ -132,6 +266,7 @@ for epoch in range(num_epochs):
     model.train()
     total_loss = 0
     for batch in train_loader:
+        batch = batch.cuda()
         optimizer.zero_grad()
         out = model(batch)
         edge_weights = model.predict_edge_weights(out, batch.edge_index)
@@ -139,7 +274,9 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
         total_loss += loss.item()
-    print(f'Epoch {epoch + 1}, Loss: {total_loss / len(train_loader)}')
+    avg_loss = total_loss / len(train_loader)
+    print(f'Epoch {epoch + 1}, Loss: {avg_loss}')
+    wandb.log({'train_loss': avg_loss})
 
     # Evaluation on test set and visualize results
     model.eval()
@@ -149,6 +286,7 @@ for epoch in range(num_epochs):
     with torch.no_grad():
         total_test_loss = 0
         for batch in test_loader:
+            batch = batch.cuda()
             out = model(batch)
             edge_weights = model.predict_edge_weights(out, batch.edge_index)
             loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
@@ -157,7 +295,9 @@ for epoch in range(num_epochs):
             # Collect ground truth and predictions for visualization
             all_ground_truth.append(batch.edge_attr.squeeze(-1).cpu().numpy())
             all_predictions.append(edge_weights.cpu().numpy())
-        print(f'Test Loss: {total_test_loss / len(test_loader)}')
+        avg_test_loss = total_test_loss / len(test_loader)
+        print(f'Test Loss: {avg_test_loss}')
+        wandb.log({'test_loss': avg_test_loss})
 
     # Convert to numpy arrays for visualization
     all_ground_truth = np.concatenate(all_ground_truth)
@@ -204,22 +344,6 @@ for epoch in range(num_epochs):
     plt.ylabel("Distance to Adjacent Nodes")
 
     plt.tight_layout()
-
-    # Log the images to Wandb
-    wandb.log({"Ground Truth Hi-C Contact Map": wandb.Image(plt.gcf())})
-    plt.close()
-
-    plt.figure(figsize=(14, 6))
-
-    plt.subplot(1, 2, 1)
-    plt.title("Predicted Hi-C Contact Map")
-    plt.imshow(predicted_contact_map[:n, :].T, cmap='RdYlBu_r', aspect='auto', origin='lower')
-    plt.colorbar()
-    plt.xlabel("Genomic Position")
-    plt.ylabel("Distance to Adjacent Nodes")
-
-    plt.tight_layout()
-
-    # Log the images to Wandb
-    wandb.log({"Predicted Hi-C Contact Map": wandb.Image(plt.gcf())})
-    plt.close()
+    plt.savefig(f'epoch_{epoch+1}_hic_map.png')
+    wandb.log({f"Ground_Truth_HiC_Map_Epoch_{epoch+1}": wandb.Image(f'epoch_{epoch+1}_hic_map.png')})
+    wandb.log({f"Predicted_HiC_Map_Epoch_{epoch+1}": wandb.Image(f'epoch_{epoch+1}_hic_map.png')})
