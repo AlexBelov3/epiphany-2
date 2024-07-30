@@ -16,23 +16,41 @@ class EdgeWeightMPNN(MessagePassing):
         self.track_length = track_length
         self.hidden_dim = hidden_dim
         self.conv = nn.Sequential(
-            nn.Conv1d(in_channels=track_channels, out_channels=16, kernel_size=11, stride=1, dilation=1, padding="same"),
+            nn.Conv1d(in_channels=track_channels, out_channels=16, kernel_size=11, padding='same'),
             nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(in_channels=16, out_channels=32, kernel_size=7, stride=1, dilation=1, padding="same"),
+            nn.Conv1d(in_channels=16, out_channels=32, kernel_size=7, padding='same'),
             nn.BatchNorm1d(32),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, stride=1, dilation=1, padding="same"),
+            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
             nn.BatchNorm1d(32),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, stride=1, dilation=1, padding="same"),
+            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
             nn.BatchNorm1d(32),
-            nn.ReLU()
+            nn.ReLU(),
+            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(in_channels=32, out_channels=16, kernel_size=3, padding='same'),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.Conv1d(in_channels=16, out_channels=16, kernel_size=3, padding='same'),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
         )
-        self.linear = nn.Linear(32 * (track_length // 8) + 1, hidden_dim)  # Adjusted for multiple convolutions and poolings
+        self.linear = nn.Linear(16 * (track_length // 8) + 1, hidden_dim)  # Adjusted for max pooling
         self.message_mlp = nn.Sequential(
             nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
             nn.ReLU(),
@@ -48,6 +66,7 @@ class EdgeWeightMPNN(MessagePassing):
         self.edge_predictor = nn.Linear(hidden_dim * 2, 1)  # Concatenation of row and col features
 
     def forward(self, data):
+        print("FORWARD")
         # Split x into tracks and positional encoding
         tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)  # 5 tracks of length 1000
         pos_enc = data.x[:, -1].unsqueeze(-1)  # Positional encoding
@@ -55,37 +74,34 @@ class EdgeWeightMPNN(MessagePassing):
         # Apply 1D convolution
         conv_out = torch.relu(self.conv(tracks))  # Shape: [batch_size, hidden_dim, track_length]
         conv_out = conv_out.view(conv_out.size(0), -1)  # Flatten to [batch_size, hidden_dim * track_length]
+        print(f"After conv: {conv_out.shape}")
 
         # Concatenate positional encoding
         node_features = torch.cat([conv_out, pos_enc], dim=1)  # Shape: [batch_size, hidden_dim * track_length + 1]
+        print(f"After concat: {node_features.shape}")
 
         # Linear layer
         node_features = torch.relu(self.linear(node_features))  # Shape: [batch_size, hidden_dim]
+        print(f"After linear: {node_features.shape}")
 
         # Propagate messages
         edge_index = data.edge_index
         row, col = edge_index
-
-        # Message passing
         out = self.message(node_features[row], node_features[col], data.edge_attr)
-
-        # Aggregation
         aggr_out = self.aggregate(out, row)  # Use the row indices for aggregation
-
-        # Update
         out = self.update(aggr_out, node_features)
-
-        # Edge weight prediction
         edge_embeddings = torch.cat([out[row], out[col]], dim=-1)
         edge_weights = self.edge_predictor(edge_embeddings)
-
         return edge_weights.squeeze(-1)  # Ensure the output is of shape [num_edges]
 
     def message(self, x_i, x_j, edge_attr):
+        print("MESSAGE")
+        edge_attr = edge_attr.unsqueeze(-1)  # Ensure edge_attr has the same number of dimensions
         msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
         return self.message_mlp(msg_input)
 
     def update(self, aggr_out, x):
+        print("UPDATE")
         update_input = torch.cat([x, aggr_out], dim=-1)  # Concatenate x and aggr_out
         return self.update_mlp(update_input)
 
