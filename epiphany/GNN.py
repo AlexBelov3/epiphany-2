@@ -8,8 +8,6 @@ import numpy as np
 from graph_data_loader import GraphDataset
 import wandb
 
-wandb.init(project="gnn-hic-prediction")
-
 class EdgeWeightMPNN(MessagePassing):
     def __init__(self, track_channels, track_length, hidden_dim, edge_dim):
         super(EdgeWeightMPNN, self).__init__(aggr='add')
@@ -90,6 +88,8 @@ class EdgeWeightMPNN(MessagePassing):
         out = self.message(node_features[row], node_features[col], data.edge_attr)
         aggr_out = self.aggregate(out, row)  # Use the row indices for aggregation
         out = self.update(aggr_out, node_features)
+
+        # Edge weight prediction
         edge_embeddings = torch.cat([out[row], out[col]], dim=-1)
         edge_weights = self.edge_predictor(edge_embeddings)
         return edge_weights.squeeze(-1)  # Ensure the output is of shape [num_edges]
@@ -104,6 +104,7 @@ class EdgeWeightMPNN(MessagePassing):
         print("UPDATE")
         update_input = torch.cat([x, aggr_out], dim=-1)  # Concatenate x and aggr_out
         return self.update_mlp(update_input)
+
 
 # Parameters for the dataset
 window_size = 10000
@@ -141,8 +142,7 @@ for epoch in range(num_epochs):
         batch = batch.to(device)
         optimizer.zero_grad()
         out = model(batch)
-        edge_weights = model.predict_edge_weights(out, batch.edge_index)
-        loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
+        loss = loss_fn(out, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
         loss.backward()
         optimizer.step()
         total_loss += loss.item()
@@ -160,13 +160,12 @@ with torch.no_grad():
     for batch in test_loader:
         batch = batch.to(device)
         out = model(batch)
-        edge_weights = model.predict_edge_weights(out, batch.edge_index)
-        loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
+        loss = loss_fn(out, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
         total_test_loss += loss.item()
 
         # Collect ground truth and predictions for visualization
         all_ground_truth.append(batch.edge_attr.squeeze(-1).cpu().numpy())
-        all_predictions.append(edge_weights.cpu().numpy())
+        all_predictions.append(out.cpu().numpy())
     print(f'Test Loss: {total_test_loss / len(test_loader)}')
 
 # Convert to numpy arrays for visualization
