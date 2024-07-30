@@ -115,7 +115,7 @@ test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 # Model, loss function, optimizer
 track_channels = 5  # Number of tracks
 track_length = window_size  # Length of each track
-hidden_dim = 128*8  # Dimension of hidden layers
+hidden_dim = 128*4  # Dimension of hidden layers
 
 model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1).cuda()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
