@@ -257,7 +257,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 
 # Training loop
-num_epochs = 2
+num_epochs = 100
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0
