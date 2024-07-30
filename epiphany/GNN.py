@@ -8,15 +8,6 @@ from torch_geometric.nn import MessagePassing
 import numpy as np
 from graph_data_loader import GraphDataset
 
-# Parse arguments
-parser = argparse.ArgumentParser()
-parser.add_argument('--gpu', type=int, default=0, help='GPU device number')
-args = parser.parse_args()
-
-# Set the GPU device and seed for reproducibility
-torch.cuda.set_device(int(args.gpu))
-torch.manual_seed(0)
-
 class EdgeWeightMPNN(MessagePassing):
     def __init__(self, track_channels, track_length, hidden_dim, edge_dim):
         super(EdgeWeightMPNN, self).__init__(aggr='add')
@@ -40,18 +31,24 @@ class EdgeWeightMPNN(MessagePassing):
 
     def forward(self, data):
         print("FORWARD")
-        # Split x into tracks and positional encoding
-        tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)  # 5 tracks of length 1000
-        pos_enc = data.x[:, -1].unsqueeze(-1)  # Positional encoding
-        # Apply 1D convolution
-        conv_out = torch.relu(self.conv(tracks))  # Shape: [batch_size, hidden_dim, track_length]
-        conv_out = conv_out.view(conv_out.size(0), -1)  # Flatten to [batch_size, hidden_dim * track_length]
+        # Process each node individually
+        node_features_list = []
+        for node_idx in range(data.x.size(0)):
+            tracks = data.x[node_idx, :-1].reshape(1, 5, self.track_length)  # 5 tracks of length 1000
+            pos_enc = data.x[node_idx, -1].unsqueeze(0).unsqueeze(0)  # Positional encoding
 
-        # Concatenate positional encoding
-        node_features = torch.cat([conv_out, pos_enc], dim=1)  # Shape: [batch_size, hidden_dim * track_length + 1]
+            # Apply 1D convolution
+            conv_out = torch.relu(self.conv(tracks))  # Shape: [1, hidden_dim, track_length]
+            conv_out = conv_out.view(1, -1)  # Flatten to [1, hidden_dim * track_length]
 
-        # Linear layer
-        node_features = torch.relu(self.linear(node_features))  # Shape: [batch_size, hidden_dim]
+            # Concatenate positional encoding
+            node_features = torch.cat([conv_out, pos_enc], dim=1)  # Shape: [1, hidden_dim * track_length + 1]
+
+            # Linear layer
+            node_features = torch.relu(self.linear(node_features))  # Shape: [1, hidden_dim]
+            node_features_list.append(node_features)
+
+        node_features = torch.cat(node_features_list, dim=0)  # Shape: [num_nodes, hidden_dim]
 
         # Propagate messages
         out = self.propagate(edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
@@ -76,16 +73,16 @@ class EdgeWeightMPNN(MessagePassing):
         return edge_weights.squeeze(-1)  # Ensure the output is of shape [num_edges]
 
 # Parameters for the dataset
-window_size = 10000
+window_size = 1000
 chroms = ['chr17']
-save_dir = '/data/leslie/belova1//Epiphany_dataset'
+save_dir = 'Epiphany_dataset'
 
 # Create instances of the custom dataset
 train_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=save_dir)
 test_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=save_dir)
 
 # Create DataLoader
-train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)  # Reduce batch size
+train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 # Model, loss function, optimizer
@@ -93,9 +90,13 @@ track_channels = 5  # Number of tracks
 track_length = window_size  # Length of each track
 hidden_dim = 128  # Dimension of hidden layers
 
-model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1).cuda()
+model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1)
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 loss_fn = nn.MSELoss()
+
+# Move model to GPU
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+model = model.to(device)
 
 # Training loop
 num_epochs = 2
@@ -103,8 +104,8 @@ for epoch in range(num_epochs):
     model.train()
     total_loss = 0
     for batch in train_loader:
-        batch = batch.to('cuda')
         optimizer.zero_grad()
+        batch = batch.to(device)  # Move batch to GPU
         out = model(batch)
         edge_weights = model.predict_edge_weights(out, batch.edge_index)
         loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
@@ -121,7 +122,7 @@ all_predictions = []
 with torch.no_grad():
     total_test_loss = 0
     for batch in test_loader:
-        batch = batch.to('cuda')
+        batch = batch.to(device)  # Move batch to GPU
         out = model(batch)
         edge_weights = model.predict_edge_weights(out, batch.edge_index)
         loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
