@@ -129,11 +129,9 @@ args = parser.parse_args()
 
 torch.cuda.set_device(args.gpu)
 torch.manual_seed(0)
-
-if args.wandb:
-    import wandb
-    wandb.init()
-    wandb.watch(model, log='all')  # Watch the EdgeWeightMPNN model we instantiate
+import wandb
+wandb.init()
+wandb.watch(model)  # Watch the EdgeWeightMPNN model we instantiate
 
 # Training loop
 num_epochs = 2
