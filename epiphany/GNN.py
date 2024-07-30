@@ -65,13 +65,12 @@ class EdgeWeightMPNN(MessagePassing):
         # Propagate messages
         edge_index = data.edge_index
         row, col = edge_index
-        edge_attr = data.edge_attr.unsqueeze(-1)
 
         # Message passing
-        out = self.message(node_features[row], node_features[col], edge_attr)
+        out = self.message(node_features[row], node_features[col], data.edge_attr)
 
         # Aggregation
-        aggr_out = self.aggregate(out, edge_index)
+        aggr_out = self.aggregate(out, row)  # Use the row indices for aggregation
 
         # Update
         out = self.update(aggr_out, node_features)
