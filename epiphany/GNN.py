@@ -78,14 +78,14 @@ class EdgeWeightMPNN(MessagePassing):
 # Parameters for the dataset
 window_size = 14000
 chroms = ['chr17']
-save_dir = '/data/leslie/belova1/Epiphany_dataset'
+save_dir = 'Epiphany_dataset'
 
 # Create instances of the custom dataset
 train_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=save_dir)
 test_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=save_dir)
 
 # Create DataLoader
-train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
+train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)  # Reduce batch size
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 # Model, loss function, optimizer
