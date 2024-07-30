@@ -76,7 +76,7 @@ class EdgeWeightMPNN(MessagePassing):
         return edge_weights.squeeze(-1)  # Ensure the output is of shape [num_edges]
 
 # Parameters for the dataset
-window_size = 1000
+window_size = 14000
 chroms = ['chr17']
 save_dir = '/data/leslie/belova1/Epiphany_dataset'
 
