@@ -14,8 +14,7 @@ class EdgeWeightMPNN(MessagePassing):
         super(EdgeWeightMPNN, self).__init__(aggr='add')
         self.track_length = track_length
         self.hidden_dim = hidden_dim
-
-        # Replace self.conv with the new sequential layer
+        self.conv = nn.Conv1d(in_channels=track_channels, out_channels=hidden_dim, kernel_size=3, padding=1)
         self.bulk_extractor_2d = nn.Sequential(
             nn.Conv1d(
                 in_channels=5,
@@ -50,6 +49,16 @@ class EdgeWeightMPNN(MessagePassing):
             nn.BatchNorm1d(32),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
             nn.Conv1d(
                 in_channels=32,
                 out_channels=32,
@@ -161,11 +170,10 @@ class EdgeWeightMPNN(MessagePassing):
                 padding="same",
             ),
             nn.BatchNorm1d(16),
-            nn.ReLU(),
-            # outer_prod(),
+            nn.ReLU()
         )
 
-        self.linear = nn.Linear(hidden_dim * track_length + 1, hidden_dim)  # +1 for positional encoding
+        self.linear = nn.Linear(800 + 1, hidden_dim)  # 800 from conv output + 1 for positional encoding
         self.message_mlp = nn.Sequential(
             nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
             nn.ReLU(),
@@ -179,6 +187,7 @@ class EdgeWeightMPNN(MessagePassing):
             nn.Linear(hidden_dim, hidden_dim)
         )
         self.edge_predictor = nn.Linear(hidden_dim * 2, 1)  # Concatenation of row and col features
+
 
     def forward(self, data):
         print("FORWARD")
