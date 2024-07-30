@@ -231,7 +231,7 @@ class EdgeWeightMPNN(MessagePassing):
 
 
 # Parameters for the dataset
-window_size = 24000  # Set window size to 10,000
+window_size = 10000  # Set window size to 10,000
 chroms = ['chr17']
 save_dir = '/data/leslie/belova1/Epiphany_dataset'
 
