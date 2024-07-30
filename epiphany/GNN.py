@@ -106,7 +106,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.01)
 loss_fn = nn.MSELoss()
 
 # Training loop
-num_epochs = 2
+num_epochs = 100
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0
@@ -184,5 +184,4 @@ for epoch in range(num_epochs):
     plt.tight_layout()
     plt.savefig(f'epoch_{epoch+1}_hic_map.png')
     wandb.log({f"Ground_Truth_HiC_Map_Epoch_{epoch+1}": wandb.Image(f'epoch_{epoch+1}_hic_map.png')})
-    wandb.log({f"Predicted_HiC_Map_Epoch_{epoch+1}": wandb.Image(f'epoch_{epoch+1}_hic_map.png')})
     plt.close()  # Close the figure to free memory
