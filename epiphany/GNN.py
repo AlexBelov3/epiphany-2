@@ -1,241 +1,97 @@
 import matplotlib.pyplot as plt
-# import torch
-# import torch.nn as nn
-# import torch.optim as optim
-# from torch_geometric.loader import DataLoader
-# from torch_geometric.nn import MessagePassing
-# import numpy as np
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch_geometric.loader import DataLoader
+from torch_geometric.nn import MessagePassing
+import numpy as np
 from graph_data_loader import GraphDataset
 import wandb
 wandb.init(project='gnn-hic-prediction')
-#
-# class EdgeWeightMPNN(MessagePassing):
-#     def __init__(self, track_channels, track_length, hidden_dim, edge_dim):
-#         super(EdgeWeightMPNN, self).__init__(aggr='add')
-#         self.track_length = track_length
-#         self.hidden_dim = hidden_dim
-#         self.conv = nn.Sequential(
-#             nn.Conv1d(in_channels=track_channels, out_channels=16, kernel_size=11, padding='same'),
-#             nn.BatchNorm1d(16),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(in_channels=16, out_channels=32, kernel_size=7, padding='same'),
-#             nn.BatchNorm1d(32),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
-#             nn.BatchNorm1d(32),
-#             nn.ReLU(),
-#             nn.MaxPool1d(kernel_size=2),
-#             nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
-#             nn.BatchNorm1d(32),
-#             nn.ReLU(),
-#             nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
-#             nn.BatchNorm1d(32),
-#             nn.ReLU(),
-#             nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
-#             nn.BatchNorm1d(32),
-#             nn.ReLU(),
-#             nn.Conv1d(in_channels=32, out_channels=16, kernel_size=3, padding='same'),
-#             nn.BatchNorm1d(16),
-#             nn.ReLU(),
-#             nn.Conv1d(in_channels=16, out_channels=16, kernel_size=3, padding='same'),
-#             nn.BatchNorm1d(16),
-#             nn.ReLU(),
-#         )
-#         self.linear = nn.Linear(16 * (track_length // 8) + 1, hidden_dim)
-#         self.message_mlp = nn.Sequential(
-#             nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
-#             nn.ReLU(),
-#             nn.Linear(hidden_dim, hidden_dim),
-#             nn.ReLU(),
-#             nn.Linear(hidden_dim, hidden_dim)
-#         )
-#         self.update_mlp = nn.Sequential(
-#             nn.Linear(hidden_dim + hidden_dim, hidden_dim),
-#             nn.ReLU(),
-#             nn.Linear(hidden_dim, hidden_dim)
-#         )
-#         self.edge_predictor = nn.Linear(hidden_dim * 2, 1)
-#
-#     def forward(self, data):
-#         print("FORWARD")
-#         tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)
-#         pos_enc = data.x[:, -1].unsqueeze(-1)
-#
-#         conv_out = torch.relu(self.conv(tracks))
-#         conv_out = conv_out.view(conv_out.size(0), -1)
-#         print(f"After conv: {conv_out.shape}")
-#
-#         node_features = torch.cat([conv_out, pos_enc], dim=1)
-#         print(f"After concat: {node_features.shape}")
-#
-#         node_features = torch.relu(self.linear(node_features))
-#         print(f"After linear: {node_features.shape}")
-#
-#         out = self.propagate(edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
-#         return out
-#
-#     def message(self, x_i, x_j, edge_attr):
-#         print("MESSAGE")
-#         edge_attr = edge_attr.unsqueeze(-1)
-#         msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
-#         return self.message_mlp(msg_input)
-#
-#     def update(self, aggr_out, x):
-#         print("UPDATE")
-#         update_input = torch.cat([x, aggr_out], dim=-1)
-#         return self.update_mlp(update_input)
-#
-#     def predict_edge_weights(self, x, edge_index):
-#         row, col = edge_index
-#         edge_embeddings = torch.cat([x[row], x[col]], dim=-1)
-#         edge_weights = self.edge_predictor(edge_embeddings)
-#         return edge_weights.squeeze(-1)
-#
-# # Parameters for the dataset
-# window_size = 10000
-# chroms = ['chr17']
-# save_dir = '/data/leslie/belova1/Epiphany_dataset'
-#
-# # Create instances of the custom dataset
-# train_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=save_dir)
-# test_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=save_dir)
-#
-# # Create DataLoader
-# train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
-# test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
-#
-# # Model, loss function, optimizer
-# track_channels = 5
-# track_length = window_size
-# hidden_dim = 128
-#
-# model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1)
-# optimizer = optim.Adam(model.parameters(), lr=0.01)
-# loss_fn = nn.MSELoss()
-#
-# # Move model to GPU
-# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-# model = model.to(device)
-# torch.manual_seed(0)
-#
-# # Training loop
-# num_epochs = 2
-# for epoch in range(num_epochs):
-#     model.train()
-#     total_loss = 0
-#     for batch in train_loader:
-#         batch = batch.to(device)
-#         optimizer.zero_grad()
-#         out = model(batch)
-#         edge_weights = model.predict_edge_weights(out, batch.edge_index)
-#         loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
-#         initial_params = {name: param.clone() for name, param in model.named_parameters()}
-#         loss.backward()
-#         for name, param in model.named_parameters():
-#             if param.grad is None:
-#                 print(f"No gradients for {name}")
-#
-#         optimizer.step()
-#         for name, param in model.named_parameters():
-#             if torch.equal(param, initial_params[name]):
-#                 print(f"Parameter {name} has NOT been updated.")
-#         total_loss += loss.item()
-#     print(f'Epoch {epoch + 1}, Loss: {total_loss / len(train_loader)}')
-#     wandb.log({'loss': total_loss / len(train_loader)})
-#
-# # Evaluation on test set and visualize results
-# model.eval()
-# all_ground_truth = []
-# all_predictions = []
-#
-# with torch.no_grad():
-#     total_test_loss = 0
-#     for batch in test_loader:
-#         batch = batch.to(device)
-#         out = model(batch)
-#         edge_weights = model.predict_edge_weights(out, batch.edge_index)
-#         loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
-#         total_test_loss += loss.item()
-#
-#         all_ground_truth.append(batch.edge_attr.squeeze(-1).cpu().numpy())
-#         all_predictions.append(edge_weights.cpu().numpy())
-#     print(f'Test Loss: {total_test_loss / len(test_loader)}')
-#
-# # Convert to numpy arrays for visualization
-# all_ground_truth = np.concatenate(all_ground_truth)
-# all_predictions = np.concatenate(all_predictions)
-#
-# num_nodes = test_dataset[0].x.size(0)
-# ground_truth_hic_matrix = test_dataset.contact_maps[chroms[0]]
-#
-# predicted_contact_map = np.zeros_like(ground_truth_hic_matrix)
-#
-# edge_index = test_dataset[0].edge_index.numpy()
-# predicted_values = all_predictions
-#
-# for idx in range(edge_index.shape[1]):
-#     i, j = edge_index[:, idx]
-#     if i < j:
-#         predicted_contact_map[i, j - i] = predicted_values[idx]
-#     elif i > j:
-#         predicted_contact_map[i, i - j] = predicted_values[idx]
-#     else:
-#         predicted_contact_map[i, 0] = predicted_values[idx]
-#
-# # Plot the last 400 genomic positions
-# n = 400
-# plt.figure(figsize=(14, 6))
-#
-# plt.subplot(1, 2, 1)
-# plt.title("Ground Truth Hi-C Contact Map")
-# plt.imshow(ground_truth_hic_matrix[:n, :].T, cmap='RdYlBu_r', aspect='auto', origin='lower')
-# plt.colorbar()
-# plt.xlabel("Genomic Position")
-# plt.ylabel("Distance to Adjacent Nodes")
-#
-# plt.subplot(1, 2, 2)
-# plt.title("Predicted Hi-C Contact Map")
-# plt.imshow(predicted_contact_map[:n, :].T, cmap='RdYlBu_r', aspect='auto', origin='lower')
-# plt.colorbar()
-# plt.xlabel("Genomic Position")
-# plt.ylabel("Distance to Adjacent Nodes")
-#
-# plt.tight_layout()
-# plt.show()
-#
-# im = wandb.Image(plt)
-# wandb.log({"Predicted Hi-C Contact Map": im})
-# plt.close()
-import torch
-import torch.nn.functional as F
-from torch_geometric.nn import GCNConv
-from torch_geometric.loader import DataLoader
-from torch_geometric.data import Data
-import numpy as np
 
-class GCN(torch.nn.Module):
-    def __init__(self, track_channels, hidden_dim, num_classes):
-        super(GCN, self).__init__()
-        self.conv1 = GCNConv(track_channels, hidden_dim)
-        self.conv2 = GCNConv(hidden_dim, hidden_dim)
-        self.linear = torch.nn.Linear(hidden_dim, num_classes)
+class EdgeWeightMPNN(MessagePassing):
+    def __init__(self, track_channels, track_length, hidden_dim, edge_dim):
+        super(EdgeWeightMPNN, self).__init__(aggr='add')
+        self.track_length = track_length
+        self.hidden_dim = hidden_dim
+        self.conv = nn.Sequential(
+            nn.Conv1d(in_channels=track_channels, out_channels=16, kernel_size=11, padding='same'),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(in_channels=16, out_channels=32, kernel_size=7, padding='same'),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(in_channels=32, out_channels=16, kernel_size=3, padding='same'),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.Conv1d(in_channels=16, out_channels=16, kernel_size=3, padding='same'),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+        )
+        self.linear = nn.Linear(16 * (track_length // 8) + 1, hidden_dim)
+        self.message_mlp = nn.Sequential(
+            nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim)
+        )
+        self.update_mlp = nn.Sequential(
+            nn.Linear(hidden_dim + hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim)
+        )
+        self.edge_predictor = nn.Linear(hidden_dim * 2, 1)
 
     def forward(self, data):
-        x, edge_index = data.x, data.edge_index
-        x = self.conv1(x, edge_index)
-        x = F.relu(x)
-        x = self.conv2(x, edge_index)
-        x = F.relu(x)
-        x = self.linear(x)
-        return x
+        print("FORWARD")
+        tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)
+        pos_enc = data.x[:, -1].unsqueeze(-1)
+
+        conv_out = torch.relu(self.conv(tracks))
+        conv_out = conv_out.view(conv_out.size(0), -1)
+        print(f"After conv: {conv_out.shape}")
+
+        node_features = torch.cat([conv_out, pos_enc], dim=1)
+        print(f"After concat: {node_features.shape}")
+
+        node_features = torch.relu(self.linear(node_features))
+        print(f"After linear: {node_features.shape}")
+
+        out = self.propagate(edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
+        return out
+
+    def message(self, x_i, x_j, edge_attr):
+        print("MESSAGE")
+        edge_attr = edge_attr.unsqueeze(-1)
+        msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
+        return self.message_mlp(msg_input)
+
+    def update(self, aggr_out, x):
+        print("UPDATE")
+        update_input = torch.cat([x, aggr_out], dim=-1)
+        return self.update_mlp(update_input)
 
     def predict_edge_weights(self, x, edge_index):
         row, col = edge_index
         edge_embeddings = torch.cat([x[row], x[col]], dim=-1)
-        edge_weights = self.linear(edge_embeddings)
-        return edge_weights.squeeze(-1)  # Ensure the output is of shape [num_edges]
+        edge_weights = self.edge_predictor(edge_embeddings)
+        return edge_weights.squeeze(-1)
 
 # Parameters for the dataset
 window_size = 10000
@@ -251,19 +107,18 @@ train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 # Model, loss function, optimizer
-track_channels = 5  # Number of tracks
-hidden_dim = 128  # Dimension of hidden layers
-num_classes = 1  # Predicting edge weights
+track_channels = 5
+track_length = window_size
+hidden_dim = 128
 
-model = GCN(track_channels=track_channels, hidden_dim=hidden_dim, num_classes=num_classes)
-optimizer = torch.optim.Adam(model.parameters(), lr=0.01)
-loss_fn = torch.nn.MSELoss()
+model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1)
+optimizer = optim.Adam(model.parameters(), lr=0.01)
+loss_fn = nn.MSELoss()
 
 # Move model to GPU
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = model.to(device)
 torch.manual_seed(0)
-
 
 # Training loop
 num_epochs = 2
@@ -275,12 +130,19 @@ for epoch in range(num_epochs):
         optimizer.zero_grad()
         out = model(batch)
         edge_weights = model.predict_edge_weights(out, batch.edge_index)
-        loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
+        loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
+        initial_params = {name: param.clone() for name, param in model.named_parameters()}
         loss.backward()
+        for name, param in model.named_parameters():
+            if param.grad is None:
+                print(f"No gradients for {name}")
+
         optimizer.step()
+        for name, param in model.named_parameters():
+            if torch.equal(param, initial_params[name]):
+                print(f"Parameter {name} has NOT been updated.")
         total_loss += loss.item()
     print(f'Epoch {epoch + 1}, Loss: {total_loss / len(train_loader)}')
-
     wandb.log({'loss': total_loss / len(train_loader)})
 
 # Evaluation on test set and visualize results
@@ -294,10 +156,9 @@ with torch.no_grad():
         batch = batch.to(device)
         out = model(batch)
         edge_weights = model.predict_edge_weights(out, batch.edge_index)
-        loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
+        loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
         total_test_loss += loss.item()
 
-        # Collect ground truth and predictions for visualization
         all_ground_truth.append(batch.edge_attr.squeeze(-1).cpu().numpy())
         all_predictions.append(edge_weights.cpu().numpy())
     print(f'Test Loss: {total_test_loss / len(test_loader)}')
@@ -306,16 +167,11 @@ with torch.no_grad():
 all_ground_truth = np.concatenate(all_ground_truth)
 all_predictions = np.concatenate(all_predictions)
 
-# Define num_nodes from test dataset
 num_nodes = test_dataset[0].x.size(0)
+ground_truth_hic_matrix = test_dataset.contact_maps[chroms[0]]
 
-# Extract the ground truth Hi-C matrix from the test dataset
-ground_truth_hic_matrix = test_dataset.contact_maps[chroms[0]]  # Assuming single chromosome in test set
-
-# Initialize an empty contact map for predictions
 predicted_contact_map = np.zeros_like(ground_truth_hic_matrix)
 
-# Fill the contact map with predicted edge weights
 edge_index = test_dataset[0].edge_index.numpy()
 predicted_values = all_predictions
 
@@ -325,7 +181,7 @@ for idx in range(edge_index.shape[1]):
         predicted_contact_map[i, j - i] = predicted_values[idx]
     elif i > j:
         predicted_contact_map[i, i - j] = predicted_values[idx]
-    else:  # i == j
+    else:
         predicted_contact_map[i, 0] = predicted_values[idx]
 
 # Plot the last 400 genomic positions
