@@ -7,13 +7,172 @@ from torch_geometric.loader import DataLoader
 from torch_geometric.nn import MessagePassing
 import numpy as np
 from graph_data_loader import GraphDataset
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch_geometric.loader import DataLoader
+from torch_geometric.nn import MessagePassing
+import numpy as np
+from graph_data_loader import GraphDataset
+from torch.utils.checkpoint import checkpoint
+
 
 class EdgeWeightMPNN(MessagePassing):
     def __init__(self, track_channels, track_length, hidden_dim, edge_dim):
         super(EdgeWeightMPNN, self).__init__(aggr='add')
         self.track_length = track_length
         self.hidden_dim = hidden_dim
-        self.conv = nn.Conv1d(in_channels=track_channels, out_channels=hidden_dim, kernel_size=3, padding=1)
+
+        # Replace self.conv with the new sequential layer
+        self.bulk_extractor_2d = nn.Sequential(
+            nn.Conv1d(
+                in_channels=5,
+                out_channels=16,
+                kernel_size=11,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=32,
+                kernel_size=7,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=2),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=2,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=3,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=5,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=5,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=7,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=11,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=32,
+                kernel_size=5,
+                stride=1,
+                dilation=11,
+                padding="same",
+            ),
+            nn.BatchNorm1d(32),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=5),
+            nn.Conv1d(
+                in_channels=32,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.MaxPool1d(kernel_size=5),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            nn.Conv1d(
+                in_channels=16,
+                out_channels=16,
+                kernel_size=3,
+                stride=1,
+                dilation=1,
+                padding="same",
+            ),
+            nn.BatchNorm1d(16),
+            nn.ReLU(),
+            # outer_prod(),
+        )
+
         self.linear = nn.Linear(hidden_dim * track_length + 1, hidden_dim)  # +1 for positional encoding
         self.message_mlp = nn.Sequential(
             nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
@@ -31,27 +190,15 @@ class EdgeWeightMPNN(MessagePassing):
 
     def forward(self, data):
         print("FORWARD")
-        # Process each node individually
-        node_features_list = []
-        for node_idx in range(data.x.size(0)):
-            tracks = data.x[node_idx, :-1].reshape(1, 5, self.track_length)  # 5 tracks of length 1000
-            pos_enc = data.x[node_idx, -1].unsqueeze(0).unsqueeze(0)  # Positional encoding
+        tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)  # 5 tracks of length 1000
+        pos_enc = data.x[:, -1].unsqueeze(-1)  # Positional encoding
+        conv_out = self.bulk_extractor_2d(tracks)  # Use the new sequential layer
+        conv_out = conv_out.view(conv_out.size(0), -1)  # Flatten to [batch_size, hidden_dim * track_length]
+        node_features = torch.cat([conv_out, pos_enc], dim=1)  # Shape: [batch_size, hidden_dim * track_length + 1]
+        node_features = torch.relu(self.linear(node_features))  # Shape: [batch_size, hidden_dim]
 
-            # Apply 1D convolution
-            conv_out = torch.relu(self.conv(tracks))  # Shape: [1, hidden_dim, track_length]
-            conv_out = conv_out.view(1, -1)  # Flatten to [1, hidden_dim * track_length]
-
-            # Concatenate positional encoding
-            node_features = torch.cat([conv_out, pos_enc], dim=1)  # Shape: [1, hidden_dim * track_length + 1]
-
-            # Linear layer
-            node_features = torch.relu(self.linear(node_features))  # Shape: [1, hidden_dim]
-            node_features_list.append(node_features)
-
-        node_features = torch.cat(node_features_list, dim=0)  # Shape: [num_nodes, hidden_dim]
-
-        # Propagate messages
-        out = self.propagate(edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
+        # Propagate messages with gradient checkpointing
+        out = checkpoint(self.propagate, edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
         return out
 
     def message(self, x_i, x_j, edge_attr):
@@ -72,6 +219,7 @@ class EdgeWeightMPNN(MessagePassing):
         edge_weights = self.edge_predictor(edge_embeddings)
         return edge_weights.squeeze(-1)  # Ensure the output is of shape [num_edges]
 
+
 # Parameters for the dataset
 window_size = 10000
 chroms = ['chr17']
@@ -81,8 +229,8 @@ save_dir = '/data/leslie/belova1//Epiphany_dataset'
 train_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=save_dir)
 test_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=save_dir)
 
-# Create DataLoader
-train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
+# Create DataLoader with smaller batch size
+train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 # Model, loss function, optimizer
@@ -112,6 +260,7 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
         total_loss += loss.item()
+        torch.cuda.empty_cache()
     print(f'Epoch {epoch + 1}, Loss: {total_loss / len(train_loader)}')
 
 # Evaluation on test set and visualize results
