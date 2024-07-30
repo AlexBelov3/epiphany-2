@@ -1,12 +1,4 @@
-import argparse
 import matplotlib.pyplot as plt
-import torch
-import torch.nn as nn
-import torch.optim as optim
-from torch_geometric.loader import DataLoader
-from torch_geometric.nn import MessagePassing
-import numpy as np
-from graph_data_loader import GraphDataset
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -170,7 +162,7 @@ class EdgeWeightMPNN(MessagePassing):
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
-            # outer_prod(),
+            outer_prod(),
         )
 
         self.linear = nn.Linear(hidden_dim * track_length + 1, hidden_dim)  # +1 for positional encoding
@@ -192,10 +184,19 @@ class EdgeWeightMPNN(MessagePassing):
         print("FORWARD")
         tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)  # 5 tracks of length 1000
         pos_enc = data.x[:, -1].unsqueeze(-1)  # Positional encoding
-        conv_out = self.bulk_extractor_2d(tracks)  # Use the new sequential layer
+
+        # Apply the new sequential layer and print shapes
+        conv_out = self.bulk_extractor_2d(tracks)
+        print(f"After bulk_extractor_2d: {conv_out.shape}")
+
         conv_out = conv_out.view(conv_out.size(0), -1)  # Flatten to [batch_size, hidden_dim * track_length]
+        print(f"After view: {conv_out.shape}")
+
         node_features = torch.cat([conv_out, pos_enc], dim=1)  # Shape: [batch_size, hidden_dim * track_length + 1]
+        print(f"After concat: {node_features.shape}")
+
         node_features = torch.relu(self.linear(node_features))  # Shape: [batch_size, hidden_dim]
+        print(f"After linear: {node_features.shape}")
 
         # Propagate messages with gradient checkpointing
         out = checkpoint(self.propagate, edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
@@ -221,9 +222,9 @@ class EdgeWeightMPNN(MessagePassing):
 
 
 # Parameters for the dataset
-window_size = 10000
+window_size = 10000  # Set window size to 10,000
 chroms = ['chr17']
-save_dir = '/data/leslie/belova1//Epiphany_dataset'
+save_dir = '/data/leslie/belova1/Epiphany_dataset'
 
 # Create instances of the custom dataset
 train_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=save_dir)
