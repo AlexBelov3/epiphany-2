@@ -144,8 +144,17 @@ for epoch in range(num_epochs):
         optimizer.zero_grad()
         out = model(batch)
         loss = loss_fn(out, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
+        initial_params = {name: param.clone() for name, param in model.named_parameters()}
         loss.backward()
+        for name, param in model.named_parameters():
+            if param.grad is None:
+                print(f"No gradients for {name}")
+
         optimizer.step()
+
+        for name, param in model.named_parameters():
+            if torch.equal(param, initial_params[name]):
+                print(f"Parameter {name} has NOT been updated.")
         total_loss += loss.item()
     print(f'Epoch {epoch + 1}, Loss: {total_loss / len(train_loader)}')
 
