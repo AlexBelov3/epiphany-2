@@ -101,7 +101,7 @@ class EdgeWeightMPNN(MessagePassing):
 
 # Parameters for the dataset
 window_size = 10000
-chroms = ['chr17']
+chroms = ['chr17', 'chr16']
 save_dir = '/data/leslie/belova1/Epiphany_dataset'
 
 # Create instances of the custom dataset
@@ -131,11 +131,11 @@ torch.cuda.set_device(args.gpu)
 torch.manual_seed(0)
 
 import wandb
-wandb.init()
+wandb.init(project="gnn-hic-prediction")
 wandb.watch(model)  # Watch the EdgeWeightMPNN model we instantiate
 
 # Training loop
-num_epochs = 2
+num_epochs = 100
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0
@@ -222,8 +222,6 @@ for epoch in range(num_epochs):
         plt.show()
 
         ground_truth_image = wandb.Image(plt)
-        wandb.log({"Ground Truth Hi-C Contact Map": ground_truth_image})
-        predicted_image = wandb.Image(plt)
-        wandb.log({"Predicted Hi-C Contact Map": predicted_image})
+        wandb.log({"Hi-C Contact Map": ground_truth_image})
 
         plt.close()
