@@ -112,7 +112,7 @@ track_length = window_size
 hidden_dim = 128
 
 model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1)
-optimizer = optim.Adam(model.parameters(), lr=0.01)
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 loss_fn = nn.MSELoss()
 
 # Move model to GPU
@@ -139,7 +139,6 @@ for epoch in range(num_epochs):
 
         optimizer.step()
         for name, param in model.named_parameters():
-            print(name)
             if torch.equal(param, initial_params[name]):
                 print(f"Parameter {name} has NOT been updated.")
         total_loss += loss.item()
