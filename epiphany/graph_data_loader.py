@@ -45,7 +45,7 @@ def data_preparation(m, diag_log_list, chip_list, distance=100, chip_res=100, hi
 class GraphDataset(torch.utils.data.Dataset):
     def __init__(self, window_size=14000, chroms=['chr22'], save_dir='/data/leslie/belova1/Epiphany_dataset'):
         save_path_X = os.path.join(save_dir, 'GM12878_X.h5')
-        save_path_y = os.path.join(save_dir, 'GM12878_y.pickle')
+        save_path_y = os.path.join(save_dir, 'new_GM12878_y.pickle')
 
         self.window_size = window_size
         self.num_channels = 5
