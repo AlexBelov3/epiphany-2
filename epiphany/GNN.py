@@ -135,7 +135,7 @@ model = model.to(device)
 torch.manual_seed(0)
 
 # Training loop
-num_epochs = 2
+num_epochs = 100
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0
