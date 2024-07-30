@@ -61,8 +61,8 @@ class EdgeWeightMPNN(MessagePassing):
     def forward(self, data):
         print("FORWARD")
         # Split x into tracks and positional encoding
-        tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)  # 5 tracks of length 1000
-        pos_enc = data.x[:, -1].unsqueeze(-1)  # Positional encoding
+        tracks = data.x[:, :-1].reshape(-1, 5, self.track_length).cuda()  # Move input to GPU
+        pos_enc = data.x[:, -1].unsqueeze(-1).cuda()  # Move input to GPU
         # Apply 1D convolution
         conv_out = torch.relu(self.conv(tracks))  # Shape: [batch_size, hidden_dim, track_length]
         print(f"After bulk_extractor_2d: {conv_out.shape}")
@@ -78,7 +78,7 @@ class EdgeWeightMPNN(MessagePassing):
         print(f"After linear: {node_features.shape}")
 
         # Propagate messages
-        out = self.propagate(edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
+        out = self.propagate(edge_index=data.edge_index.cuda(), x=node_features, edge_attr=data.edge_attr.cuda())
         return out
 
     def message(self, x_i, x_j, edge_attr):
@@ -129,6 +129,7 @@ args = parser.parse_args()
 
 torch.cuda.set_device(args.gpu)
 torch.manual_seed(0)
+
 import wandb
 wandb.init()
 wandb.watch(model)  # Watch the EdgeWeightMPNN model we instantiate
@@ -139,6 +140,7 @@ for epoch in range(num_epochs):
     model.train()
     total_loss = 0
     for batch in train_loader:
+        batch = batch.cuda()  # Move batch to GPU
         optimizer.zero_grad()
         out = model(batch)
         edge_weights = model.predict_edge_weights(out, batch.edge_index)
@@ -159,6 +161,7 @@ for epoch in range(num_epochs):
     with torch.no_grad():
         total_test_loss = 0
         for batch in test_loader:
+            batch = batch.cuda()  # Move batch to GPU
             out = model(batch)
             edge_weights = model.predict_edge_weights(out, batch.edge_index)
             loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
@@ -220,10 +223,9 @@ for epoch in range(num_epochs):
         plt.tight_layout()
         plt.show()
 
-        if args.wandb:
-            ground_truth_image = wandb.Image(plt)
-            wandb.log({"Ground Truth Hi-C Contact Map": ground_truth_image})
-            predicted_image = wandb.Image(plt)
-            wandb.log({"Predicted Hi-C Contact Map": predicted_image})
+        ground_truth_image = wandb.Image(plt)
+        wandb.log({"Ground Truth Hi-C Contact Map": ground_truth_image})
+        predicted_image = wandb.Image(plt)
+        wandb.log({"Predicted Hi-C Contact Map": predicted_image})
 
         plt.close()
