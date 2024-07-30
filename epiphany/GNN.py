@@ -81,7 +81,7 @@ class EdgeWeightMPNN(MessagePassing):
         row, col = edge_index
         edge_embeddings = torch.cat([x[row], x[col]], dim=-1)
         edge_weights = self.edge_predictor(edge_embeddings)
-        return edge_weights.squeeze(-1)
+        return torch.relu(edge_weights.squeeze(-1))  # Ensure the output is non-negative
 
 # Parameters for the dataset
 window_size = 10000
@@ -101,8 +101,18 @@ track_channels = 5
 track_length = window_size
 hidden_dim = 128
 
+def initialize_weights(model):
+    for m in model.modules():
+        if isinstance(m, nn.Conv1d) or isinstance(m, nn.Linear):
+            nn.init.kaiming_normal_(m.weight, nonlinearity='relu')
+            if m.bias is not None:
+                nn.init.constant_(m.bias, 0)
+
+
 model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1).cuda()
-optimizer = optim.Adam(model.parameters(), lr=0.01)
+initialize_weights(model)
+# model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1).cuda()
+optimizer = optim.Adam(model.parameters(), lr=0.001) #0.01
 loss_fn = nn.MSELoss()
 
 # Training loop
@@ -183,5 +193,5 @@ for epoch in range(num_epochs):
 
     plt.tight_layout()
     plt.savefig(f'epoch_{epoch+1}_hic_map.png')
-    wandb.log({f"Ground_Truth_HiC_Map_Epoch_{epoch+1}": wandb.Image(f'epoch_{epoch+1}_hic_map.png')})
+    wandb.log({f"HiC Map": wandb.Image(f'epoch_{epoch+1}_hic_map.png')})
     plt.close()  # Close the figure to free memory
