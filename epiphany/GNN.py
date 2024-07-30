@@ -9,6 +9,7 @@ from graph_data_loader import GraphDataset
 import wandb
 
 wandb.init(project='gnn-hic-prediction')
+
 class EdgeWeightMPNN(MessagePassing):
     def __init__(self, track_channels, track_length, hidden_dim, edge_dim):
         super(EdgeWeightMPNN, self).__init__(aggr='add')
@@ -36,12 +37,6 @@ class EdgeWeightMPNN(MessagePassing):
             nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
             nn.BatchNorm1d(32),
             nn.ReLU(),
-            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, padding='same'),
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
             nn.Conv1d(in_channels=32, out_channels=16, kernel_size=3, padding='same'),
             nn.BatchNorm1d(16),
             nn.ReLU(),
@@ -49,7 +44,7 @@ class EdgeWeightMPNN(MessagePassing):
             nn.BatchNorm1d(16),
             nn.ReLU(),
         )
-        self.linear = nn.Linear(16 * (track_length // 8) + 1, hidden_dim)  # Adjusted for max pooling
+        self.linear = nn.Linear(16 * (track_length // 8) + 1, hidden_dim)
         self.message_mlp = nn.Sequential(
             nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
             nn.ReLU(),
@@ -58,54 +53,46 @@ class EdgeWeightMPNN(MessagePassing):
             nn.Linear(hidden_dim, hidden_dim)
         )
         self.update_mlp = nn.Sequential(
-            nn.Linear(hidden_dim + hidden_dim, hidden_dim),  # Concatenation of aggr_out and x
+            nn.Linear(hidden_dim + hidden_dim, hidden_dim),
             nn.ReLU(),
             nn.Linear(hidden_dim, hidden_dim)
         )
-        self.edge_predictor = nn.Linear(hidden_dim * 2, 1)  # Concatenation of row and col features
+        self.edge_predictor = nn.Linear(hidden_dim * 2, 1)
 
     def forward(self, data):
         print("FORWARD")
-        # Split x into tracks and positional encoding
-        tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)  # 5 tracks of length 1000
-        pos_enc = data.x[:, -1].unsqueeze(-1)  # Positional encoding
+        tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)
+        pos_enc = data.x[:, -1].unsqueeze(-1)
 
-        # Apply 1D convolution
-        conv_out = torch.relu(self.conv(tracks))  # Shape: [batch_size, hidden_dim, track_length]
-        conv_out = conv_out.view(conv_out.size(0), -1)  # Flatten to [batch_size, hidden_dim * track_length]
+        conv_out = torch.relu(self.conv(tracks))
+        conv_out = conv_out.view(conv_out.size(0), -1)
         print(f"After conv: {conv_out.shape}")
 
-        # Concatenate positional encoding
-        node_features = torch.cat([conv_out, pos_enc], dim=1)  # Shape: [batch_size, hidden_dim * track_length + 1]
+        node_features = torch.cat([conv_out, pos_enc], dim=1)
         print(f"After concat: {node_features.shape}")
 
-        # Linear layer
-        node_features = torch.relu(self.linear(node_features))  # Shape: [batch_size, hidden_dim]
+        node_features = torch.relu(self.linear(node_features))
         print(f"After linear: {node_features.shape}")
 
-        # Propagate messages
-        edge_index = data.edge_index
-        row, col = edge_index
-        out = self.message(node_features[row], node_features[col], data.edge_attr)
-        aggr_out = self.aggregate(out, row)  # Use the row indices for aggregation
-        out = self.update(aggr_out, node_features)
-
-        # Edge weight prediction
-        edge_embeddings = torch.cat([out[row], out[col]], dim=-1)
-        edge_weights = self.edge_predictor(edge_embeddings)
-        return edge_weights.squeeze(-1)  # Ensure the output is of shape [num_edges]
+        out = self.propagate(edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
+        return out
 
     def message(self, x_i, x_j, edge_attr):
         print("MESSAGE")
-        edge_attr = edge_attr.unsqueeze(-1)  # Ensure edge_attr has the same number of dimensions
+        edge_attr = edge_attr.unsqueeze(-1)
         msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
         return self.message_mlp(msg_input)
 
     def update(self, aggr_out, x):
         print("UPDATE")
-        update_input = torch.cat([x, aggr_out], dim=-1)  # Concatenate x and aggr_out
+        update_input = torch.cat([x, aggr_out], dim=-1)
         return self.update_mlp(update_input)
 
+    def predict_edge_weights(self, x, edge_index):
+        row, col = edge_index
+        edge_embeddings = torch.cat([x[row], x[col]], dim=-1)
+        edge_weights = self.edge_predictor(edge_embeddings)
+        return edge_weights.squeeze(-1)
 
 # Parameters for the dataset
 window_size = 10000
@@ -121,9 +108,9 @@ train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 # Model, loss function, optimizer
-track_channels = 5  # Number of tracks
-track_length = window_size  # Length of each track
-hidden_dim = 128  # Dimension of hidden layers
+track_channels = 5
+track_length = window_size
+hidden_dim = 128
 
 model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1)
 optimizer = optim.Adam(model.parameters(), lr=0.01)
@@ -135,7 +122,7 @@ model = model.to(device)
 torch.manual_seed(0)
 
 # Training loop
-num_epochs = 100
+num_epochs = 2
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0
@@ -143,21 +130,12 @@ for epoch in range(num_epochs):
         batch = batch.to(device)
         optimizer.zero_grad()
         out = model(batch)
-        loss = loss_fn(out, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
-        initial_params = {name: param.clone() for name, param in model.named_parameters()}
+        edge_weights = model.predict_edge_weights(out, batch.edge_index)
+        loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
         loss.backward()
-        for name, param in model.named_parameters():
-            if param.grad is None:
-                print(f"No gradients for {name}")
-
         optimizer.step()
-
-        for name, param in model.named_parameters():
-            if torch.equal(param, initial_params[name]):
-                print(f"Parameter {name} has NOT been updated.")
         total_loss += loss.item()
     print(f'Epoch {epoch + 1}, Loss: {total_loss / len(train_loader)}')
-
     wandb.log({'loss': total_loss / len(train_loader)})
 
 # Evaluation on test set and visualize results
@@ -170,28 +148,23 @@ with torch.no_grad():
     for batch in test_loader:
         batch = batch.to(device)
         out = model(batch)
-        loss = loss_fn(out, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
+        edge_weights = model.predict_edge_weights(out, batch.edge_index)
+        loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
         total_test_loss += loss.item()
 
-        # Collect ground truth and predictions for visualization
         all_ground_truth.append(batch.edge_attr.squeeze(-1).cpu().numpy())
-        all_predictions.append(out.cpu().numpy())
+        all_predictions.append(edge_weights.cpu().numpy())
     print(f'Test Loss: {total_test_loss / len(test_loader)}')
 
 # Convert to numpy arrays for visualization
 all_ground_truth = np.concatenate(all_ground_truth)
 all_predictions = np.concatenate(all_predictions)
 
-# Define num_nodes from test dataset
 num_nodes = test_dataset[0].x.size(0)
+ground_truth_hic_matrix = test_dataset.contact_maps[chroms[0]]
 
-# Extract the ground truth Hi-C matrix from the test dataset
-ground_truth_hic_matrix = test_dataset.contact_maps[chroms[0]]  # Assuming single chromosome in test set
-
-# Initialize an empty contact map for predictions
 predicted_contact_map = np.zeros_like(ground_truth_hic_matrix)
 
-# Fill the contact map with predicted edge weights
 edge_index = test_dataset[0].edge_index.numpy()
 predicted_values = all_predictions
 
@@ -201,7 +174,7 @@ for idx in range(edge_index.shape[1]):
         predicted_contact_map[i, j - i] = predicted_values[idx]
     elif i > j:
         predicted_contact_map[i, i - j] = predicted_values[idx]
-    else:  # i == j
+    else:
         predicted_contact_map[i, 0] = predicted_values[idx]
 
 # Plot the last 400 genomic positions
