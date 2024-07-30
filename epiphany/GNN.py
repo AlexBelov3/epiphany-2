@@ -9,7 +9,7 @@ from graph_data_loader import GraphDataset
 import wandb
 
 # Initialize Wandb
-wandb.init(project="gnn-hic-prediction", entity="your_entity")  # Replace 'your_entity' with your Wandb entity name
+wandb.init(project="gnn-hic-prediction")  # Replace 'your_entity' with your Wandb entity name
 wandb.config = {
     "learning_rate": 0.01,
     "epochs": 2,
