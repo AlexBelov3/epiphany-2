@@ -162,7 +162,7 @@ class EdgeWeightMPNN(MessagePassing):
             ),
             nn.BatchNorm1d(16),
             nn.ReLU(),
-            outer_prod(),
+            # outer_prod(),
         )
 
         self.linear = nn.Linear(hidden_dim * track_length + 1, hidden_dim)  # +1 for positional encoding
