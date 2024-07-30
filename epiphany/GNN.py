@@ -110,7 +110,7 @@ def initialize_weights(model):
 
 
 model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1).cuda()
-initialize_weights(model)
+# initialize_weights(model)
 # model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1).cuda()
 optimizer = optim.Adam(model.parameters(), lr=0.001) #0.01
 loss_fn = nn.MSELoss()
