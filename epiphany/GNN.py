@@ -150,8 +150,7 @@ for epoch in range(num_epochs):
         total_loss += loss.item()
     print(f'Epoch {epoch + 1}, Loss: {total_loss / len(train_loader)}')
 
-    if args.wandb:
-        wandb.log({'loss': total_loss / len(train_loader)})
+    wandb.log({'loss': total_loss / len(train_loader)})
 
     # Evaluation on test set and visualize results
     model.eval()
@@ -173,8 +172,7 @@ for epoch in range(num_epochs):
 
         print(f'Test Loss: {total_test_loss / len(test_loader)}')
 
-        if args.wandb:
-            wandb.log({'test_loss': total_test_loss / len(test_loader)})
+        wandb.log({'test_loss': total_test_loss / len(test_loader)})
 
         # Convert to numpy arrays for visualization
         all_ground_truth = np.concatenate(all_ground_truth)
