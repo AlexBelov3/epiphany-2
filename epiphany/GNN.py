@@ -22,166 +22,24 @@ class EdgeWeightMPNN(MessagePassing):
         super(EdgeWeightMPNN, self).__init__(aggr='add')
         self.track_length = track_length
         self.hidden_dim = hidden_dim
-        self.conv = nn.Conv1d(in_channels=track_channels, out_channels=hidden_dim, kernel_size=3, padding=1)
-        self.bulk_extractor_2d = nn.Sequential(
-            nn.Conv1d(
-                in_channels=5,
-                out_channels=16,
-                kernel_size=11,
-                stride=1,
-                dilation=1,
-                padding="same",
-            ),
+        self.conv = nn.Sequential(
+            nn.Conv1d(in_channels=track_channels, out_channels=16, kernel_size=11, stride=1, dilation=1, padding='same'),
             nn.BatchNorm1d(16),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(
-                in_channels=16,
-                out_channels=32,
-                kernel_size=7,
-                stride=1,
-                dilation=1,
-                padding="same",
-            ),
+            nn.Conv1d(in_channels=16, out_channels=32, kernel_size=7, stride=1, dilation=1, padding='same'),
             nn.BatchNorm1d(32),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(
-                in_channels=32,
-                out_channels=32,
-                kernel_size=5,
-                stride=1,
-                dilation=1,
-                padding="same",
-            ),
+            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, stride=1, dilation=1, padding='same'),
             nn.BatchNorm1d(32),
             nn.ReLU(),
             nn.MaxPool1d(kernel_size=2),
-            nn.Conv1d(
-                in_channels=32,
-                out_channels=32,
-                kernel_size=5,
-                stride=1,
-                dilation=1,
-                padding="same",
-            ),
+            nn.Conv1d(in_channels=32, out_channels=32, kernel_size=5, stride=1, dilation=1, padding='same'),
             nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.Conv1d(
-                in_channels=32,
-                out_channels=32,
-                kernel_size=5,
-                stride=1,
-                dilation=1,
-                padding="same",
-            ),
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.Conv1d(
-                in_channels=32,
-                out_channels=32,
-                kernel_size=5,
-                stride=1,
-                dilation=2,
-                padding="same",
-            ),
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.Conv1d(
-                in_channels=32,
-                out_channels=32,
-                kernel_size=5,
-                stride=1,
-                dilation=3,
-                padding="same",
-            ),
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.Conv1d(
-                in_channels=32,
-                out_channels=32,
-                kernel_size=5,
-                stride=1,
-                dilation=5,
-                padding="same",
-            ),
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.Conv1d(
-                in_channels=32,
-                out_channels=32,
-                kernel_size=5,
-                stride=1,
-                dilation=5,
-                padding="same",
-            ),
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.Conv1d(
-                in_channels=32,
-                out_channels=32,
-                kernel_size=5,
-                stride=1,
-                dilation=7,
-                padding="same",
-            ),
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.Conv1d(
-                in_channels=32,
-                out_channels=32,
-                kernel_size=5,
-                stride=1,
-                dilation=11,
-                padding="same",
-            ),
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.Conv1d(
-                in_channels=32,
-                out_channels=32,
-                kernel_size=5,
-                stride=1,
-                dilation=11,
-                padding="same",
-            ),
-            nn.BatchNorm1d(32),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=5),
-            nn.Conv1d(
-                in_channels=32,
-                out_channels=16,
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding="same",
-            ),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
-            nn.MaxPool1d(kernel_size=5),
-            nn.Conv1d(
-                in_channels=16,
-                out_channels=16,
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding="same",
-            ),
-            nn.BatchNorm1d(16),
-            nn.ReLU(),
-            nn.Conv1d(
-                in_channels=16,
-                out_channels=16,
-                kernel_size=3,
-                stride=1,
-                dilation=1,
-                padding="same",
-            ),
-            nn.BatchNorm1d(16),
             nn.ReLU()
         )
-
-        self.linear = nn.Linear(800 + 1, hidden_dim)  # 800 from conv output + 1 for positional encoding
+        self.linear = nn.Linear(32 * (track_length // 8) + 1, hidden_dim)  # Adjust input size for linear layer
         self.message_mlp = nn.Sequential(
             nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
             nn.ReLU(),
@@ -198,36 +56,24 @@ class EdgeWeightMPNN(MessagePassing):
 
     def forward(self, data):
         print("FORWARD")
-        # Split x into tracks and positional encoding
-        tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)  # 5 tracks of length 1000
-        pos_enc = data.x[:, -1].unsqueeze(-1)  # Positional encoding
-        # Apply 1D convolution
-        conv_out = torch.relu(self.bulk_extractor_2d(tracks))  # Shape: [batch_size, hidden_dim, track_length]
-        print(f"After bulk_extractor_2d: {conv_out.shape}")
-        conv_out = conv_out.view(conv_out.size(0), -1)  # Flatten to [batch_size, hidden_dim * track_length]
-        print(f"After view: {conv_out.shape}")
-
-        # Concatenate positional encoding
-        node_features = torch.cat([conv_out, pos_enc], dim=1)  # Shape: [batch_size, hidden_dim * track_length + 1]
-        print(f"After concat: {node_features.shape}")
-
-        # Linear layer
-        node_features = torch.relu(self.linear(node_features))  # Shape: [batch_size, hidden_dim]
-        print(f"After linear: {node_features.shape}")
-
-        # Propagate messages
+        tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)
+        pos_enc = data.x[:, -1].unsqueeze(-1)
+        conv_out = self.conv(tracks)
+        conv_out = conv_out.view(conv_out.size(0), -1)
+        node_features = torch.cat([conv_out, pos_enc], dim=1)
+        node_features = torch.relu(self.linear(node_features))
         out = self.propagate(edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
         return out
 
     def message(self, x_i, x_j, edge_attr):
         print("MESSAGE")
-        edge_attr = edge_attr.unsqueeze(-1)  # Ensure edge_attr has the same number of dimensions
+        edge_attr = edge_attr.unsqueeze(-1)
         msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
         return self.message_mlp(msg_input)
 
     def update(self, aggr_out, x):
         print("UPDATE")
-        update_input = torch.cat([x, aggr_out], dim=-1)  # Concatenate x and aggr_out
+        update_input = torch.cat([x, aggr_out], dim=-1)
         return self.update_mlp(update_input)
 
     def predict_edge_weights(self, x, edge_index):
@@ -235,13 +81,12 @@ class EdgeWeightMPNN(MessagePassing):
         row, col = edge_index
         edge_embeddings = torch.cat([x[row], x[col]], dim=-1)
         edge_weights = self.edge_predictor(edge_embeddings)
-        return edge_weights.squeeze(-1)  # Ensure the output is of shape [num_edges]
-
+        return edge_weights.squeeze(-1)
 
 # Parameters for the dataset
 window_size = 10000
 chroms = ['chr17']
-save_dir = '/data/leslie/belova1//Epiphany_dataset'
+save_dir = '/data/leslie/belova1/Epiphany_dataset'
 
 # Create instances of the custom dataset
 train_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=save_dir)
@@ -252,16 +97,16 @@ train_loader = DataLoader(train_dataset, batch_size=2, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
 # Model, loss function, optimizer
-track_channels = 5  # Number of tracks
-track_length = window_size  # Length of each track
-hidden_dim = 128  # Dimension of hidden layers
+track_channels = 5
+track_length = window_size
+hidden_dim = 128
 
 model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1).cuda()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 loss_fn = nn.MSELoss()
 
 # Training loop
-num_epochs = 100
+num_epochs = 2
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0
@@ -270,7 +115,7 @@ for epoch in range(num_epochs):
         optimizer.zero_grad()
         out = model(batch)
         edge_weights = model.predict_edge_weights(out, batch.edge_index)
-        loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
+        loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
         loss.backward()
         optimizer.step()
         total_loss += loss.item()
@@ -289,30 +134,24 @@ for epoch in range(num_epochs):
             batch = batch.cuda()
             out = model(batch)
             edge_weights = model.predict_edge_weights(out, batch.edge_index)
-            loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))  # Ensure the target size matches
+            loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
             total_test_loss += loss.item()
 
             # Collect ground truth and predictions for visualization
-            all_ground_truth.append(batch.edge_attr.squeeze(-1).cpu().numpy())
-            all_predictions.append(edge_weights.cpu().numpy())
+            all_ground_truth.append(batch.edge_attr.squeeze(-1).cpu().detach().numpy())
+            all_predictions.append(edge_weights.cpu().detach().numpy())
         avg_test_loss = total_test_loss / len(test_loader)
         print(f'Test Loss: {avg_test_loss}')
         wandb.log({'test_loss': avg_test_loss})
 
-    # Convert to numpy arrays for visualization
     all_ground_truth = np.concatenate(all_ground_truth)
     all_predictions = np.concatenate(all_predictions)
 
-    # Define num_nodes from test dataset
     num_nodes = test_dataset[0].x.size(0)
+    ground_truth_hic_matrix = test_dataset.contact_maps[chroms[0]]
 
-    # Extract the ground truth Hi-C matrix from the test dataset
-    ground_truth_hic_matrix = test_dataset.contact_maps[chroms[0]]  # Assuming single chromosome in test set
-
-    # Initialize an empty contact map for predictions
     predicted_contact_map = np.zeros_like(ground_truth_hic_matrix)
 
-    # Fill the contact map with predicted edge weights
     edge_index = test_dataset[0].edge_index.numpy()
     predicted_values = all_predictions
 
@@ -322,10 +161,9 @@ for epoch in range(num_epochs):
             predicted_contact_map[i, j - i] = predicted_values[idx]
         elif i > j:
             predicted_contact_map[i, i - j] = predicted_values[idx]
-        else:  # i == j
+        else:
             predicted_contact_map[i, 0] = predicted_values[idx]
 
-    # Plot the last 400 genomic positions
     n = 400
     plt.figure(figsize=(14, 6))
 
@@ -347,3 +185,4 @@ for epoch in range(num_epochs):
     plt.savefig(f'epoch_{epoch+1}_hic_map.png')
     wandb.log({f"Ground_Truth_HiC_Map_Epoch_{epoch+1}": wandb.Image(f'epoch_{epoch+1}_hic_map.png')})
     wandb.log({f"Predicted_HiC_Map_Epoch_{epoch+1}": wandb.Image(f'epoch_{epoch+1}_hic_map.png')})
+    plt.close()  # Close the figure to free memory
