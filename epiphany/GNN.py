@@ -43,7 +43,7 @@ class EdgeWeightMPNN(MessagePassing):
             nn.BatchNorm1d(16),
             nn.ReLU(),
         )
-        self.linear = nn.Linear(16 * track_length // 64 + 1, hidden_dim)  # Adjusted for reduced dimensions
+        self.linear = nn.Linear(800 + 1, hidden_dim)  # Adjusted for reduced dimensions
         self.message_mlp = nn.Sequential(
             nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
             nn.ReLU(),
