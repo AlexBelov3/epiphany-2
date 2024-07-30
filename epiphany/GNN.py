@@ -9,10 +9,10 @@ from graph_data_loader import GraphDataset
 import wandb
 
 # Initialize Wandb
-wandb.init(project="gnn-hic-prediction", log='all')  # Replace 'your_entity' with your Wandb entity name
+wandb.init(project="gnn-hic-prediction")  # Replace 'your_entity' with your Wandb entity name
 wandb.config = {
     "learning_rate": 0.01,
-    "epochs": 2,
+    "epochs": 100,
     "batch_size": 2,
     "window_size": 10000
 }
@@ -261,7 +261,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.01)
 loss_fn = nn.MSELoss()
 
 # Training loop
-num_epochs = 2
+num_epochs = 100
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0
