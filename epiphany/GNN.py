@@ -208,8 +208,8 @@ class EdgeWeightMPNN(MessagePassing):
         print(f"After linear: {node_features.shape}")
 
         # Propagate messages with gradient checkpointing
-        out = checkpoint(self.propagate, edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
-        return out
+        # out = checkpoint(self.propagate, edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
+        return node_features
 
     def message(self, x_i, x_j, edge_attr):
         print("MESSAGE")
