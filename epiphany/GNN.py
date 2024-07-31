@@ -144,8 +144,7 @@ test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 # hidden_dim = 128
 #
 # model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1)
-# optimizer = optim.Adam(model.parameters(), lr=0.001)
-# loss_fn = nn.MSELoss()
+
 #
 # # Move model to GPU
 # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
@@ -159,7 +158,8 @@ edge_dim = 1
 
 # Initialize the model
 model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=edge_dim)
-
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+loss_fn = nn.MSELoss()
 # Specify the path to the saved model weights
 model_path = 'logs/0.1/gnn_hic_prediction_epoch_100.pt'
 
