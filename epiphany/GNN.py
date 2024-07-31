@@ -106,13 +106,17 @@ class EdgeWeightMPNN(MessagePassing):
         msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
         print(f"edge_attr shape: {edge_attr.shape}")
         print(f"msg_input shape: {msg_input.shape}")
-        return self.message_mlp(msg_input)
+        msg_out = self.message_mlp(msg_input)
+        print(f"msg_out shape: {msg_out.shape}")
+        return msg_out
 
     def update(self, aggr_out, x):
         print("UPDATE")
         update_input = torch.cat([x, aggr_out], dim=-1)
         print(f"update_input shape: {update_input.shape}")
-        return self.update_mlp(update_input)
+        update_out = self.update_mlp(update_input)
+        print(f"update_out shape: {update_out}")
+        return update_out
 
     def predict_edge_weights(self, x, edge_index):
         row, col = edge_index
