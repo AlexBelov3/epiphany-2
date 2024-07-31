@@ -202,7 +202,8 @@ for epoch in range(num_epochs):
         # print(f"Input requires_grad: {batch.requires_grad}")
         optimizer.zero_grad()
         out = model(batch)
-        edge_weights = batch.edge_attr.squeeze(-1)
+        # edge_weights = batch.edge_attr.squeeze(-1)
+        edge_weights = model.predict_edge_weights(out, batch.edge_index)
         loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
         loss.backward()  # This line raises the error
         optimizer.step()
