@@ -86,7 +86,7 @@ class EdgeWeightMPNN(MessagePassing):
         print("FORWARD")
         tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)
         pos_enc = data.x[:, -1].unsqueeze(-1)
-
+        print(f"tracks shape (conv input): {tracks.shape}")
         conv_out = torch.relu(self.conv(tracks))
         conv_out = conv_out.view(conv_out.size(0), -1)
         print(f"After conv: {conv_out.shape}")
@@ -104,11 +104,14 @@ class EdgeWeightMPNN(MessagePassing):
         print("MESSAGE")
         edge_attr = edge_attr.unsqueeze(-1)
         msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
+        print(f"edge_attr shape: {edge_attr.shape}")
+        print(f"msg_input shape: {msg_input.shape}")
         return self.message_mlp(msg_input)
 
     def update(self, aggr_out, x):
         print("UPDATE")
         update_input = torch.cat([x, aggr_out], dim=-1)
+        print(f"update_input shape: {update_input.shape}")
         return self.update_mlp(update_input)
 
     def predict_edge_weights(self, x, edge_index):
@@ -172,7 +175,7 @@ for epoch in range(num_epochs):
 
     # Save model weights
     if (epoch + 1) % 50 == 0:
-        torch.save(model.state_dict(), f'logs/{epoch + 1}/gnn_hic_prediction.pt')
+        torch.save(model.state_dict(), f'logs/gnn_hic_prediction_{epoch + 1}.pt')
         # Visualization
         model.eval()
         all_ground_truth = []
