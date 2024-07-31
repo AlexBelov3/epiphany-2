@@ -56,7 +56,8 @@ class EdgeWeightMPNN(MessagePassing):
             nn.ReLU(),
             nn.Linear(hidden_dim, hidden_dim)
         )
-        self.edge_predictor = nn.Sequential(nn.Linear(hidden_dim * 2, 1), nn.ReLU())
+        # self.edge_predictor = nn.Sequential(nn.Linear(hidden_dim * 2, 1), nn.ReLU())
+        self.edge_predictor = nn.Linear(hidden_dim * 2, 1)
 
     def forward(self, data):
         print("FORWARD")
