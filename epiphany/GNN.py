@@ -16,6 +16,7 @@ class symmetrize_bulk(nn.Module):
     def forward(self, x):
         if len(x.shape) == 2:
             print("not implemented")
+            print(x.shape)
             return None
         else:
             if len(x.shape) == 3:
