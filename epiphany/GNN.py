@@ -112,10 +112,16 @@ class EdgeWeightMPNN(MessagePassing):
         # return msg_out
     def message(self, x_i, x_j, edge_attr):
         print("MESSAGE")
+        print(f"edge_attr before unsqueeze: {edge_attr.shape}")
         edge_attr = edge_attr.unsqueeze(-1)
+        print(f"edge_attr after unsqueeze: {edge_attr.shape}")
         msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
+        print(f"msg_input shape: {msg_input.shape}")
         edge_weights = self.edge_predictor(msg_input).squeeze(-1)
-        return edge_weights * x_j  # Weighted message using edge weights
+        print(f"edge_weights shape: {edge_weights.shape}")
+        msg_out = edge_weights * x_j
+        print(f"msg_out shape: {msg_out.shape}")
+        return msg_out  # Weighted message using edge weights
 
     def update(self, aggr_out, x):
         print("UPDATE")
