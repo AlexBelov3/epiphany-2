@@ -88,6 +88,7 @@ class EdgeWeightMPNN(MessagePassing):
         pos_enc = data.x[:, -1].unsqueeze(-1)
         print(f"tracks shape (conv input): {tracks.shape}")
         conv_out = torch.relu(self.conv(tracks))
+        print(f"After conv: {conv_out.shape}")
         conv_out = conv_out.view(conv_out.size(0), -1)
         print(f"After conv: {conv_out.shape}")
 
