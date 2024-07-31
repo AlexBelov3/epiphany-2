@@ -131,7 +131,8 @@ class EdgeWeightMPNN(MessagePassing):
 
         # Predict edge weights using MLP
         edge_weights = self.edge_mlp(msg_input).squeeze(-1)
-
+        print(f"v shape: {edge_weights.shape}")
+        print(f"x_j shape: {x_j.shape}")
         # Use edge weights to scale the message
         message = edge_weights * x_j  # Or any other way you want to use edge weights
         return message
