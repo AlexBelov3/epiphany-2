@@ -124,6 +124,7 @@ class EdgeWeightMPNN(MessagePassing):
     def predict_edge_weights(self, x, edge_index):
         row, col = edge_index
         edge_embeddings = torch.cat([x[row], x[col]], dim=-1)
+        print(f"edge_embeddings shape: {edge_embeddings.shape}")
         edge_weights = self.edge_predictor(edge_embeddings)
         print(f"edge_weights shape: {edge_weights.shape}")
         return edge_weights.squeeze(-1)
