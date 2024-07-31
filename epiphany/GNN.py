@@ -180,23 +180,34 @@ num_epochs = 100
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0
+    # for batch in train_loader:
+    #     batch = batch.to(device)
+    #     optimizer.zero_grad()
+    #     out = model(batch)
+    #     edge_weights = model.predict_edge_weights(out, batch.edge_index)
+    #     loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
+    #     initial_params = {name: param.clone() for name, param in model.named_parameters()}
+    #     loss.backward()
+    #     for name, param in model.named_parameters():
+    #         if param.grad is None:
+    #             print(f"No gradients for {name}")
+    #
+    #     optimizer.step()
+    #     for name, param in model.named_parameters():
+    #         if torch.equal(param, initial_params[name]):
+    #             print(f"Parameter {name} has NOT been updated.")
+    #     total_loss += loss.item()
     for batch in train_loader:
         batch = batch.to(device)
+        print(f"Input requires_grad: {batch.requires_grad}")
         optimizer.zero_grad()
         out = model(batch)
-        edge_weights = model.predict_edge_weights(out, batch.edge_index)
+        edge_weights = batch.edge_attr.squeeze(-1)
         loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
-        initial_params = {name: param.clone() for name, param in model.named_parameters()}
-        loss.backward()
-        for name, param in model.named_parameters():
-            if param.grad is None:
-                print(f"No gradients for {name}")
-
+        loss.backward()  # This line raises the error
         optimizer.step()
-        for name, param in model.named_parameters():
-            if torch.equal(param, initial_params[name]):
-                print(f"Parameter {name} has NOT been updated.")
         total_loss += loss.item()
+
     print(f'Epoch {epoch + 1}, Loss: {total_loss / len(train_loader)}')
     wandb.log({'loss': total_loss / len(train_loader)})
 
