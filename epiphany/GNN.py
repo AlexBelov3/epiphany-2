@@ -91,14 +91,14 @@ class EdgeWeightMPNN(MessagePassing):
         #     nn.BatchNorm2d(16),
         #     nn.ReLU(),
         #     )
-
-        self.edge_mlp = nn.Sequential(
-            nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, hidden_dim),
-            nn.ReLU(),
-            nn.Linear(hidden_dim, 1)
-        )
+        #
+        # self.edge_mlp = nn.Sequential(
+        #     nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
+        #     nn.ReLU(),
+        #     nn.Linear(hidden_dim, hidden_dim),
+        #     nn.ReLU(),
+        #     nn.Linear(hidden_dim, 1)
+        # )
 
     def forward(self, data):
         print("FORWARD")
@@ -178,7 +178,7 @@ model = model.to(device)
 torch.manual_seed(0)
 
 # Training loop
-num_epochs = 100
+num_epochs = 1000000
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0
