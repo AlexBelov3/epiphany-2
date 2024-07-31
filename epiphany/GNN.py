@@ -92,8 +92,13 @@ class EdgeWeightMPNN(MessagePassing):
         #     nn.ReLU(),
         #     )
 
-        self.do_not_modify = nn.Sequential(nn.Linear(hidden_dim * 2, hidden_dim),
-                                            nn.ReLU(), nn.Linear(hidden_dim, 1))
+        self.edge_mlp = nn.Sequential(
+            nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, 1)
+        )
 
     def forward(self, data):
         print("FORWARD")
