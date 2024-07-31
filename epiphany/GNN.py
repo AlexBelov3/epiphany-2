@@ -75,22 +75,25 @@ class EdgeWeightMPNN(MessagePassing):
             nn.ReLU(),
             nn.Linear(hidden_dim, hidden_dim)
         )
-        # self.edge_predictor = nn.Sequential(nn.Linear(hidden_dim * 2, hidden_dim),
-        #                                     nn.ReLU(), nn.Linear(hidden_dim, 1))
+        self.edge_predictor = nn.Sequential(nn.Linear(hidden_dim * 2, hidden_dim),
+                                            nn.ReLU(), nn.Linear(hidden_dim, 1))
         # self.edge_predictor = nn.Linear(hidden_dim * 2, 1)
-        self.edge_predictor = nn.Sequential(symmetrize_bulk(),
-            nn.Conv2d(in_channels=hidden_dim, out_channels=64, kernel_size=3, stride=2), #nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
-            nn.BatchNorm2d(64),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=2),
-            nn.BatchNorm2d(32),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=2),
-            nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
-            nn.BatchNorm2d(16),
-            nn.ReLU(),
-            )
+        # self.edge_predictor = nn.Sequential(symmetrize_bulk(),
+        #     nn.Conv2d(in_channels=hidden_dim, out_channels=64, kernel_size=3, stride=2), #nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
+        #     nn.BatchNorm2d(64),
+        #     nn.ReLU(),
+        #     nn.MaxPool2d(kernel_size=2),
+        #     nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=2),
+        #     nn.BatchNorm2d(32),
+        #     nn.ReLU(),
+        #     nn.MaxPool2d(kernel_size=2),
+        #     nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
+        #     nn.BatchNorm2d(16),
+        #     nn.ReLU(),
+        #     )
+
+        self.do_not_modify = nn.Sequential(nn.Linear(hidden_dim * 2, hidden_dim),
+                                            nn.ReLU(), nn.Linear(hidden_dim, 1))
 
     def forward(self, data):
         print("FORWARD")
