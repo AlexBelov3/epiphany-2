@@ -155,10 +155,11 @@ for epoch in range(num_epochs):
         edge_weights = batch.edge_attr.squeeze(-1)  # Directly use edge attributes as weights
         loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
         initial_params = {name: param.clone() for name, param in model.named_parameters()}
-        loss.backward()
         for name, param in model.named_parameters():
             if param.grad is None:
                 print(f"No gradients for {name}")
+        loss.backward()
+
 
         optimizer.step()
         for name, param in model.named_parameters():
