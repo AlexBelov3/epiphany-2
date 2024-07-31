@@ -83,8 +83,11 @@ class EdgeWeightMPNN(MessagePassing):
 
     def forward(self, data):
         print("FORWARD")
+        print(f"input shape: {data.shape}")
         tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)
+        print(f"tracks shape: {tracks.shape}")
         pos_enc = data.x[:, -1].unsqueeze(-1)
+        print(f"pos_enc shape: {pos_enc.shape}")
 
         conv_out = torch.relu(self.conv(tracks))
         conv_out = conv_out.view(conv_out.size(0), -1)
@@ -135,19 +138,42 @@ test_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=sav
 train_loader = DataLoader(train_dataset, batch_size=1, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
 
-# Model, loss function, optimizer
+# # Model, loss function, optimizer
+# track_channels = 5
+# track_length = window_size
+# hidden_dim = 128
+#
+# model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1)
+# optimizer = optim.Adam(model.parameters(), lr=0.001)
+# loss_fn = nn.MSELoss()
+#
+# # Move model to GPU
+# device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+# model = model.to(device)
+# torch.manual_seed(0)
+# Parameters for the model
 track_channels = 5
-track_length = window_size
+track_length = 10000  # window_size
 hidden_dim = 128
+edge_dim = 1
 
-model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=1)
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-loss_fn = nn.MSELoss()
+# Initialize the model
+model = EdgeWeightMPNN(track_channels=track_channels, track_length=track_length, hidden_dim=hidden_dim, edge_dim=edge_dim)
+
+# Specify the path to the saved model weights
+model_path = 'logs/0.1/gnn_hic_prediction_epoch_100.pt'
+
+# Check if the saved model weights exist
+if os.path.isfile(model_path):
+    # Load the model weights
+    model.load_state_dict(torch.load(model_path))
+    print(f"Model weights loaded from {model_path}")
+else:
+    print(f"No saved model weights found at {model_path}")
 
 # Move model to GPU
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = model.to(device)
-torch.manual_seed(0)
 
 # Training loop
 num_epochs = 100
