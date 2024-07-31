@@ -9,6 +9,24 @@ from graph_data_loader import GraphDataset
 import wandb
 wandb.init(project='gnn-hic-prediction')
 
+class symmetrize_bulk(nn.Module):
+    def __init__(self):
+        super(symmetrize_bulk, self).__init__()
+
+    def forward(self, x):
+        if len(x.shape) == 2:
+            print("not implemented")
+            return None
+        else:
+            if len(x.shape) == 3:
+                a, b, c = x.shape
+                x = x.reshape(a, b, 1, c)
+                x = x.repeat(1, 1, c, 1)
+                x_t = x.permute(0, 1, 3, 2)
+                x_sym = torch.concat((x, x_t), axis=1)  # (x+x_t)/2
+                return x_sym
+            else:
+                return None
 class EdgeWeightMPNN(MessagePassing):
     def __init__(self, track_channels, track_length, hidden_dim, edge_dim):
         super(EdgeWeightMPNN, self).__init__(aggr='add')
@@ -56,8 +74,22 @@ class EdgeWeightMPNN(MessagePassing):
             nn.ReLU(),
             nn.Linear(hidden_dim, hidden_dim)
         )
-        # self.edge_predictor = nn.Sequential(nn.Linear(hidden_dim * 2, 1), nn.ReLU())
-        self.edge_predictor = nn.Linear(hidden_dim * 2, 1)
+        self.edge_predictor = nn.Sequential(nn.Linear(hidden_dim * 2, hidden_dim),
+                                            nn.ReLU(), nn.Linear(hidden_dim, 1))
+        # self.edge_predictor = nn.Linear(hidden_dim * 2, 1)
+        # self.edge_predictor = nn.Sequential(symmetrize_bulk(),
+        #     nn.Conv2d(in_channels=42, out_channels=64, kernel_size=3, stride=2), #nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
+        #     nn.BatchNorm2d(64),
+        #     nn.ReLU(),
+        #     nn.MaxPool2d(kernel_size=2),
+        #     nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=2),
+        #     nn.BatchNorm2d(32),
+        #     nn.ReLU(),
+        #     nn.MaxPool2d(kernel_size=2),
+        #     nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
+        #     nn.BatchNorm2d(16),
+        #     nn.ReLU(),
+        #     )
 
     def forward(self, data):
         print("FORWARD")
