@@ -7,6 +7,8 @@ from torch_geometric.nn import MessagePassing
 import numpy as np
 from graph_data_loader import GraphDataset
 import wandb
+import os
+
 wandb.init(project='gnn-hic-prediction')
 
 class symmetrize_bulk(nn.Module):
@@ -28,6 +30,7 @@ class symmetrize_bulk(nn.Module):
                 return x_sym
             else:
                 return None
+
 class EdgeWeightMPNN(MessagePassing):
     def __init__(self, track_channels, track_length, hidden_dim, edge_dim):
         super(EdgeWeightMPNN, self).__init__(aggr='add')
@@ -77,28 +80,6 @@ class EdgeWeightMPNN(MessagePassing):
         )
         self.edge_predictor = nn.Sequential(nn.Linear(hidden_dim * 2, hidden_dim),
                                             nn.ReLU(), nn.Linear(hidden_dim, 1))
-        # self.edge_predictor = nn.Linear(hidden_dim * 2, 1)
-        # self.edge_predictor = nn.Sequential(symmetrize_bulk(),
-        #     nn.Conv2d(in_channels=hidden_dim, out_channels=64, kernel_size=3, stride=2), #nn.Conv2d(in_channels=36, out_channels=64, kernel_size=3, stride=2),
-        #     nn.BatchNorm2d(64),
-        #     nn.ReLU(),
-        #     nn.MaxPool2d(kernel_size=2),
-        #     nn.Conv2d(in_channels=64, out_channels=32, kernel_size=3, stride=2),
-        #     nn.BatchNorm2d(32),
-        #     nn.ReLU(),
-        #     nn.MaxPool2d(kernel_size=2),
-        #     nn.Conv2d(in_channels=32, out_channels=16, kernel_size=3, stride=2),
-        #     nn.BatchNorm2d(16),
-        #     nn.ReLU(),
-        #     )
-        #
-        # self.edge_mlp = nn.Sequential(
-        #     nn.Linear(2 * hidden_dim + edge_dim, hidden_dim),
-        #     nn.ReLU(),
-        #     nn.Linear(hidden_dim, hidden_dim),
-        #     nn.ReLU(),
-        #     nn.Linear(hidden_dim, 1)
-        # )
 
     def forward(self, data):
         print("FORWARD")
@@ -123,19 +104,6 @@ class EdgeWeightMPNN(MessagePassing):
         edge_attr = edge_attr.unsqueeze(-1)
         msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
         return self.message_mlp(msg_input)
-    # def message(self, x_i, x_j, edge_attr):
-    #     print("MESSAGE")
-    #     # Concatenate node features and edge attributes
-    #     edge_attr = edge_attr.unsqueeze(-1)  # Ensure edge_attr has the same number of dimensions
-    #     msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
-    #
-    #     # Predict edge weights using MLP
-    #     edge_weights = self.edge_mlp(msg_input).squeeze(-1)
-    #     print(f"v shape: {edge_weights.shape}")
-    #
-    #     # Use edge weights to scale the message
-    #     message = edge_weights * x_j  # Or any other way you want to use edge weights
-    #     return message
 
     def update(self, aggr_out, x):
         print("UPDATE")
@@ -149,6 +117,10 @@ class EdgeWeightMPNN(MessagePassing):
         edge_weights = self.edge_predictor(edge_embeddings)
         print(f"edge_weights shape: {edge_weights.shape}")
         return edge_weights.squeeze(-1)
+
+def save_model(model, path):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    torch.save(model.state_dict(), path)
 
 # Parameters for the dataset
 window_size = 10000
@@ -178,7 +150,7 @@ model = model.to(device)
 torch.manual_seed(0)
 
 # Training loop
-num_epochs = 1000000
+num_epochs = 100
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0
@@ -202,66 +174,70 @@ for epoch in range(num_epochs):
     print(f'Epoch {epoch + 1}, Loss: {total_loss / len(train_loader)}')
     wandb.log({'loss': total_loss / len(train_loader)})
 
-# Evaluation on test set and visualize results
-model.eval()
-all_ground_truth = []
-all_predictions = []
+    if (epoch + 1) % 50 == 0:
+        # Save the model
+        save_model(model, f'logs/0.1/gnn_hic_prediction_epoch_{epoch + 1}.pt')
 
-with torch.no_grad():
-    total_test_loss = 0
-    for batch in test_loader:
-        batch = batch.to(device)
-        out = model(batch)
-        edge_weights = model.predict_edge_weights(out, batch.edge_index)
-        loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
-        total_test_loss += loss.item()
+        # Evaluation on test set and visualize results
+        model.eval()
+        all_ground_truth = []
+        all_predictions = []
 
-        all_ground_truth.append(batch.edge_attr.squeeze(-1).cpu().numpy())
-        all_predictions.append(edge_weights.cpu().numpy())
-    print(f'Test Loss: {total_test_loss / len(test_loader)}')
+        with torch.no_grad():
+            total_test_loss = 0
+            for batch in test_loader:
+                batch = batch.to(device)
+                out = model(batch)
+                edge_weights = model.predict_edge_weights(out, batch.edge_index)
+                loss = loss_fn(edge_weights, batch.edge_attr.squeeze(-1))
+                total_test_loss += loss.item()
 
-# Convert to numpy arrays for visualization
-all_ground_truth = np.concatenate(all_ground_truth)
-all_predictions = np.concatenate(all_predictions)
+                all_ground_truth.append(batch.edge_attr.squeeze(-1).cpu().numpy())
+                all_predictions.append(edge_weights.cpu().numpy())
+            print(f'Test Loss: {total_test_loss / len(test_loader)}')
 
-num_nodes = test_dataset[0].x.size(0)
-ground_truth_hic_matrix = test_dataset.contact_maps[chroms[0]]
+        # Convert to numpy arrays for visualization
+        all_ground_truth = np.concatenate(all_ground_truth)
+        all_predictions = np.concatenate(all_predictions)
 
-predicted_contact_map = np.zeros_like(ground_truth_hic_matrix)
+        num_nodes = test_dataset[0].x.size(0)
+        ground_truth_hic_matrix = test_dataset.contact_maps[chroms[0]]
 
-edge_index = test_dataset[0].edge_index.numpy()
-predicted_values = all_predictions
+        predicted_contact_map = np.zeros_like(ground_truth_hic_matrix)
 
-for idx in range(edge_index.shape[1]):
-    i, j = edge_index[:, idx]
-    if i < j:
-        predicted_contact_map[i, j - i] = predicted_values[idx]
-    elif i > j:
-        predicted_contact_map[i, i - j] = predicted_values[idx]
-    else:
-        predicted_contact_map[i, 0] = predicted_values[idx]
+        edge_index = test_dataset[0].edge_index.numpy()
+        predicted_values = all_predictions
 
-# Plot the last 400 genomic positions
-n = 400
-plt.figure(figsize=(14, 6))
+        for idx in range(edge_index.shape[1]):
+            i, j = edge_index[:, idx]
+            if i < j:
+                predicted_contact_map[i, j - i] = predicted_values[idx]
+            elif i > j:
+                predicted_contact_map[i, i - j] = predicted_values[idx]
+            else:
+                predicted_contact_map[i, 0] = predicted_values[idx]
 
-plt.subplot(1, 2, 1)
-plt.title("Ground Truth Hi-C Contact Map")
-plt.imshow(ground_truth_hic_matrix[:n, :].T, cmap='RdYlBu_r', aspect='auto', origin='lower')
-plt.colorbar()
-plt.xlabel("Genomic Position")
-plt.ylabel("Distance to Adjacent Nodes")
+        # Plot the last 400 genomic positions
+        n = 400
+        plt.figure(figsize=(14, 6))
 
-plt.subplot(1, 2, 2)
-plt.title("Predicted Hi-C Contact Map")
-plt.imshow(predicted_contact_map[:n, :].T, cmap='RdYlBu_r', aspect='auto', origin='lower')
-plt.colorbar()
-plt.xlabel("Genomic Position")
-plt.ylabel("Distance to Adjacent Nodes")
+        plt.subplot(1, 2, 1)
+        plt.title("Ground Truth Hi-C Contact Map")
+        plt.imshow(ground_truth_hic_matrix[:n, :].T, cmap='RdYlBu_r', aspect='auto', origin='lower')
+        plt.colorbar()
+        plt.xlabel("Genomic Position")
+        plt.ylabel("Distance to Adjacent Nodes")
 
-plt.tight_layout()
-plt.show()
+        plt.subplot(1, 2, 2)
+        plt.title("Predicted Hi-C Contact Map")
+        plt.imshow(predicted_contact_map[:n, :].T, cmap='RdYlBu_r', aspect='auto', origin='lower')
+        plt.colorbar()
+        plt.xlabel("Genomic Position")
+        plt.ylabel("Distance to Adjacent Nodes")
 
-im = wandb.Image(plt)
-wandb.log({"Predicted Hi-C Contact Map": im})
-plt.close()
+        plt.tight_layout()
+        plt.show()
+
+        im = wandb.Image(plt)
+        wandb.log({"Predicted Hi-C Contact Map": im})
+        plt.close()
