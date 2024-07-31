@@ -83,7 +83,7 @@ class EdgeWeightMPNN(MessagePassing):
 
     def forward(self, data):
         print("FORWARD")
-        # print(f"input shape: {data.shape}")
+        print(f"input shape: {data.x.shape}")
         tracks = data.x[:, :-1].reshape(-1, 5, self.track_length)
         print(f"tracks shape: {tracks.shape}")
         pos_enc = data.x[:, -1].unsqueeze(-1)
