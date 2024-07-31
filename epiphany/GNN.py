@@ -118,25 +118,24 @@ class EdgeWeightMPNN(MessagePassing):
         out = self.propagate(edge_index=data.edge_index, x=node_features, edge_attr=data.edge_attr)
         return out
 
-    # def message(self, x_i, x_j, edge_attr):
-    #     print("MESSAGE")
-    #     edge_attr = edge_attr.unsqueeze(-1)
-    #     msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
-    #     return self.message_mlp(msg_input)
     def message(self, x_i, x_j, edge_attr):
         print("MESSAGE")
-        # Concatenate node features and edge attributes
-        edge_attr = edge_attr.unsqueeze(-1)  # Ensure edge_attr has the same number of dimensions
+        edge_attr = edge_attr.unsqueeze(-1)
         msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
-
-        # Predict edge weights using MLP
-        edge_weights = self.edge_mlp(msg_input).squeeze(-1)
-        edge_weights = edge_weights.unsqueeze(0)
-        print(f"edge_weights shape: {edge_weights.shape}")
-        print(f"x_j shape: {x_j.shape}")
-        # Use edge weights to scale the message
-        message = edge_weights * x_j  # Or any other way you want to use edge weights
-        return message
+        return self.message_mlp(msg_input)
+    # def message(self, x_i, x_j, edge_attr):
+    #     print("MESSAGE")
+    #     # Concatenate node features and edge attributes
+    #     edge_attr = edge_attr.unsqueeze(-1)  # Ensure edge_attr has the same number of dimensions
+    #     msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
+    #
+    #     # Predict edge weights using MLP
+    #     edge_weights = self.edge_mlp(msg_input).squeeze(-1)
+    #     print(f"v shape: {edge_weights.shape}")
+    #
+    #     # Use edge weights to scale the message
+    #     message = edge_weights * x_j  # Or any other way you want to use edge weights
+    #     return message
 
     def update(self, aggr_out, x):
         print("UPDATE")
