@@ -199,7 +199,7 @@ for epoch in range(num_epochs):
     #     total_loss += loss.item()
     for batch in train_loader:
         batch = batch.to(device)
-        print(f"Input requires_grad: {batch.requires_grad}")
+        # print(f"Input requires_grad: {batch.requires_grad}")
         optimizer.zero_grad()
         out = model(batch)
         edge_weights = batch.edge_attr.squeeze(-1)
