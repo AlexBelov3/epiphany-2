@@ -187,8 +187,9 @@ def main():
             wandb.log({chr + " Evaluation Examples": im})
             # Example usage
             im = wandb.Image(
-                generate_hic_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels) - 1))
+                generate_hic_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)))
             wandb.log({chr + " Extracted HiC": im})
+
             # for i in range(len(co_signal)):
             #     im = wandb.Image(
             #         plot_cosignal_matrix(co_signal[i]))
@@ -221,16 +222,30 @@ def main():
         bins_pred_path = f"{pred_output_data_path}_bins.tsv"
         counts_pred_path = f"{pred_output_data_path}_counts.tsv"
 
+        def load_data_with_pandas(file_path, delimiter="\t"):
+            # Load the data into a pandas DataFrame
+            df = pd.read_csv(file_path, delimiter=delimiter, na_values='NA')
+
+            # Fill NA values with a specific value, e.g., np.nan
+            df.fillna(np.nan, inplace=True)
+
+            # Convert the DataFrame to a NumPy array
+            data_array = df.values
+            return data_array
+
+
+
         # Load the bins and counts data
         bins = pd.read_csv(bins_real_path, sep="\t")
-        counts = np.loadtxt(counts_real_path, delimiter="\t")
+        counts = load_data_with_pandas(counts_pred_path)
         # Calculate insulation scores
         insulation_scores = calculate_insulation_scores(bins, counts)
         real_insulation_scores = np.log2(insulation_scores + 1e-10)
         # Plot log2 insulation scores
 
         bins = pd.read_csv(bins_pred_path, sep="\t")
-        counts = np.loadtxt(counts_pred_path, delimiter="\t")
+        counts = load_data_with_pandas(counts_pred_path)
+        # counts = np.loadtxt(counts_pred_path, delimiter="\t")
         # Calculate insulation scores
         insulation_scores = calculate_insulation_scores(bins, counts)
         pred_insulation_scores = np.log2(insulation_scores + 1e-10)
