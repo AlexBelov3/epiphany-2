@@ -187,9 +187,9 @@ def main():
             wandb.log({chr + " Evaluation Examples": im})
             # Example usage
             im1, im2 = generate_hic_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels))
-            im = wandb.Image(
-                )
-            wandb.log({"Real " + chr + " Extracted HiC": im})
+            im1, im2 = wandb.Image(im1), wandb.Image(im2)
+            wandb.log({"Real " + chr + " Extracted HiC": im1})
+            wandb.log({"Predicted " + chr + " Extracted HiC": im2})
 
             # for i in range(len(co_signal)):
             #     im = wandb.Image(
