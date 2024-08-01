@@ -348,10 +348,6 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     # Initialize the image arrays
     im1 = np.zeros((seq_length, seq_length))
     im2 = np.zeros((seq_length, seq_length))
-    print(f"len label: {len(label)}")
-    print(f"len y_up_list: {len(y_up_list)}")
-    print(f"len y_down_list: {len(y_down_list)}")
-    print(f"seq_length: {seq_length}")
     # Fill the top diagonal with the reconstructed Hi-C from label diagonals
     for i in range(seq_length):
         diag_values_down = y_down_list[i].cpu()
@@ -382,6 +378,9 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     # Plot the results
     fig, ax = plt.subplots()
     combined_image = im1 + im2.T
+    np.fill_diagonal(combined_image, 0)
+    np.fill_diagonal(combined_image[1:], 0)
+    np.fill_diagonal(combined_image[:, 1:], 0)
     ax.imshow(combined_image, cmap='RdYlBu_r', vmin=0)
     plt.imsave(path, combined_image, cmap='RdYlBu_r', vmin=0)
 
