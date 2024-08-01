@@ -183,19 +183,19 @@ def main():
                 break
             i += 1
         if args.wandb:
-            im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)-1))
+            im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)))
             wandb.log({chr + " Evaluation Examples": im})
             # Example usage
             matrix = wandb.Image(
                 generate_hic_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels) - 1))
             result_np = extract_off_diagonals_np(matrix, 3)
-            print("Extracted Band:\n", result_np)
+            wandb.log({chr + " Extracted HiC": result_np})
             # for i in range(len(co_signal)):
             #     im = wandb.Image(
             #         plot_cosignal_matrix(co_signal[i]))
             #     wandb.log({f"{i} " + chr + " Co-Signal": im})
-        np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=len(labels)-1), delimiter="\t", fmt="%.6f")
-        np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)-1),
+        np.savetxt("hic_real.tsv", generate_hic_true(labels, path=LOG_PATH, seq_length=len(labels)), delimiter="\t", fmt="%.6f")
+        np.savetxt("hic_pred.tsv", generate_hic_hat(y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)),
                    delimiter="\t", fmt="%.6f")
         cwd = os.getcwd()
         # Define paths
