@@ -186,10 +186,9 @@ def main():
             im = wandb.Image(generate_image_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels)))
             wandb.log({chr + " Evaluation Examples": im})
             # Example usage
-            matrix = wandb.Image(
+            im = wandb.Image(
                 generate_hic_test(labels, y_hat_L_list, y_hat_R_list, path=LOG_PATH, seq_length=len(labels) - 1))
-            result_np = extract_off_diagonals_np(matrix, 3)
-            wandb.log({chr + " Extracted HiC": result_np})
+            wandb.log({chr + " Extracted HiC": im})
             # for i in range(len(co_signal)):
             #     im = wandb.Image(
             #         plot_cosignal_matrix(co_signal[i]))
