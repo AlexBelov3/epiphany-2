@@ -387,7 +387,7 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
 
     return plt.imread(path)
 
-def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200, num_vs = 1):
+def generate_hic(label, y_up_list, y_down_list, seq_length, path='./', num_vs = 1):
     label = torch.cat(label, dim=0)
     label = safe_tensor_to_numpy(label)
     for i in range(len(y_up_list)):
@@ -530,7 +530,7 @@ def extract_off_diagonals_np(matrix, height):
 
     return result
 
-def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
+def generate_hic_test(label, y_up_list, y_down_list, seq_length, path='./'):
     matrix = generate_hic(label, y_up_list, y_down_list, seq_length)
     print(matrix.shape)
     # matrix = matrix + matrix.T
