@@ -532,16 +532,19 @@ def extract_off_diagonals_np(matrix, height):
 
 def generate_hic_test(label, y_up_list, y_down_list, seq_length, path='./'):
     matrix = generate_hic(label, y_up_list, y_down_list, seq_length)
-    print(matrix.shape)
     # matrix = matrix + matrix.T
-    matrix = extract_off_diagonals_np(matrix, 50)
-    matrix = np.flipud(matrix)
-    print(f"extract_off_diagonals_np shape: {matrix.shape}")
-    path = os.path.join(path, 'ex_test.png')
+    matrix_top = extract_off_diagonals_np(matrix.T, 50)
+    matrix_bottom = extract_off_diagonals_np(matrix, 50)
+    matrix_bottom = np.flipud(matrix_bottom)
+    matrix_top = np.flipud(matrix_top)
+    path_b = os.path.join(path, 'ex_bottom_test.png')
+    path_t = os.path.join(path, 'ex_top_test.png')
     fig, ax = plt.subplots()
-    ax.imshow(matrix, cmap='RdYlBu_r', vmin=0)
-    plt.imsave(path, matrix, cmap='RdYlBu_r', vmin=0)
-    return plt.imread(path)
+    ax.imshow(matrix_bottom, cmap='RdYlBu_r', vmin=0)
+    plt.imsave(path_b, matrix_bottom, cmap='RdYlBu_r', vmin=0)
+    ax.imshow(matrix_top, cmap='RdYlBu_r', vmin=0)
+    plt.imsave(path_t, matrix_top, cmap='RdYlBu_r', vmin=0)
+    return plt.imread(path_b), plt.imread(path_t)
 
 
 def plot_cosignal_matrix(matrix, title='Co-Signal Matrix'):
