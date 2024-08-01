@@ -513,7 +513,7 @@ def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
     #                 im[99 - j, i - j//2] = (diag_values_down[j] + im[99 - j, i - j]) / 2
     #
     # Save and plot the image
-    matrix = generate_image(label, y_up_list, y_down_list, seq_length=200)
+    matrix = generate_image_test(label, y_up_list, y_down_list, seq_length=200)
     matrix = matrix + matrix.T
     matrix = extract_off_diagonals_np(matrix, 100)
     path = os.path.join(path, 'ex_test.png')
