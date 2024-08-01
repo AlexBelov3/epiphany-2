@@ -238,7 +238,7 @@ def main():
 
         # Load the bins and counts data
         bins = pd.read_csv(bins_real_path, sep="\t")
-        counts = load_data_with_pandas(counts_pred_path)
+        counts = load_data_with_pandas(counts_real_path)
         # Calculate insulation scores
         insulation_scores = calculate_insulation_scores(bins, counts)
         real_insulation_scores = np.log2(insulation_scores + 1e-10)
