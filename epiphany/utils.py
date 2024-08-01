@@ -471,34 +471,55 @@ def generate_hic_hat(y_up_list, y_down_list, path='./', seq_length=200):
     plt.imsave(path, combined_image, cmap='RdYlBu_r', vmin=0)
     return combined_image
 
+def extract_off_diagonals_np(matrix, height):
+    n = matrix.shape[0]
+    assert matrix.shape[1] == n, "Input must be a square matrix"
+    assert height <= n, "Height exceeds matrix dimensions"
+
+    result = np.zeros((height, 2*(n-height-1)-1), dtype=matrix.dtype)
+    col_idx = 0
+
+    for i in range(height-1, n - height + 1):
+        diagonal = [matrix[i + j, i - j] for j in range(height)]
+        result[:, col_idx] = diagonal
+        col_idx += 1
+        if i < n - height:
+            diagonal = [matrix[i + j + 1, i - j] for j in range(height)]
+            result[:, col_idx] = diagonal
+            col_idx += 1
+
+    return result
 
 def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
-    im = np.zeros((100, seq_length))  # Initialize the image with zeros
-
-    for i in range(seq_length):  # Iterate over each position on the x-axis
-        diag_values_down = np.array(y_down_list[i].cpu())  # Get the down segment
-        diag_values_up = np.array(y_up_list[i].cpu())  # Get the up segment
-
-        for j in range(100):  # Iterate over the height
-            # Diagonal Down (Right)
-            if i + j//2 < seq_length:  # Ensure within bounds
-                if im[99 - j, i + j//2] == 0:
-                    im[99 - j, i + j//2] = diag_values_up[j]
-                else:
-                    im[99 - j, i + j//2] = (diag_values_up[j] + im[99 - j, i + j]) / 2
-
-            # Diagonal Up (Left)
-            if i - j//2 >= 0:  # Ensure within bounds
-                if im[99 - j, i - j//2] == 0:
-                    im[99 - j, i - j//2] = diag_values_down[j]
-                else:
-                    im[99 - j, i - j//2] = (diag_values_down[j] + im[99 - j, i - j]) / 2
-
+    # im = np.zeros((100, seq_length))  # Initialize the image with zeros
+    #
+    # for i in range(seq_length):  # Iterate over each position on the x-axis
+    #     diag_values_down = np.array(y_down_list[i].cpu())  # Get the down segment
+    #     diag_values_up = np.array(y_up_list[i].cpu())  # Get the up segment
+    #
+    #     for j in range(100):  # Iterate over the height
+    #         # Diagonal Down (Right)
+    #         if i + j//2 < seq_length:  # Ensure within bounds
+    #             if im[99 - j, i + j//2] == 0:
+    #                 im[99 - j, i + j//2] = diag_values_up[j]
+    #             else:
+    #                 im[99 - j, i + j//2] = (diag_values_up[j] + im[99 - j, i + j]) / 2
+    #
+    #         # Diagonal Up (Left)
+    #         if i - j//2 >= 0:  # Ensure within bounds
+    #             if im[99 - j, i - j//2] == 0:
+    #                 im[99 - j, i - j//2] = diag_values_down[j]
+    #             else:
+    #                 im[99 - j, i - j//2] = (diag_values_down[j] + im[99 - j, i - j]) / 2
+    #
     # Save and plot the image
+    matrix = generate_image(label, y_up_list, y_down_list, seq_length=200)
+    matrix = matrix + matrix.T
+    matrix = extract_off_diagonals_np(matrix, 100)
     path = os.path.join(path, 'ex_test.png')
     fig, ax = plt.subplots()
-    ax.imshow(im, cmap='RdYlBu_r', vmin=0)
-    plt.imsave(path, im, cmap='RdYlBu_r', vmin=0)
+    ax.imshow(matrix, cmap='RdYlBu_r', vmin=0)
+    plt.imsave(path, matrix, cmap='RdYlBu_r', vmin=0)
     return plt.imread(path)
 
 
