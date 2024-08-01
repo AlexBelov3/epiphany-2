@@ -534,7 +534,7 @@ def generate_hic_test(label, y_up_list, y_down_list, seq_length, path='./'):
     matrix = generate_hic(label, y_up_list, y_down_list, seq_length)
     print(matrix.shape)
     # matrix = matrix + matrix.T
-    matrix = extract_off_diagonals_np(matrix, 100)
+    matrix = extract_off_diagonals_np(matrix, 50)
     matrix = np.flipud(matrix)
     print(f"extract_off_diagonals_np shape: {matrix.shape}")
     path = os.path.join(path, 'ex_test.png')
