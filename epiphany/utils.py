@@ -388,7 +388,6 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
     return plt.imread(path)
 
 def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200, num_vs = 1):
-    path = os.path.join(path, 'ex_test.png')
     label = torch.cat(label, dim=0)
     label = safe_tensor_to_numpy(label)
     for i in range(len(y_up_list)):
@@ -416,8 +415,6 @@ def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200, num_v
                 im1[i, i + j] = np.mean([diag_values_up[j], im1[i, i + j]])
 
     bands = len(label)
-    # print(f"bands: {bands}")
-    # print(len(label[0]))
     label = np.flip(label, axis=0)
     for j in range(bands - 1):
         if j > 0:
@@ -426,7 +423,6 @@ def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200, num_v
             np.fill_diagonal(im2, .5 * label[bands - 1 - j, :])
 
     # Plot the results
-    fig, ax = plt.subplots()
     combined_image = im1 + im2.T
     return combined_image
 
@@ -534,31 +530,11 @@ def extract_off_diagonals_np(matrix, height):
     return result
 
 def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
-    # im = np.zeros((100, seq_length))  # Initialize the image with zeros
-    #
-    # for i in range(seq_length):  # Iterate over each position on the x-axis
-    #     diag_values_down = np.array(y_down_list[i].cpu())  # Get the down segment
-    #     diag_values_up = np.array(y_up_list[i].cpu())  # Get the up segment
-    #
-    #     for j in range(100):  # Iterate over the height
-    #         # Diagonal Down (Right)
-    #         if i + j//2 < seq_length:  # Ensure within bounds
-    #             if im[99 - j, i + j//2] == 0:
-    #                 im[99 - j, i + j//2] = diag_values_up[j]
-    #             else:
-    #                 im[99 - j, i + j//2] = (diag_values_up[j] + im[99 - j, i + j]) / 2
-    #
-    #         # Diagonal Up (Left)
-    #         if i - j//2 >= 0:  # Ensure within bounds
-    #             if im[99 - j, i - j//2] == 0:
-    #                 im[99 - j, i - j//2] = diag_values_down[j]
-    #             else:
-    #                 im[99 - j, i - j//2] = (diag_values_down[j] + im[99 - j, i - j]) / 2
-    #
-    # Save and plot the image
     matrix = generate_hic(label, y_up_list, y_down_list, seq_length=200)
+    print(matrix.shape)
     matrix = matrix + matrix.T
     matrix = extract_off_diagonals_np(matrix, 100)
+    print(f"extract_off_diagonals_np shape: {matrix.shape}")
     path = os.path.join(path, 'ex_test.png')
     fig, ax = plt.subplots()
     ax.imshow(matrix, cmap='RdYlBu_r', vmin=0)
