@@ -515,7 +515,8 @@ def extract_off_diagonals_np(matrix, height):
     assert matrix.shape[1] == n, "Input must be a square matrix"
     assert height <= n, "Height exceeds matrix dimensions"
 
-    result = np.zeros((height, 2*(n-height-1)-1), dtype=matrix.dtype)
+    # result = np.zeros((height, 2*(n-height-1)-1), dtype=matrix.dtype)
+    result = np.zeros((height, (n - height * 2 + 2) * 2 - 1), dtype=matrix.dtype)
     col_idx = 0
 
     for i in range(height-1, n - height + 1):
@@ -532,7 +533,7 @@ def extract_off_diagonals_np(matrix, height):
 def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
     matrix = generate_hic(label, y_up_list, y_down_list, seq_length=200)
     print(matrix.shape)
-    matrix = matrix + matrix.T
+    # matrix = matrix + matrix.T
     matrix = extract_off_diagonals_np(matrix, 100)
     print(f"extract_off_diagonals_np shape: {matrix.shape}")
     path = os.path.join(path, 'ex_test.png')
