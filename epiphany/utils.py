@@ -531,7 +531,7 @@ def extract_off_diagonals_np(matrix, height):
     return result
 
 def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
-    matrix = generate_hic(label, y_up_list, y_down_list, seq_length=200)
+    matrix = generate_hic(label, y_up_list, y_down_list, seq_length)
     print(matrix.shape)
     # matrix = matrix + matrix.T
     matrix = extract_off_diagonals_np(matrix, 100)
