@@ -387,6 +387,49 @@ def generate_image_test(label, y_up_list, y_down_list, path='./', seq_length=200
 
     return plt.imread(path)
 
+def generate_hic(label, y_up_list, y_down_list, path='./', seq_length=200, num_vs = 1):
+    path = os.path.join(path, 'ex_test.png')
+    label = torch.cat(label, dim=0)
+    label = safe_tensor_to_numpy(label)
+    for i in range(len(y_up_list)):
+        y_up_list[i] = y_up_list[i].squeeze()
+        y_down_list[i] = y_down_list[i].squeeze()
+
+    # Initialize the image arrays
+    im1 = np.zeros((seq_length, seq_length))
+    im2 = np.zeros((seq_length, seq_length))
+    # Fill the top diagonal with the reconstructed Hi-C from label diagonals
+    for i in range(seq_length):
+        diag_values_down = y_down_list[i].cpu()
+        for j in range(min(100, i)):
+            im1[i, i-j] = diag_values_down[j]
+    im1 = im1.T
+    for i in range(seq_length):
+        diag_values_up = y_up_list[i].cpu()
+        for j in range(min(100, seq_length - i)):
+            # print(f"j: {j}")
+            if im1[i, i+j] == 0:
+                # print(f"diag_values_up[j]: {diag_values_up[j]}")
+                # print(f"im1[i, i+j]: {im1[i, i+j]}")
+                im1[i, i + j] = diag_values_up[j]
+            else:
+                im1[i, i + j] = np.mean([diag_values_up[j], im1[i, i + j]])
+
+    bands = len(label)
+    # print(f"bands: {bands}")
+    # print(len(label[0]))
+    label = np.flip(label, axis=0)
+    for j in range(bands - 1):
+        if j > 0:
+            np.fill_diagonal(im2[:, j:], label[bands - 1 - j, j // 2:-j // 2])
+        else:
+            np.fill_diagonal(im2, .5 * label[bands - 1 - j, :])
+
+    # Plot the results
+    fig, ax = plt.subplots()
+    combined_image = im1 + im2.T
+    return combined_image
+
 
 def plot_insulation_scores(log_insulation_scores):
     # Calculate the maximum and minimum log2 insulation scores and set the y-axis limits
@@ -513,7 +556,7 @@ def generate_hic_test(label, y_up_list, y_down_list, path='./', seq_length=200):
     #                 im[99 - j, i - j//2] = (diag_values_down[j] + im[99 - j, i - j]) / 2
     #
     # Save and plot the image
-    matrix = generate_image_test(label, y_up_list, y_down_list, seq_length=200)
+    matrix = generate_hic(label, y_up_list, y_down_list, seq_length=200)
     matrix = matrix + matrix.T
     matrix = extract_off_diagonals_np(matrix, 100)
     path = os.path.join(path, 'ex_test.png')
