@@ -532,8 +532,8 @@ def extract_off_diagonals_np(matrix, height):
 def generate_hic_test(label, y_up_list, y_down_list, seq_length, path='./'):
     matrix = generate_hic(label, y_up_list, y_down_list, seq_length)
     # matrix = matrix + matrix.T
-    matrix_top = extract_off_diagonals_np(matrix.T, 50)[1:-1, :]
-    matrix_bottom = extract_off_diagonals_np(matrix, 50)[1:-1, :]
+    matrix_top = extract_off_diagonals_np(matrix.T, 50)#[1:-1, :]
+    matrix_bottom = extract_off_diagonals_np(matrix, 50)#[1:-1, :]
     matrix_bottom = np.flipud(matrix_bottom)
     matrix_top = np.flipud(matrix_top)
     path_b = os.path.join(path, 'ex_bottom_test.png')
