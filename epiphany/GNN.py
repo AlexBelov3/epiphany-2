@@ -170,7 +170,7 @@ torch.manual_seed(0)
 
 # Print which device is being used
 if device.type == 'cuda':
-    print(f"Running on GPU: {torch.cuda.get_device_name(device)}")
+    print(f"Running on GPU: {device.index}")
 else:
     print("Running on CPU")
 
