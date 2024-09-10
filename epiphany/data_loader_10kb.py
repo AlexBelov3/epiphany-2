@@ -14,7 +14,7 @@ import sys
 #wandb.init()
 
 class Chip2HiCDataset(torch.utils.data.Dataset):
-    def __init__(self, seq_length=200, window_size=14000, chroms=['chr22'], mode='train', save_dir='/data/leslie/belova1//Epiphany_dataset', zero_pad=True, num_Vs = 1):
+    def __init__(self, seq_length=200, window_size=14000, chroms=['chr22'], mode='train', save_dir='./Epiphany_dataset', zero_pad=True, num_Vs = 1):
 
         save_path_X = os.path.join(save_dir, 'GM12878_X.h5')
         # save_path_y = os.path.join(save_dir, 'new_GM12878_y.pickle')
@@ -73,6 +73,9 @@ class Chip2HiCDataset(torch.utils.data.Dataset):
             contact_data.append(contact_vec)
 
         X_chr = self.inputs[chr][:self.num_channels, 100*start-(self.window_size//2):100*end+(self.window_size//2)].astype('float32')
+        # X_chr = self.inputs[chr][:self.num_channels,
+        #         (100 + self.num_Vs) * start - (self.window_size // 2):(100 + self.num_Vs) * end + (
+        #                     self.window_size // 2)].astype('float32')
         y_chr = np.array(contact_data)
         if self.zero_pad and y_chr.shape[0] < self.seq_length:
             try:
