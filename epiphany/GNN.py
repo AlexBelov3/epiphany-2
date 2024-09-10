@@ -164,7 +164,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 loss_fn = nn.MSELoss()
 
 # Move model to GPU
-device = torch.device('cuda:1' if torch.cuda.is_available() else 'cpu')
+device = torch.device('cuda:7' if torch.cuda.is_available() else 'cpu')
 model = model.to(device)
 torch.manual_seed(0)
 
