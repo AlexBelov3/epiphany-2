@@ -144,7 +144,7 @@ class EdgeWeightMPNN(MessagePassing):
 # Parameters for the dataset
 window_size = 10000
 chroms = ['chr17']
-save_dir = '/Epiphany_dataset'
+save_dir = './Epiphany_dataset'
 
 # Create instances of the custom dataset
 train_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=save_dir)
