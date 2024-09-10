@@ -103,6 +103,7 @@ class EdgeWeightMPNN(MessagePassing):
 
     # def message(self, x_i, x_j, edge_attr):
         # print("MESSAGE")
+        # print(f"edge_attr before unsqueeze: {edge_attr.shape}")
         # edge_attr = edge_attr.unsqueeze(-1)
         # msg_input = torch.cat([x_i, x_j, edge_attr], dim=-1)
         # print(f"edge_attr shape: {edge_attr.shape}")
@@ -143,7 +144,7 @@ class EdgeWeightMPNN(MessagePassing):
 # Parameters for the dataset
 window_size = 10000
 chroms = ['chr17']
-save_dir = '/data/leslie/belova1/Epiphany_dataset'
+save_dir = './Epiphany_dataset'
 
 # Create instances of the custom dataset
 train_dataset = GraphDataset(window_size=window_size, chroms=chroms, save_dir=save_dir)
@@ -254,3 +255,30 @@ for epoch in range(num_epochs):
         im = wandb.Image(plt)
         wandb.log({"Predicted Hi-C Contact Map": im})
         plt.close()
+# import numpy as np
+#
+# def extract_off_diagonals_np(matrix, height):
+#     n = matrix.shape[0]
+#     assert matrix.shape[1] == n, "Input must be a square matrix"
+#     assert height <= n, "Height exceeds matrix dimensions"
+#
+#     result = np.zeros((height, (n - height*2 + 2)*2-1), dtype=matrix.dtype)
+#     col_idx = 0
+#
+#     for i in range(height-1, n - height + 1):
+#         diagonal = [matrix[i + j, i - j] for j in range(height)]
+#         result[:, col_idx] = diagonal
+#         col_idx += 1
+#         if i < n - height:
+#             diagonal = [matrix[i + j + 1, i - j] for j in range(height)]
+#             result[:, col_idx] = diagonal
+#             col_idx += 1
+#
+#     return result
+#
+# # Example usage
+# n = 10
+# matrix = np.arange(1, n*n+1).reshape(n, n)
+# print("Original Matrix:\n", matrix)
+# result_np = extract_off_diagonals_np(matrix, 5)
+# print("Extracted Band:\n", result_np)
