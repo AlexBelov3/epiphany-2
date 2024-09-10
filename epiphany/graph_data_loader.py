@@ -46,7 +46,7 @@ def data_preparation(m, diag_log_list, chip_list, distance=100, chip_res=100, hi
     return contacts, distances
 
 class GraphDataset(torch.utils.data.Dataset):
-    def __init__(self, window_size=14000, chroms=['chr22'], save_dir='./Epiphany_dataset'):
+    def __init__(self, window_size=14000, chroms=['chr22'], save_dir='Epiphany_dataset'):
         save_path_X = os.path.join(save_dir, 'GM12878_X.h5')
         save_path_y = os.path.join(save_dir, 'GM12878_y.pickle')
         print(f"save_path_X: {save_path_X}")
