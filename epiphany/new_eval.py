@@ -159,7 +159,7 @@ def main():
         # Save plot to wandb
         if args.wandb:
             wandb.log({f'{chr}_Epigenetic_Tracks': wandb.Image(plt)})
-
+        print(eval_pooled_epigenetic)
         plt.close()  # Close the plot to free memory
         #------------------------------------------------------------------------------------------
         for i, (test_data, test_label, co_s) in enumerate(test_loader):
@@ -240,7 +240,7 @@ def main():
         pred_output_data_path = os.path.join(cwd, "pred_output_data")
         # Full path to Rscript executable
         rscript_executable = "./Rscript"
-        rscript_executable = os.path.join(cwd, rscript_executable)
+        # rscript_executable = os.path.join(cwd, rscript_executable)
         try:
             subprocess.run([rscript_executable, r_script_path, real_hic_matrix_path, real_output_data_path],
                                     capture_output=True, text=True)
