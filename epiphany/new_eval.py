@@ -133,7 +133,7 @@ def main():
         test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
         # 1. Find the bin size (ratio of epigenetic track length to Hi-C chromosome length)
         epigenetic_track_length = len(test_set.inputs[chr][0])  # Length of epigenetic track
-        hic_data_length = len(test_set.labels)  # Length of Hi-C data (or y_list)
+        hic_data_length = len(test_set.labels[0])  # Length of Hi-C data (or y_list)
         bin_size = epigenetic_track_length / hic_data_length
 
         # 2. Average pool the epigenetic tracks across channels
