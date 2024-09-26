@@ -127,9 +127,41 @@ def main():
         y_down_list = []
         labels = []
         co_signal = []
+        # ------------------------------------------------------------------------------------------
         test_set = Chip2HiCDataset(seq_length=TEST_SEQ_LENGTH, window_size=int(args.window_size), chroms=[chr],
                                    mode='test')
         test_loader = torch.utils.data.DataLoader(test_set, batch_size=1, shuffle=False, num_workers=1)
+        # 1. Find the bin size (ratio of epigenetic track length to Hi-C chromosome length)
+        epigenetic_track_length = len(test_set.inputs[chr][0])  # Length of epigenetic track
+        hic_data_length = len(y_list)  # Length of Hi-C data (or y_list)
+        bin_size = epigenetic_track_length / hic_data_length
+
+        # 2. Average pool the epigenetic tracks across channels
+        pooled_epigenetic = F.avg_pool1d(torch.tensor(test_set.inputs[chr][:test_set.num_channels]),
+                                         kernel_size=int(bin_size), stride=int(bin_size)).numpy()
+
+        # 3. Extract the first 'eval_length' items from the pooled epigenetic tracks
+        eval_pooled_epigenetic = pooled_epigenetic[:, :eval_length]
+
+        # 4. Plot the epigenetic tracks
+        plt.figure(figsize=(10, 6))
+        colors = ['blue', 'green', 'red', 'purple', 'orange']  # Different colors for each track
+        track_labels = ['Track 1', 'Track 2', 'Track 3', 'Track 4', 'Track 5']
+
+        for i in range(test_set.num_channels):
+            plt.plot(eval_pooled_epigenetic[i], label=track_labels[i], color=colors[i])
+
+        plt.title(f'Epigenetic Tracks for {chr}')
+        plt.xlabel('Genomic Position (scaled)')
+        plt.ylabel('Signal Intensity')
+        plt.legend()
+
+        # Save plot to wandb
+        if args.wandb:
+            wandb.log({f'{chr}_Epigenetic_Tracks': wandb.Image(plt)})
+
+        plt.close()  # Close the plot to free memory
+        #------------------------------------------------------------------------------------------
         for i, (test_data, test_label, co_s) in enumerate(test_loader):
             if i >= eval_length:
                 break
