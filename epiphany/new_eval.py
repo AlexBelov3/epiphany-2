@@ -135,6 +135,9 @@ def main():
         epigenetic_track_length = len(test_set.inputs[chr][0])  # Length of epigenetic track
         hic_data_length = len(test_set.labels[chr][0])  # Length of Hi-C data (or y_list)
         bin_size = epigenetic_track_length / hic_data_length
+        print(f"Epi Track Len: {epigenetic_track_length}")
+        print(f"HiC Len: {hic_data_length}")
+        print(f"Bin Size: {bin_size}")
 
         # 2. Average pool the epigenetic tracks across channels
         pooled_epigenetic = F.avg_pool1d(torch.tensor(test_set.inputs[chr][:test_set.num_channels]),
